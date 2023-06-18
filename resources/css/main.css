@@ -1,0 +1,35 @@
+@import "tailwind/_base.css";
+@import "tailwind/_components.css";
+@import "tailwind/_utilities.css";
+
+@import "_checkbox-radio-switch.css";
+@import "_progress.css";
+@import "_scrollbars.css";
+@import "_table.css";
+.dark {
+    --vs-controls-color: rgb(75 85 99);
+    --vs-border-color: rgb(75 85 99);
+
+    --vs-dropdown-bg: rgb(55 65 81);
+    --vs-dropdown-color: rgb(229 231 235 / var(--tw-text-opacity));
+    --vs-dropdown-option-color: rgb(229 231 235 / var(--tw-text-opacity));
+
+    --vs-selected-bg: rgb(255 255 255 / var(--tw-text-opacity));
+    --vs-selected-color: rgb(255 255 255 / var(--tw-text-opacity));
+
+    --vs-search-input-color: rgb(229 231 235 / var(--tw-text-opacity));
+
+    --vs-dropdown-option--active-bg: rgb(59 130 246);
+    --vs-dropdown-option--active-color:  rgb(255 255 255);
+    --vs-border-width: 2px;
+}
+@media (min-width: 0px){
+    tr:hover:is(.dark tbody tr:hover), :is(.dark tbody tr:nth-child(odd):hover) {
+        background-color: rgb(51 65 85);
+    }
+}
+.dark .filepond--drop-label,.dark .filepond--panel-center,.dark .filepond--panel-top.filepond--panel-root ,.dark .filepond--panel-bottom.filepond--panel-root{
+    background-color: rgb(55, 65, 81);
+    color: rgb(241, 245, 249);
+}
+

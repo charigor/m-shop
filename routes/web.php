@@ -1,0 +1,90 @@
+<?php
+
+use App\Http\Controllers\Admin\DeleteTemporaryImageController;
+use App\Http\Controllers\Admin\MessageController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\TestController;
+use App\Http\Controllers\Admin\UploadTemporaryImageController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return Inertia::render('HomeView');
+//    return Inertia::render('Welcome');
+})->middleware(['auth', 'verified'])->name('dashboard');;
+
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('admin')->group(function () {
+        Route::get('/messages', [MessageController::class, 'index'])->name('message.index');
+        Route::post('/messages', [MessageController::class, 'store'])->name('message.store');
+
+        /*Users */
+        Route::get('/users', [UserController::class, 'index'])->name('user.index');
+        Route::put('/users/{user}/update', [UserController::class, 'update'])->name('user.update');
+        Route::post('/users', [UserController::class, 'store'])->name('user.store');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+        Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
+        Route::post('/users/delete', [UserController::class, 'destroy'])->name('user.delete');
+
+        /*Roles */
+        Route::get('/roles', [RoleController::class, 'index'])->name('role.index');
+        Route::put('/roles/{role}/update', [RoleController::class, 'update'])->name('role.update');
+        Route::post('/roles', [RoleController::class, 'store'])->name('role.store');
+        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
+        Route::get('/roles/create', [RoleController::class, 'create'])->name('role.create');
+        Route::post('/roles/delete', [RoleController::class, 'destroy'])->name('role.delete');
+
+        /*Permissions */
+        Route::get('/permissions', [PermissionController::class, 'index'])->name('permission.index');
+        Route::put('/permissions/{permission}/update', [PermissionController::class, 'update'])->name('permission.update');
+        Route::post('/permissions', [PermissionController::class, 'store'])->name('permission.store');
+        Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])->name('permission.edit');
+        Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permission.create');
+        Route::post('/permissions/delete', [PermissionController::class, 'destroy'])->name('permission.delete');
+
+        Route::get('/test', [TestController::class, 'index'])->name('test.index');
+
+        Route::post('/upload', UploadTemporaryImageController::class);
+        Route::delete('/revert/{folder}', DeleteTemporaryImageController::class);
+    });
+
+
+//    Route::prefix('admin')->group(function () {
+//        Route::get('/users/table', [UserController::class,'table']);
+//        Route::delete('/users/delete-many', [UserController::class,'destroyMany']);
+//        Route::apiResource('users', UserController::class);
+//
+//
+//        Route::get('/roles/table', [RoleController::class,'table']);
+//        Route::delete('/roles/delete-many', [RoleController::class,'destroyMany']);
+//        Route::apiResource('roles', RoleController::class);
+//
+//        Route::get('/permissions/table', [PermissionController::class,'table']);
+//        Route::delete('/permissions/delete-many', [PermissionController::class,'destroyMany']);
+//        Route::apiResource('permissions', PermissionController::class);
+//    });
+});
+
+require __DIR__.'/auth.php';
