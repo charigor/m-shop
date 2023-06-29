@@ -43,7 +43,10 @@ defineComponent({
     SectionMain,
     BaseButton
 })
-
+const urlPrefix = window.location.href.split('?')[0];
+const baseUrl = '/admin/users'
+const deleteTitle = 'name'
+const modelName = 'Users';
 </script>
 <template>
     <LayoutAuthenticated>
@@ -54,7 +57,7 @@ defineComponent({
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.users" :filter="props.filter" :search="props.search" :columns="columns" url-prefix="/admin/users">
+            <DataTable  :data="props.users" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
                 <template  #create>
                     <BaseButton
                         color="gray"

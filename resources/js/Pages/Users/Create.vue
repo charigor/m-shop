@@ -6,12 +6,13 @@ import {defineComponent, defineProps,reactive, ref} from "vue";
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
 import { router,useForm } from '@inertiajs/vue3'
-import vueFilePond , { setOptions } from 'vue-filepond';
+
 import FilePondPluginImagePreview from "filepond-plugin-image-preview/dist/filepond-plugin-image-preview";
 import FilePondPluginFilePoster from 'filepond-plugin-file-poster/dist/filepond-plugin-file-poster';
 import 'filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css';
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+import vueFilePond , { setOptions } from 'vue-filepond';
 const FilePond = vueFilePond(FilePondPluginImagePreview,FilePondPluginFilePoster);
 
 
@@ -85,7 +86,7 @@ function handleFilePondRevert(res,load,error){
                         </div>
                         <file-pond
                             id="avatar"
-                            name="avatar"
+                            name="image"
                             ref="pond"
                             class="col-4"
                             class-name="my-pond"

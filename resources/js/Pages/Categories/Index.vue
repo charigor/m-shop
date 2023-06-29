@@ -3,13 +3,10 @@
 
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
-import DataTable from "@/Components/Partials/DataTable.vue";
+import DataTableDrag from "@/Components/Partials/DataTableDrag.vue";
 import {defineComponent, defineProps, ref} from "vue";
-import { Link } from '@inertiajs/vue3';
-import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
-import { mdiAccountBoxMultipleOutline } from "@mdi/js";
 const props = defineProps({
-    permissions: {
+    categories: {
         type: Object,
         required: true,
     },
@@ -22,6 +19,7 @@ const props = defineProps({
         required: true,
     },
 });
+const urlPrefix = window.location.href.split('?')[0];
 const columns = ref(
     [
     { value: true , label: 'id', type: 'number',sorting: true},
@@ -30,11 +28,10 @@ const columns = ref(
 ])
 
 defineComponent({
-    DataTable,
+    DataTableDrag,
     SectionTitleLineWithButton,
     SectionMain,
 })
-const urlPrefix = window.location.href.split('?')[0];
 
 </script>
 <template>
@@ -42,15 +39,15 @@ const urlPrefix = window.location.href.split('?')[0];
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Users"
+                title="Categories"
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.permissions" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/permissions" :url-prefix="urlPrefix" table-name="Permissions" delete-title="name">
+            <DataTableDrag  :data="props.categories" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/categories" :url-prefix="urlPrefix" table-name="Categories" delete-title="name">
                 <template #create>
-                    <Link :href="'/admin/permissions/create'">Create New Permission</Link>
+                    <Link :href="'/admin/categories/create'">Create New Category</Link>
                 </template>
-            </DataTable>
+            </DataTableDrag>
         </SectionMain>
     </LayoutAuthenticated>
 </template>

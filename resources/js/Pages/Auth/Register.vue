@@ -3,15 +3,15 @@ import { useForm, usePage, Head } from "@inertiajs/vue3";
 import { computed } from "vue";
 import { mdiAccount, mdiEmail, mdiFormTextboxPassword } from "@mdi/js";
 import LayoutGuest from "@/layouts/LayoutGuest.vue";
-import SectionFullScreen from "@/components/SectionFullScreen.vue";
-import CardBox from "@/components/CardBox.vue";
-import FormCheckRadioGroup from "@/components/FormCheckRadioGroup.vue";
-import FormField from "@/components/FormField.vue";
-import FormControl from "@/components/FormControl.vue";
-import BaseDivider from "@/components/BaseDivider.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import BaseButtons from "@/components/BaseButtons.vue";
-import FormValidationErrors from "@/components/FormValidationErrors.vue";
+import SectionFullScreen from "@/Components/Partials/SectionFullScreen.vue";
+import CardBox from "@/Components/Partials/CardBox.vue";
+import FormCheckRadioGroup from "@/Components/Partials/FormCheckRadioGroup.vue";
+import FormField from "@/Components/Partials/FormField.vue";
+import FormControl from "@/Components/Partials/FormControl.vue";
+import BaseDivider from "@/Components/Partials/BaseDivider.vue";
+import BaseButton from "@/Components/Partials/BaseButton.vue";
+import BaseButtons from "@/Components/Partials/BaseButtons.vue";
+import FormValidationErrors from "@/Components/FormValidationErrors.vue";
 
 const form = useForm({
   name: "",

@@ -22,11 +22,11 @@
                 </select>
             </div>
         </div>
-        <table class=" table-auto w-full bg-white dark:bg-gray-700 shadow rounded">
+        <table class="table table-auto w-full bg-white dark:bg-gray-700 shadow rounded">
             <thead>
 
             <tr class="text-left font-bold">
-                <th class="lg:w-1">
+                <th>
                     <label class="checkbox">
                         <input type="checkbox" v-model="allSelected" @click="selectAll" />
                         <span class="check" />
@@ -46,7 +46,6 @@
                 <th class="pb-4 pt-6 px-6 lg:w-6 whitespace-nowrap justify-start"><p>Actions</p></th>
             </tr>
             <tr class="text-left font-bold">
-
                 <td>
                 </td>
                 <template v-for="column in columns">
@@ -54,7 +53,7 @@
                         <input  v-if="column.type === 'number'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.label" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
                         <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.label" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
                         <slot v-else-if="column.type === 'select'" name="select" :filter="filter"></slot>
-                        <VueDatePicker class="dp__theme_dark"  :dark="darkMode" v-else-if="column.type === 'date'"  range  :partial-range="false"   multi-calendars v-model="params.filter[column.label]" :aria-label="column.label" ></VueDatePicker>
+                        <VueDatePicker class="dp__theme_dark" v-else-if="column.type === 'date'"  range :dark="darkMode" :partial-range="false"   multi-calendars v-model="params.filter[column.label]" :aria-label="column.label" ></VueDatePicker>
                     </td>
                 </template>
                 <td>
@@ -95,16 +94,23 @@
                 </td>
             </tr>
             </thead>
-                <tbody>
-                    <tr v-if="data.data.length" v-for="element in data.data" :key="element.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-                        <td>
-                            <label class="checkbox">
-                                <input type="checkbox" :value="element" v-model="selected" />
-                                <span class="check" />
-                            </label>
+
+            <draggable  @end="sorting" v-model="this.dragItems"  item-key="id"  tag="tbody" handle=".handle">
+                    <template #item="{element}">
+                    <tr  class="hover:bg-gray-100  focus-within:bg-gray-100 ">
+                        <td class="group">
+                            <div class="flex">
+                                <label class="checkbox inline-block m-1 " style="vertical-align: middle">
+                                    <input type="checkbox" :value="element" v-model="selected" />
+                                    <span class="check mt-1" />
+                                </label>
+                                <div class="m-1 align-self-center">
+                                    <BaseIcon type="mdi" size="30" middle style="vertical-align: middle" class="handle inline-block delay-75 cursor-move hidden group-hover:block" :path=" mdiDotsGrid"></BaseIcon>
+                                </div>
+                            </div>
                         </td>
                         <template v-for="column in columns" >
-                            <td class="border-b-0 before:hidden"  :class="{'w-px': (column.label === 'id'),'lg:w-auto': (column.label !== 'id')}" v-if="column.value">
+                            <td class="border-b-0  before:hidden" :class="{'w-px': (column.label === 'id'),'lg:w-auto': (column.label !== 'id')}" v-if="column.value">
                                 <Link class="flex items-center justify-center text-center px-6 py-4 focus:text-indigo-500" :href="link(element)">
                                     <div v-if="column.type === 'media'" class="center" style="width: 3rem">
                                        <img style="width: 3rem" :src="element['media'].length ? element['media'][0]['preview_url']: ''" alt="">
@@ -135,10 +141,13 @@
                             </template>
                         </td>
                     </tr>
-                    <tr v-else>
-                        <td class="px-6 py-4 border-t" colspan="4">No users found.</td>
-                    </tr>
-                </tbody>
+                    </template>
+            </draggable>
+<!--            <tr v-if="data.data.length === 0">-->
+<!--                <td class="px-6 py-4 border-t" colspan="4">No users found.</td>-->
+<!--            </tr>-->
+
+
         </table>
         <div class="flex  justify-between row">
             <div class="col-6">
@@ -173,8 +182,8 @@
 </template>
 
 <script>
-    import {useStyleStore} from "@/stores/style";
-    import {mapState} from "pinia";
+import { useMainStore } from "@/stores/main.js";
+import { darkModeKey, styleKey } from "@/config.js";
     import { Link } from '@inertiajs/vue3';
     import SectionMain from "@/Components/Partials/SectionMain.vue";
     import SectionTitleLineWithButton from "@/Components/Partials/SectionTitleLineWithButton.vue";
@@ -189,6 +198,8 @@
     import TableCheckboxCell from '@/Components/Partials/TableCheckboxCell.vue'
     import VueDatePicker from '@vuepic/vue-datepicker'
     import '@vuepic/vue-datepicker/dist/main.css'
+    import throttle from 'lodash/throttle'
+    import draggable from 'vuedraggable'
     import {
     mdiEye,
     mdiTrashCan,
@@ -201,13 +212,15 @@
     mdiSortAscending,
     mdiMagnify,
     mdiAccountBoxMultipleOutline,
-    mdiCircleEditOutline
+    mdiCircleEditOutline,
+    mdiMenu,
+    mdiDotsGrid
 
 } from "@mdi/js";
-
-
+    import {useStyleStore} from "@/stores/style";
+    import {mapState} from "pinia";
 export default {
-    name: "DataTable",
+    name: "DataTableDrag",
     components: {
         BaseLink,
         Link,
@@ -219,7 +232,9 @@ export default {
         VueDatePicker,
         CardBoxModal,
         SectionTitleLineWithButton,
-        TableCheckboxCell
+        TableCheckboxCell,
+        draggable
+
     },
     props: {
         data: {
@@ -253,10 +268,6 @@ export default {
           type:  Object,
           required: true
         },
-        draggable: {
-            type:  Boolean,
-            default: false
-        }
     },
     data() {
         return {
@@ -284,7 +295,11 @@ export default {
             mdiMagnify,
             mdiAccountBoxMultipleOutline,
             mdiCircleEditOutline,
-            dragging: false
+            mdiDotsGrid,
+            mdiMenu,
+            dragging: true,
+            dragItems: this.data.data
+
         }
     },
     computed:{
@@ -301,8 +316,10 @@ export default {
                 let params = pickBy(this.params)
                 this.$inertia.get(this.urlPrefix, params, {preserveState: true})
             }, 500)
-        },
+        }
+
     },
+
     methods: {
         link(param) {
             let  link = `${this.baseUrl}/${param.id}/edit`;
@@ -351,12 +368,14 @@ export default {
                 this.params.filter[event.target.getAttribute('aria-label').toLowerCase()] = event.target.value
             }
         },
-        // dateFilter(date,label){
-        //     this.params.filter[label] = date
-        // },
         sort(field){
             this.params.field = field
             this.params.direction = this.params.direction === 'asc' ? 'desc' : 'asc'
+        },
+        sorting(){
+            axios.post(`${this.baseUrl}/sort`, {el:this.dragItems, id:  window.location.href.split('/').pop()}).then((item) => {
+                alert('Categories were updated successfully');
+            })
         },
         capitalized(name) {
             const capitalizedFirst = name[0].toUpperCase();
@@ -384,14 +403,10 @@ export default {
             const ids = this.selected.map(i => i['id']);
             this.$inertia.post(`${this.urlPrefix}/delete`, {ids:ids})
             this.selected = []
-        },
-        initdrag(){
-            console.log(this.draggable)
-            return this.draggable ? true : false;
         }
     },
-    mounted(){
-
+    updated(){
+        this.dragItems = this.data.data
     }
 }
 </script>

@@ -47,6 +47,7 @@ const menuClick = (event, item) => {
       router.post(route("logout"));
   }
 };
+
 </script>
 
 <template>
@@ -83,8 +84,10 @@ const menuClick = (event, item) => {
           display="hidden lg:flex xl:hidden"
           @click.prevent="isAsideLgActive = true"
         >
+
           <BaseIcon :path="mdiMenu" size="24" />
         </NavBarItemPlain>
+
       </NavBar>
       <AsideMenu :roles="$page"
         :is-aside-mobile-expanded="isAsideMobileExpanded"

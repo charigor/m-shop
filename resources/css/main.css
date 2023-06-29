@@ -32,4 +32,20 @@
     background-color: rgb(55, 65, 81);
     color: rgb(241, 245, 249);
 }
+table.table-auto td:first-child,table.table-auto th:first-child {
+    max-width: 80px!important;
+    width: 80px!important;
+    min-width: 80px!important;
+    overflow: hidden;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+}
+
+
+
+
+
+
+
+
 

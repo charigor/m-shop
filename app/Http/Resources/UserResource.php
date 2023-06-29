@@ -16,7 +16,6 @@ class UserResource extends JsonResource
     {
         $defaultData = parent::toArray($request);
         $additionalData = [
-//            'media'=> $this->whenLoaded('media'),
             'roles' => $this->roles
         ];
         return array_merge($defaultData,$additionalData);

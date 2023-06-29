@@ -54,11 +54,14 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Message::class);
     }
+
+    /**
+     * @throws \Spatie\Image\Exceptions\InvalidManipulation
+     */
     public function registerMediaConversions(Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
             ->nonQueued();
     }
 }

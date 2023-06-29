@@ -17,6 +17,7 @@ import VFocus from "@/VFocus"
 import VClickOutside from "@/VClickOutside.js"
 import { Link } from '@inertiajs/vue3';
 import  vSelect  from "vue-select";
+
 import "vue-select/dist/vue-select.css";
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -63,6 +64,7 @@ createInertiaApp({
   progress: {
     color: "#4B5563",
   },
+
 });
 
 const styleStore = useStyleStore(pinia);

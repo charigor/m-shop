@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeleteTemporaryImageController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TestController;
+use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
@@ -26,11 +28,12 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('HomeView');
 //    return Inertia::render('Welcome');
+//    return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');;
 
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,9 +67,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permission.create');
         Route::post('/permissions/delete', [PermissionController::class, 'destroy'])->name('permission.delete');
 
+        /*Categories*/
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
+        Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('category.sort');
+        Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('category.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
+        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
+
+        Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('category.delete');
+
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
 
+
         Route::post('/upload', UploadTemporaryImageController::class);
+        Route::post('/uploadEditorImage', UploadEditorImageController::class);
         Route::delete('/revert/{folder}', DeleteTemporaryImageController::class);
     });
 

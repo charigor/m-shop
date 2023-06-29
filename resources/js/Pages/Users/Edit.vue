@@ -1,5 +1,4 @@
 <script setup>
-
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import {defineComponent, defineProps,computed, onMounted, reactive, ref} from "vue";
@@ -52,8 +51,8 @@ const submit = () => {
 defineComponent({
     SectionTitleLineWithButton,
     SectionMain,
-    FilePond
-
+    FilePond,
+    CKEditor
 })
 function handleFilePondInit(){
     if(props.user.media.length){
@@ -101,9 +100,10 @@ function handleFilePondRevert(res,load,error){
                         <div style="height: 15px" class="relative z-0 w-full group">
                             <label class="absolute mb-5 peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Avatar</label>
                         </div>
+
                     <file-pond
-                        id="avatar"
-                        name="avatar"
+                        id="image"
+                        name="image"
                         ref="pond"
                         class="col-4"
                         class-name="my-pond"
@@ -156,9 +156,11 @@ function handleFilePondRevert(res,load,error){
                     <label for="password_confirmation" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm password</label>
                     <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.password_confirmation">{{$page.props.errors.password_confirmation}}</p>
                 </div>
+
                 <div class="flex justify-end">
                     <button type="submit" class="right text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
                 </div>
+
             </form>
 
         </SectionMain>

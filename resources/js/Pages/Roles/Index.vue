@@ -34,6 +34,8 @@ defineComponent({
     SectionTitleLineWithButton,
     SectionMain,
 })
+const urlPrefix = window.location.href.split('?')[0];
+
 </script>
 <template>
     <LayoutAuthenticated>
@@ -44,7 +46,7 @@ defineComponent({
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.roles" :filter="props.filter" :search="props.search" :columns="columns" url-prefix="/admin/roles">
+            <DataTable  :data="props.roles" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/roles" :url-prefix="urlPrefix" table-name="Roles" delete-title="name">
                 <template #create>
                     <Link :href="'/admin/roles/create'">Create New Role</Link>
                 </template>

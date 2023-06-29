@@ -12,6 +12,8 @@ import {
     mdiPalette,
     mdiReact,
     mdiAccountMultiple,
+    mdiStoreEdit,
+    mdiViewWeek,
     mdiBagPersonalTagOutline, mdiClockOutline, mdiCloud, mdiCrop, mdiMessage,mdiAccountSwitch,mdiAccountKey
 } from "@mdi/js";
 
@@ -50,10 +52,17 @@ export default [
 
     },
     {
-        route: "role.index",
-        icon:  mdiAccountMultiple,
-        label: "Roles",
-        roles: ['admin']
+        icon:  mdiStoreEdit,
+        label: "Catalog",
+        roles: ['admin'],
+        menu: [
+            {
+                icon:  mdiViewWeek,
+                route: "category.index",
+                label: "Categories",
+                roles: ['admin'],
+            }
+        ]
 
     },
 
@@ -64,11 +73,7 @@ export default [
         roles: []
 
     },
-    // {
-    //     route: "another-route-name",
-    //     icon: mdiMonitor,
-    //     label: "Dashboard 2",
-    // },
+
     {
         href: "https://example.com/",
         icon: mdiMonitor,
@@ -81,73 +86,5 @@ export default [
         label: "Messages",
         roles: ['admin']
     },
-  // {
-  //   to: "/dashboard",
-  //   icon: mdiMonitor,
-  //   label: "Dashboard",
-  // },
-  // {
-  //   to: "/tables",
-  //   label: "Tables",
-  //   icon: mdiTable,
-  // },
-  // {
-  //   to: "/forms",
-  //   label: "Forms",
-  //   icon: mdiSquareEditOutline,
-  // },
-  // {
-  //   to: "/ui",
-  //   label: "UI",
-  //   icon: mdiTelevisionGuide,
-  // },
-  // {
-  //   to: "/responsive",
-  //   label: "Responsive",
-  //   icon: mdiResponsive,
-  // },
-  // {
-  //   to: "/",
-  //   label: "Styles",
-  //   icon: mdiPalette,
-  // },
-  // {
-  //   to: "/profile",
-  //   label: "Profile",
-  //   icon: mdiAccountCircle,
-  // },
-  // {
-  //   to: "/login",
-  //   label: "Login",
-  //   icon: mdiLock,
-  // },
-  // {
-  //   to: "/error",
-  //   label: "Error",
-  //   icon: mdiAlertCircle,
-  // },
-  // {
-  //   label: "Dropdown",
-  //   icon: mdiViewList,
-  //   menu: [
-  //     {
-  //       label: "Item One",
-  //     },
-  //     {
-  //       label: "Item Two",
-  //     },
-  //   ],
-  // },
-  // {
-  //   href: "https://github.com/justboil/admin-one-vue-tailwind",
-  //   label: "GitHub",
-  //   icon: mdiGithub,
-  //   target: "_blank",
-  // },
-  // {
-  //   href: "https://github.com/justboil/admin-one-react-tailwind",
-  //   label: "React version",
-  //   icon: mdiReact,
-  //   target: "_blank",
-  // },
+
 ];
