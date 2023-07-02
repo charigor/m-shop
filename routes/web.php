@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
         Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
-
+        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia']);
         Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('category.delete');
 
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/upload', UploadTemporaryImageController::class);
         Route::post('/uploadEditorImage', UploadEditorImageController::class);
+
         Route::delete('/revert/{folder}', DeleteTemporaryImageController::class);
     });
 

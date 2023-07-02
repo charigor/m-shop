@@ -8,6 +8,8 @@ import { useMainStore } from "@/stores/main.js";
 import { useStyleStore } from "@/stores/style.js";
 import BaseIcon from "@/Components/Partials/BaseIcon.vue";
 import FormControl from "@/Components/Partials/FormControl.vue";
+import NotificationBar from "@/Components/Partials/NotificationBar.vue";
+
 import NavBar from "@/Components/Partials/NavBar.vue";
 import NavBarItemPlain from "@/Components/Partials/NavBarItemPlain.vue";
 import AsideMenu from "@/Components/Partials/AsideMenu.vue";
@@ -97,7 +99,11 @@ const menuClick = (event, item) => {
         @aside-lg-close-click="isAsideLgActive = false"
       />
         <slot name="Head" />
-
+        <NotificationBar class="fixed right-5  bg-blue-500 z-10">
+            <div  class="alert pr-3">
+                {{ $page.props.flash.message }}
+            </div>
+        </NotificationBar>
       <slot />
       <FooterBar>
         Get more with

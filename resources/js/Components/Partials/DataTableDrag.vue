@@ -374,7 +374,7 @@ export default {
         },
         sorting(){
             axios.post(`${this.baseUrl}/sort`, {el:this.dragItems, id:  window.location.href.split('/').pop()}).then((item) => {
-                alert('Categories were updated successfully');
+                this.$page.props.flash.message = 'Item(s) was sorted successfully'
             })
         },
         capitalized(name) {

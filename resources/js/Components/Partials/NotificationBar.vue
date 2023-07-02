@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, useSlots } from "vue";
+import { ref, computed, useSlots,reactive } from "vue";
 import { mdiClose } from "@mdi/js";
 import { colorsBgLight, colorsOutline } from "@/colors";
 import BaseLevel from "@/Components/Partials/BaseLevel.vue";
@@ -15,18 +15,15 @@ const props = defineProps({
   color: {
     type: String,
     required: true,
-  },
+  }
 });
 
 const componentClass = computed(() =>
   props.outline ? colorsOutline[props.color] : colorsBgLight[props.color]
 );
 
-const isDismissed = ref(false);
 
-const dismiss = () => {
-  isDismissed.value = true;
-};
+
 
 const slots = useSlots();
 
@@ -35,7 +32,7 @@ const hasRightSlot = computed(() => slots.right);
 
 <template>
   <div
-    v-if="!isDismissed"
+    v-show="$page.props.flash.message"
     :class="componentClass"
     class="px-3 py-6 md:py-3 mb-6 last:mb-0 border rounded-lg transition-colors duration-150"
   >
@@ -58,7 +55,7 @@ const hasRightSlot = computed(() => slots.right);
         small
         rounded-full
         color="white"
-        @click="dismiss"
+        @click="$page.props.flash.message = ''"
       />
     </BaseLevel>
   </div>

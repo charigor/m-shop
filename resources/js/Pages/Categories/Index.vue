@@ -1,7 +1,9 @@
 <script setup>
 
-
+import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
+import { Link } from '@inertiajs/vue3';
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
+import BaseButton from '@/Components/Partials/BaseButton.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTableDrag from "@/Components/Partials/DataTableDrag.vue";
 import {defineComponent, defineProps, ref} from "vue";
@@ -31,6 +33,8 @@ defineComponent({
     DataTableDrag,
     SectionTitleLineWithButton,
     SectionMain,
+    Link,
+
 })
 
 </script>
@@ -45,7 +49,14 @@ defineComponent({
             </SectionTitleLineWithButton>
             <DataTableDrag  :data="props.categories" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/categories" :url-prefix="urlPrefix" table-name="Categories" delete-title="name">
                 <template #create>
-                    <Link :href="'/admin/categories/create'">Create New Category</Link>
+                    <BaseLink
+                        color="gray"
+                        small
+                        label="Create"
+                        :href="'/admin/categories/create'"
+                    >
+
+                    </BaseLink>
                 </template>
             </DataTableDrag>
         </SectionMain>

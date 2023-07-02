@@ -51,8 +51,7 @@ const submit = () => {
 defineComponent({
     SectionTitleLineWithButton,
     SectionMain,
-    FilePond,
-    CKEditor
+    FilePond
 })
 function handleFilePondInit(){
     if(props.user.media.length){

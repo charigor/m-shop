@@ -53,3 +53,18 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+
+class A {
+    public static function who(){
+        dd( __CLASS__);
+    }
+    public static function test(){
+        dd( self::who());
+    }
+}
+class B {
+    public static function who(){
+        dd( __CLASS__);
+    }
+}
+

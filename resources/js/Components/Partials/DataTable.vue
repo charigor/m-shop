@@ -266,7 +266,7 @@ export default {
                 field: null,
                 direction: null,
                 page: null,
-                filter: {}
+                filter: {},
             },
             isModalDangerActive: false,
             columnShow: false,
@@ -329,7 +329,6 @@ export default {
             this.params.search = event.target.value
         },
         reset() {
-            console.log(this.urlPrefix);
             this.params.filter.created_at = null
             for (let paramsKey in this.params) {
                 if(typeof this.params[paramsKey] === 'object') {
@@ -383,11 +382,8 @@ export default {
         {
             const ids = this.selected.map(i => i['id']);
             this.$inertia.post(`${this.urlPrefix}/delete`, {ids:ids})
+            this.page = 1;
             this.selected = []
-        },
-        initdrag(){
-            console.log(this.draggable)
-            return this.draggable ? true : false;
         }
     },
     mounted(){

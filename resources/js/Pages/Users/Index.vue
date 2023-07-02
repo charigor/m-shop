@@ -59,14 +59,13 @@ const modelName = 'Users';
             </SectionTitleLineWithButton>
             <DataTable  :data="props.users" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
                 <template  #create>
-                    <BaseButton
+                    <BaseLink
                         color="gray"
-                        middle
-                        class="col-6"
+                        small
                         :href="'/admin/users/create'"
-                        label="Create New User"
+                        label="Create"
                     >
-                    </BaseButton>
+                    </BaseLink>
                 </template>
                 <template v-slot:select="{ filter,value,key }">
                     <select @change="filter"  aria-label="roles" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">

@@ -55,7 +55,7 @@ class UserController extends Controller
             $path = Storage::path($image);
             $user->addMedia($path)->toMediaCollection('avatars');
         }
-        return redirect()->route('user.edit',$user->id);
+        return redirect()->route('user.edit',$user->id)->with('message','User(s) was created successfully');
 
     }
     /**
@@ -103,7 +103,7 @@ class UserController extends Controller
                 $user->clearMediaCollection('avatars');
             }
         }
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->with('message','User(s) was updated successfully');
     }
 
 
@@ -113,6 +113,6 @@ class UserController extends Controller
     public function destroy(Request $request)
     {
         User::whereIn('id',$request->ids)->delete();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->with('message','User(s) was deleted successfully');
     }
 }
