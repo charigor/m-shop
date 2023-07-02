@@ -4,6 +4,7 @@ import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { Link } from '@inertiajs/vue3';
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import BaseButton from '@/Components/Partials/BaseButton.vue'
+import BaseLink from '@/Components/Partials/BaseLink.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTableDrag from "@/Components/Partials/DataTableDrag.vue";
 import {defineComponent, defineProps, ref} from "vue";
@@ -33,7 +34,7 @@ defineComponent({
     DataTableDrag,
     SectionTitleLineWithButton,
     SectionMain,
-    Link,
+    BaseLink
 
 })
 
@@ -55,7 +56,6 @@ defineComponent({
                         label="Create"
                         :href="'/admin/categories/create'"
                     >
-
                     </BaseLink>
                 </template>
             </DataTableDrag>

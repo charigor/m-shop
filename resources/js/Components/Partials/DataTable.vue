@@ -12,7 +12,7 @@
                 <TablePaginate @link="(e) => { this.params.page = e}" class="mt-6" :data="data.meta"/>
             </div>
             <div class="w-1/6 mt-5 col-6">
-                <select v-model="params.perPage" class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50" placeholder="Per Page">
+                <select @change="changePages" :value="params.perPage" class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50" placeholder="Per Page">
                     <option value="5" >5</option>
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -118,13 +118,13 @@
                         <td >
                             <template class="flex items-center">
                                 <BaseButtons type="justify-start lg:justify-start" no-wrap>
-                                        <BaseButton
+                                        <BaseLink
                                             color="gray"
                                             middle
                                             :href="`${baseUrl}/${element.id}/edit`"
                                             :icon="mdiCircleEditOutline"
                                             >
-                                        </BaseButton>
+                                        </BaseLink>
                                         <BaseButton
                                             color="danger"
                                             :icon="mdiTrashCan"
@@ -136,7 +136,7 @@
                         </td>
                     </tr>
                     <tr v-else>
-                        <td class="px-6 py-4 border-t" colspan="4">No users found.</td>
+                        <td class="w-full empty px-6 py-4 border-t" colspan="1000">No items found.</td>
                     </tr>
                 </tbody>
         </table>
@@ -145,7 +145,7 @@
              <TablePaginate @link="(e) => { this.params.page = e}" class="mt-6" :data="data.meta"/>
             </div>
             <div class="w-1/6 mt-5 col-6">
-                <select v-model="params.perPage" class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50" placeholder="Per Page">
+                <select @change="changePages" :value="params.perPage" class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50" placeholder="Per Page">
                     <option value="5" >5</option>
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -262,7 +262,7 @@ export default {
         return {
             params: {
                 search: this.search,
-                perPage: 25,
+                perPage: this.data.meta.per_page,
                 field: null,
                 direction: null,
                 page: null,
@@ -299,7 +299,7 @@ export default {
                 this.selected = []
                 this.allSelected = false
                 let params = pickBy(this.params)
-                this.$inertia.get(this.urlPrefix, params, {preserveState: true})
+                this.$inertia.get(this.urlPrefix, params, {preserveState: true,  preserveScroll: true})
             }, 500)
         },
     },
@@ -343,7 +343,7 @@ export default {
 
         },
         filter(event){
-            this.params.page = null
+            this.params.page = 1
             if(event.target.value == ''){
                 delete(this.params.filter[event.target.getAttribute('aria-label').toLowerCase()])
             }else{
@@ -384,6 +384,10 @@ export default {
             this.$inertia.post(`${this.urlPrefix}/delete`, {ids:ids})
             this.page = 1;
             this.selected = []
+        },
+        changePages(e){
+            this.params.page = 1;
+            this.params.perPage = e.target.value
         }
     },
     mounted(){

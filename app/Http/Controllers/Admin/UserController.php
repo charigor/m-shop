@@ -36,7 +36,7 @@ class UserController extends Controller
             'roles' => RoleResource::collection(Role::all()->prepend(['id' => 0,'name' => 'All']))->resolve(),
             'users' => UserResource::collection((new Users)->table($request)),
             'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'filter' => $request->get('filter'),
         ]);
 
     }

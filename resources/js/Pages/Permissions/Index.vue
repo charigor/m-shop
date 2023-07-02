@@ -8,6 +8,7 @@ import {defineComponent, defineProps, ref} from "vue";
 import { Link } from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
+import BaseLink from '@/Components/Partials/BaseLink.vue'
 const props = defineProps({
     permissions: {
         type: Object,
@@ -33,6 +34,7 @@ defineComponent({
     DataTable,
     SectionTitleLineWithButton,
     SectionMain,
+    BaseLink
 })
 const urlPrefix = window.location.href.split('?')[0];
 
@@ -42,13 +44,19 @@ const urlPrefix = window.location.href.split('?')[0];
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Users"
+                title="Permissions"
                 main
             >
             </SectionTitleLineWithButton>
             <DataTable  :data="props.permissions" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/permissions" :url-prefix="urlPrefix" table-name="Permissions" delete-title="name">
                 <template #create>
-                    <Link :href="'/admin/permissions/create'">Create New Permission</Link>
+                    <BaseLink
+                        color="gray"
+                        small
+                        label="Create"
+                        :href="'/admin/permissions/create'"
+                    >
+                    </BaseLink>
                 </template>
             </DataTable>
         </SectionMain>
