@@ -19,20 +19,25 @@ use App\Services\Datatables\Users\Filters\Created_at;
 class Users
 {
     use Datatable;
-     protected $perPage = 25;
-     protected $filters = [
-         'id'    => Id::class,
-         'name'  => Name::class,
-         'email' => Email::class,
-         'roles' => Roles::class,
+     protected int $perPage = 25;
+     protected array $filters = [
+         'id'         => Id::class,
+         'name'       => Name::class,
+         'email'      => Email::class,
+         'roles'      => Roles::class,
          'created_at' => Created_at::class
      ];
-    protected $search = [
+    protected array $search = [
         'name',
         'email',
         'roles'
     ];
-
+    protected array $sort = [
+        'id',
+        'name',
+        'email',
+        'created_at',
+    ];
     /**
      * @return Builder
      */
@@ -53,7 +58,7 @@ class Users
     {
         $request->validate([
             'direction' => ['in:asc,desc'],
-            'field' => ['in:id,name,email,created_at']
+            'field' => ['in:'.implode(',',$this->sort)]
         ]);
         $query = $this->query();
         $query = $this->filter($request,$query);

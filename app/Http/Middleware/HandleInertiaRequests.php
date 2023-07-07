@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Lang;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -30,7 +31,10 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $languages = Lang::whereActive(1)->get();
         return array_merge(parent::share($request), [
+            "languages" => $languages,
+            'locale' => app()->getLocale(),
             'auth' => [
                 'user' => $request->user(),
                 'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],

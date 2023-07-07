@@ -14,7 +14,7 @@ import {
     mdiAccountMultiple,
     mdiStoreEdit,
     mdiViewWeek,
-    mdiBagPersonalTagOutline, mdiClockOutline, mdiCloud, mdiCrop, mdiMessage,mdiAccountSwitch,mdiAccountKey
+    mdiBagPersonalTagOutline, mdiClockOutline, mdiCloud, mdiCrop, mdiMessage,mdiAccountSwitch,mdiAccountKey,mdiCogs,mdiWeb
 } from "@mdi/js";
 
 export default [
@@ -22,30 +22,30 @@ export default [
     {
         route: "dashboard",
         icon: mdiMonitor,
-        label: "Dashboard",
+        label: "dashboard",
         roles: ['standard','admin'],
     },
     {
         icon:  mdiAccountMultiple,
-        label: "Management",
+        label: "management",
         roles: ['admin'],
         menu: [
             {
                 icon:  mdiAccountMultiple,
                 route: "user.index",
-                label: "Users",
+                label: "users",
                 roles: ['admin'],
             },
             {
                 route: "role.index",
                 icon:  mdiAccountSwitch,
-                label: "Roles",
+                label: "roles",
                 roles: ['admin']
             },
             {
                 route: "permission.index",
                 icon:  mdiAccountKey,
-                label: "Permissions",
+                label: "permissions",
                 roles: ['admin']
             }
         ]
@@ -53,13 +53,13 @@ export default [
     },
     {
         icon:  mdiStoreEdit,
-        label: "Catalog",
+        label: "catalog",
         roles: ['admin'],
         menu: [
             {
                 icon:  mdiViewWeek,
                 route: "category.index",
-                label: "Categories",
+                label: "categories",
                 roles: ['admin'],
             }
         ]
@@ -67,24 +67,23 @@ export default [
     },
 
     {
-        route: "test.index",
-        icon: mdiBagPersonalTagOutline,
-        label: "Test",
-        roles: []
-
-    },
-
-    {
-        href: "https://example.com/",
-        icon: mdiMonitor,
-        label: "Example.com",
-        roles: ['admin']
-    },
-    {
         route: "message.index",
         icon: mdiMessage,
-        label: "Messages",
+        label: "messages",
         roles: ['admin']
     },
+    {
+        icon: mdiCogs,
+        label: "settings",
+        roles: ['admin'],
+        menu: [
+            {
+                icon:  mdiWeb,
+                route: "lang.index",
+                label: "languages",
+                roles: ['admin'],
+            },
+        ]
+    }
 
 ];

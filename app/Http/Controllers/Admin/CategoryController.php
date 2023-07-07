@@ -20,7 +20,7 @@ class CategoryController extends Controller
     /**
      * @param CategoryService $categoryService
      */
-    public function __construct(private CategoryService   $categoryService)
+    public function __construct(CategoryService   $categoryService)
     {
         $this->service = $categoryService;
     }
@@ -45,7 +45,7 @@ class CategoryController extends Controller
     {
         $category = $this->service->createItem($request);
 
-        return redirect()->route('category.edit', $category->id)->with('message','Item(s) was created successfully');;
+        return redirect()->route('category.edit', $category->id)->with('message',trans('messages.success.create'));;
 
     }
 
@@ -53,7 +53,7 @@ class CategoryController extends Controller
 
     {
         $this->service->updateItem($category,$request);
-        return redirect()->route('category.index')->with('message','Item(s) was updated successfully');
+        return redirect()->route('category.index')->with('message',trans('messages.success.update'));
     }
     /**
      * @return \Inertia\Response
@@ -62,7 +62,7 @@ class CategoryController extends Controller
     {
         return Inertia::render('Categories/Create', [
             'category' => CategoryResource::make(new Category()),
-            'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
+            'categories' => CategoryResource::collection(Category::orderBy('id')->get())->resolve(),
         ]);
     }
 
@@ -83,7 +83,7 @@ class CategoryController extends Controller
     public function destroy(Request $request)
     {
         Category::whereIn('id',$request->ids)->delete();
-        return redirect()->route('category.index')->with('message','Item(s) was deleted successfully');
+        return redirect()->route('category.index')->with('message',trans('messages.success.delete'));
     }
 
     /**

@@ -94,7 +94,7 @@ const checkPermissions = computed(() => {
       />
       <span
         class="grow text-ellipsis line-clamp-1 text-black dark:text-gray-300"
-        >{{ item.label }}</span
+        >{{ $t(`global.menu.${item.label}`) }}</span
       >
       <BaseIcon
         v-if="hasDropdown"

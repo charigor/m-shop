@@ -16,17 +16,21 @@ use App\Models\Role;
 class Roles
 {
     use Datatable;
-     protected $perPage = 10;
-     protected $filters = [
+     protected int $perPage = 25;
+     protected array $filters = [
          'id'          => Id::class,
          'name'        => Name::class,
          'guard_name'  => Guard_name::class,
          'created_at'  => Created_at::class
      ];
-    protected $search = [
+    protected array $search = [
         'name'
     ];
-
+    protected array $sort = [
+        'id',
+        'name',
+        'created_at',
+    ];
     /**
      * @return Builder
      */
@@ -43,7 +47,7 @@ class Roles
     {
         $request->validate([
             'direction' => ['in:asc,desc'],
-            'field' => ['in:id,name,created_at']
+            'field' => ['in:'.implode(',',$this->sort)]
         ]);
         $query = $this->query();
         $query = $this->filter($request,$query);

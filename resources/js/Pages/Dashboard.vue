@@ -10,7 +10,7 @@ export default {
         open: ['Dashboard'],
         admins: [
             ['Management', 'mdi-account-multiple-outline'],
-            ['Settings', 'mdi-cog-outline'],
+            ['settings', 'mdi-cog-outline'],
         ],
         cruds: [
             ['Create', 'mdi-plus-outline'],

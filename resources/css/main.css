@@ -40,7 +40,7 @@ table.table-auto td:not(.empty):first-child,table.table-auto th:first-child   {
     vertical-align: middle;
     text-overflow: ellipsis;
 }
-
+.required label:after { content:"*"; color: red;padding-left: 5px; }
 
 
 

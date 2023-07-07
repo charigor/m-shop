@@ -4,6 +4,7 @@ import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { Link } from '@inertiajs/vue3';
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import BaseButton from '@/Components/Partials/BaseButton.vue'
+import { wTrans } from 'laravel-vue-i18n';
 import BaseLink from '@/Components/Partials/BaseLink.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTableDrag from "@/Components/Partials/DataTableDrag.vue";
@@ -25,16 +26,17 @@ const props = defineProps({
 const urlPrefix = window.location.href.split('?')[0];
 const columns = ref(
     [
-    { value: true , label: 'id', type: 'number',sorting: true},
-    { value: true , label: 'name',type: 'text',sorting: true},
-    { value: true ,label: 'created_at',type: 'date',sorting: true}
+    { value: true , label: 'id', type: 'number',sorting: true,trans : wTrans('page.category.table_fields.id')},
+    { value: true , label: 'name',type: 'text',sorting: true,trans : wTrans('page.category.table_fields.name')},
+    { value: true ,label: 'created_at',type: 'date',sorting: true,trans : wTrans('page.category.table_fields.created_at')}
 ])
 
 defineComponent({
     DataTableDrag,
     SectionTitleLineWithButton,
     SectionMain,
-    BaseLink
+    BaseLink,
+    wTrans
 
 })
 
@@ -44,7 +46,7 @@ defineComponent({
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Categories"
+                :title="$t('page.category.title_plural')"
                 main
             >
             </SectionTitleLineWithButton>
@@ -53,7 +55,7 @@ defineComponent({
                     <BaseLink
                         color="gray"
                         small
-                        label="Create"
+                        :label="$t('global.create')"
                         :href="'/admin/categories/create'"
                     >
                     </BaseLink>

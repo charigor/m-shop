@@ -10,6 +10,7 @@ import {defineComponent, defineProps, ref} from "vue";
 import { Link } from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
+import {wTrans} from "laravel-vue-i18n";
 const props = defineProps({
     users: {
         type: Object,
@@ -30,12 +31,12 @@ const props = defineProps({
 });
 let columns = ref(
     [
-    { value: true ,label: 'id',type: 'number',sorting: true},
-    { value: true ,label: 'avatar',type: 'media',sorting: false},
-    { value: true ,label: 'name',type: 'text',sorting: true},
-    { value: true ,label: 'email',type: 'text',sorting: true},
-    { value: true ,label: 'roles',type: 'select',sorting: false},
-    { value: true ,label: 'created_at',type: 'date',sorting: true}
+    { value: true ,label: 'id',type: 'number',sorting: true,trans: wTrans('page.user.table_fields.id')},
+    { value: true ,label: 'avatar',type: 'media',sorting: false,trans: wTrans('page.user.table_fields.avatar')},
+    { value: true ,label: 'name',type: 'text',sorting: true,trans: wTrans('page.user.table_fields.name')},
+    { value: true ,label: 'email',type: 'text',sorting: true,trans: wTrans('page.user.table_fields.email')},
+    { value: true ,label: 'roles',type: 'select',sorting: false,trans: wTrans('page.user.table_fields.role')},
+    { value: true ,label: 'created_at',type: 'date',sorting: true,trans: wTrans('page.user.table_fields.created_at')}
 ])
 
 defineComponent({
@@ -55,7 +56,7 @@ const modelName = 'Users';
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Users"
+                :title="$t('page.user.title_plural')"
                 main
             >
             </SectionTitleLineWithButton>
@@ -65,7 +66,7 @@ const modelName = 'Users';
                         color="gray"
                         small
                         :href="`/admin/users/create`"
-                        label="Create"
+                        :label="$t('global.create')"
                     >
                     </BaseLink>
                 </template>

@@ -14,8 +14,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->longText('body');
+            $table->tinyInteger('active')->default(0);
             NestedSet::columns($table);
             $table->timestamps();
         });

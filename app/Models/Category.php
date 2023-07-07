@@ -15,7 +15,7 @@ class Category extends Model implements HasMedia
     public $table = 'categories';
 
     protected $fillable = [
-        'name','body'
+        'active'
     ];
     public function registerMediaConversions(Media $media = null): void
     {

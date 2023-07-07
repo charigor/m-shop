@@ -11,12 +11,12 @@ import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
-import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import VFocus from "@/VFocus"
 import VClickOutside from "@/VClickOutside.js"
 import { Link } from '@inertiajs/vue3';
 import  vSelect  from "vue-select";
+import { i18nVue } from 'laravel-vue-i18n'
+
 
 import "vue-select/dist/vue-select.css";
 /**
@@ -57,6 +57,13 @@ createInertiaApp({
       .use(pinia)
       .use(ZiggyVue, Ziggy)
       .use(Link)
+        .use(i18nVue, {
+            resolve: async lang => {
+                const langs = import.meta.glob('../../lang/*.json');
+                return await langs[`../../lang/${lang}.json`]();
+            }
+        })
+        .mixin({ methods: { route } })
       .component("v-select", vSelect)
       .directive('click-outside',VClickOutside)
       .mount(el);

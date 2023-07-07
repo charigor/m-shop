@@ -48,7 +48,7 @@ class RoleController extends Controller
     {
         $data = $request->validated();
         $role = Role::create($data);
-        return redirect()->route('role.edit',$role->id)->with('message','Item(s) was created successfully');
+        return redirect()->route('role.edit',$role->id)->with('message',trans('messages.success.create'));
 
     }
     /**
@@ -80,7 +80,7 @@ class RoleController extends Controller
     {
         $role->update($request->validated());
         $role->permissions()->sync($request->permissions);
-        return redirect()->route('role.index')->with('message','Item(s) was updated successfully');
+        return redirect()->route('role.index')->with('message',trans('messages.success.update'));
     }
 
     /**
@@ -90,6 +90,6 @@ class RoleController extends Controller
     public function destroy(Request $request)
     {
         Role::whereIn('id',$request->ids)->delete();
-        return redirect()->route('role.index')->with('message','Item(s) was deleted successfully');
+        return redirect()->route('role.index')->with('message',trans('messages.success.delete'));
     }
 }

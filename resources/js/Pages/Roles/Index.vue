@@ -9,6 +9,7 @@ import {defineComponent, defineProps, ref} from "vue";
 import { Link } from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
+import {wTrans} from "laravel-vue-i18n";
 const props = defineProps({
     roles: {
         type: Object,
@@ -25,9 +26,9 @@ const props = defineProps({
 });
 const columns = ref(
     [
-    { value: true , label: 'id', type: 'number',sorting: true},
-    { value: true , label: 'name',type: 'text',sorting: true},
-    { value: true ,label: 'created_at',type: 'date',sorting: true}
+    { value: true , label: 'id', type: 'number',sorting: true,trans: wTrans('page.role.table_fields.id')},
+    { value: true , label: 'name',type: 'text',sorting: true,trans: wTrans('page.role.table_fields.name')},
+    { value: true , label: 'created_at',type: 'date',sorting: true,trans: wTrans('page.role.table_fields.created_at')}
 ])
 
 defineComponent({
@@ -44,7 +45,7 @@ const urlPrefix = window.location.href.split('?')[0];
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Roles"
+                :title="$t('page.role.title_plural')"
                 main
             >
             </SectionTitleLineWithButton>
@@ -53,7 +54,7 @@ const urlPrefix = window.location.href.split('?')[0];
                     <BaseLink
                         color="gray"
                         small
-                        label="Create"
+                        :label="$t('global.create')"
                         :href="'/admin/roles/create'"
                     >
                     </BaseLink>

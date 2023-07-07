@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeleteTemporaryImageController;
+use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -10,7 +11,9 @@ use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,9 +34,9 @@ Route::get('/', function () {
 //    return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');;
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -84,6 +87,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/uploadEditorImage', UploadEditorImageController::class);
 
         Route::delete('/revert/{folder}', DeleteTemporaryImageController::class);
+
+        /*Lang*/
+        Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
+        Route::resource('lang', LangController::class)->except('show','destroy');
+        Route::post('/language', function(Request $request){
+            Session()->put('locale',$request->lang);
+//            info($request->all());
+//            app()->setLocale($request->code);
+            return Response()->json(['locale' => session('locale')]);
+        })->name('language');
     });
 
 

@@ -15,18 +15,22 @@ use App\Models\Category;
 class Categories
 {
     use Datatable;
-     protected $param = null;
-     protected $perPage = 25;
-     protected $filters = [
+     protected mixed $param = null;
+     protected int $perPage = 25;
+     protected array $filters = [
          'id'          => Id::class,
          'name'        => Name::class,
          'created_at'  => Created_at::class,
      ];
 
-    protected $search = [
+    protected array $search = [
         'name'
     ];
-
+    protected array $sort = [
+        'id',
+        'name',
+        'created_at',
+    ];
     /**
      * @return Builder
      */
@@ -44,10 +48,9 @@ class Categories
     {
 
         $this->param = $param;
-        info($this->param);
         $request->validate([
             'direction' => ['in:asc,desc'],
-            'field' => ['in:id,name,created_at']
+            'field' => ['in:'.implode(',',$this->sort)]
         ]);
         $query = $this->query();
         $query = $this->filter($request,$query);
