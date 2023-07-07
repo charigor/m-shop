@@ -8,7 +8,7 @@ use App\Services\Datatables\Traits\Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Services\Datatables\Categories\Filters\Id;
-use App\Services\Datatables\Categories\Filters\Name;
+use App\Services\Datatables\Categories\Filters\Title;
 use App\Services\Datatables\Categories\Filters\Created_at;
 use App\Models\Category;
 
@@ -19,16 +19,16 @@ class Categories
      protected int $perPage = 25;
      protected array $filters = [
          'id'          => Id::class,
-         'name'        => Name::class,
+         'title'       => Title::class,
          'created_at'  => Created_at::class,
      ];
 
     protected array $search = [
-        'name'
+        'title'
     ];
     protected array $sort = [
         'id',
-        'name',
+        'title',
         'created_at',
     ];
     /**
@@ -37,7 +37,12 @@ class Categories
     public function query(): Builder
     {
 
-        return Category::with('children')->selectRaw('categories.id,categories.name,categories.created_at,categories.parent_id')->where('categories.parent_id',$this->param);
+        return Category::with('children')
+                        ->selectRaw('categories.id,category_lang.title,categories.created_at,categories.parent_id,langs.code')
+                        ->leftJoin('category_lang','categories.id','=','category_lang.category_id')
+                        ->leftJoin('langs','category_lang.lang_id','=','langs.id')
+                        ->where('langs.code',app()->getLocale())
+                        ->where('categories.parent_id',$this->param);
     }
 
     /**

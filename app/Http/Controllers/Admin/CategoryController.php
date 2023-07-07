@@ -6,7 +6,9 @@ use App\Http\Controllers\Admin\Traits\MediaUploadingTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\CategoryLang;
 use App\Services\Crud\Category\CategoryService;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -92,5 +94,15 @@ class CategoryController extends Controller
      */
     public function sort(Request $request){
         return $this->service->sortItem($request);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function slug(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $slug =  $this->service->setSlug(CategoryLang::class,'link_rewrite',$request->title);
+        info($slug);
+        return response()->json(['slug' => $slug ?? ""]);
     }
 }

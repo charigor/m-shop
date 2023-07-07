@@ -6,11 +6,11 @@ namespace App\Services\Datatables\Categories\Filters;
 
 use App\Services\Datatables\Filter;
 
-class Name extends Filter
+class Title extends Filter
 {
 
     public function filter($query)
     {
-         $query->where('categories.name','LIKE','%'.$this->value.'%');
+         $query->where('category_lang.title','LIKE','%'.$this->value.'%');
     }
 }

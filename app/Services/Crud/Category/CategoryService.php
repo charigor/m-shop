@@ -6,8 +6,10 @@ namespace App\Services\Crud\Category;
 
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\CategoryLang;
 use App\Services\BaseCrudService;
 use App\Services\Datatables\Categories\Categories;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -90,5 +92,14 @@ class CategoryService extends BaseCrudService
             $this->model::rebuildSubtree($node,$data['el']);
         }
         return response()->noContent();
+    }
+
+    /**
+     * @param $model
+     * @param $slug_field
+     * @param $slug_from
+     */
+    public function setSlug($model, $slug_field, $slug_from){
+        return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : "";
     }
 }

@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
         Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia']);
         Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('category.delete');
+        Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('category.slug');
 
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
 
@@ -93,8 +94,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('lang', LangController::class)->except('show','destroy');
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);
-//            info($request->all());
-//            app()->setLocale($request->code);
             return Response()->json(['locale' => session('locale')]);
         })->name('language');
     });

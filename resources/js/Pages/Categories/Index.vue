@@ -27,7 +27,7 @@ const urlPrefix = window.location.href.split('?')[0];
 const columns = ref(
     [
     { value: true , label: 'id', type: 'number',sorting: true,trans : wTrans('page.category.table_fields.id')},
-    { value: true , label: 'name',type: 'text',sorting: true,trans : wTrans('page.category.table_fields.name')},
+    { value: true , label: 'title',type: 'text',sorting: true,trans : wTrans('page.category.table_fields.title')},
     { value: true ,label: 'created_at',type: 'date',sorting: true,trans : wTrans('page.category.table_fields.created_at')}
 ])
 

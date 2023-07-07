@@ -10,7 +10,7 @@ import {
     mdiWeb,
 } from "@mdi/js";
 import {defineProps,defineComponent} from "vue";
-import VueFlags from "@growthbunker/vueflags";
+
 
 
 const changeLocale = async function (code){

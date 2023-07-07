@@ -7,12 +7,13 @@ return [
     "no_parents" => "нема категорії",
     "table_fields" => [
         "id"   => "Id",
-        "name" => "Ім'я",
+        "title" => "Заголовок",
         "created_at" => "Дата створення",
         "updated_at" => "Дата оновлення",
     ],
     "fields" => [
-        "name" => "Ім'я",
-        "parent" => "Батьківська категорія"
+        "title" => "Заголовок",
+        "parent" => "Батьківська категорія",
+        "link_rewrite" => "SEO url"
     ]
 ];

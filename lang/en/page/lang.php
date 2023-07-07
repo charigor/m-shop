@@ -6,7 +6,7 @@ return [
     "title_edit"   => "Language Edit",
     "table_fields" => [
         "id"   => "Id",
-        "name" => "Name",
+        "name" => "Title",
         "code" => "Code",
         "active" => "Active",
         "date_format" => "Date format",
@@ -15,7 +15,7 @@ return [
         "updated_at" => "Updated at",
     ],
     "fields" => [
-        "name" => "Name",
+        "name" => "Title",
         "code" => "Code",
         "active" => "Active",
         "date_format" => "Date format",

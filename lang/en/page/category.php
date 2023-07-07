@@ -7,12 +7,13 @@ return [
     "no_parents" => "No parents",
     "table_fields" => [
         "id"   => "Id",
-        "name" => "Name",
+        "title" => "Title",
         "created_at" => "Created at",
         "updated_at" => "Updated at",
     ],
     "fields" => [
-        "name" => "Name",
-        "parent" => "Parent Category"
+        "title" => "Title",
+        "parent" => "Parent Category",
+        "link_rewrite" => "Link rewrite"
     ]
 ];

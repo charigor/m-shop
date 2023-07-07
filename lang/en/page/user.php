@@ -6,7 +6,7 @@ return [
     "title_edit"   => "User Edit",
     "table_fields" => [
         "id"   => "Id",
-        "name" => "Name",
+        "name" => "Title",
         "avatar" => "Avatar",
         "email" => "Email",
         "role" => "Role",
@@ -14,7 +14,7 @@ return [
         "updated_at" => "Updated at",
     ],
     "fields" => [
-        "name" => "Name",
+        "name" => "Title",
         "avatar" => "Avatar",
         "email" => "Email",
         "role" => "Role",

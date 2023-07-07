@@ -6,12 +6,12 @@ return [
     "title_edit"   => "Role Edit",
     "table_fields" => [
         "id"   => "Id",
-        "name" => "Name",
+        "name" => "Title",
         "created_at" => "Created at",
         "updated_at" => "Updated at",
     ],
     "fields" => [
-        "name" => "Name",
+        "name" => "Title",
         "permissions" => "Permissions"
     ]
 ];
