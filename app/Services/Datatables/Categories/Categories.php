@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Services\Datatables\Categories\Filters\Id;
 use App\Services\Datatables\Categories\Filters\Title;
+use App\Services\Datatables\Categories\Filters\Active;
 use App\Services\Datatables\Categories\Filters\Created_at;
 use App\Models\Category;
 
@@ -20,6 +21,7 @@ class Categories
      protected array $filters = [
          'id'          => Id::class,
          'title'       => Title::class,
+         'active'      => Active::class,
          'created_at'  => Created_at::class,
      ];
 
@@ -29,6 +31,7 @@ class Categories
     protected array $sort = [
         'id',
         'title',
+        'active',
         'created_at',
     ];
     /**
@@ -38,9 +41,9 @@ class Categories
     {
 
         return Category::with('children')
-                        ->selectRaw('categories.id,category_lang.title,categories.created_at,categories.parent_id,langs.code')
+                        ->selectRaw('categories.id,category_lang.title,categories.created_at,categories.active,categories.parent_id,category_lang.meta_title,category_lang.meta_description,category_lang.meta_keywords,langs.code')
                         ->leftJoin('category_lang','categories.id','=','category_lang.category_id')
-                        ->leftJoin('langs','category_lang.lang_id','=','langs.id')
+                        ->leftJoin('langs','category_lang.locale','=','langs.code')
                         ->where('langs.code',app()->getLocale())
                         ->where('categories.parent_id',$this->param);
     }

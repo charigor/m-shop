@@ -52,7 +52,9 @@
                     <td v-if="column.value">
                         <input  v-if="column.type === 'number'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
                         <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
-                        <slot v-else-if="column.type === 'select'" name="select" :filter="filter"></slot>
+                        <template v-else-if="column.type === 'select'">
+                            <slot :name="`select_${column.label}`" :filter="filter"></slot>
+                        </template>
                         <VueDatePicker class="dp__theme_dark" v-else-if="column.type === 'date'"  range :dark="darkMode" :partial-range="false"   multi-calendars v-model="params.filter[column.label]" :aria-label="column.label" ></VueDatePicker>
                     </td>
                 </template>
@@ -184,7 +186,7 @@
 <script>
 import { useMainStore } from "@/stores/main.js";
 import { darkModeKey, styleKey } from "@/config.js";
-    import { Link } from '@inertiajs/vue3';
+import {Link, usePage,router} from '@inertiajs/vue3';
     import SectionMain from "@/Components/Partials/SectionMain.vue";
     import SectionTitleLineWithButton from "@/Components/Partials/SectionTitleLineWithButton.vue";
     import BaseButtons from "@/Components/Partials/BaseButtons.vue"
@@ -219,6 +221,7 @@ import { darkModeKey, styleKey } from "@/config.js";
 } from "@mdi/js";
     import {useStyleStore} from "@/stores/style";
     import {mapState} from "pinia";
+import {wTrans} from "laravel-vue-i18n";
 export default {
     name: "DataTableDrag",
     components: {
@@ -379,9 +382,7 @@ export default {
             this.params.direction = this.params.direction === 'asc' ? 'desc' : 'asc'
         },
         sorting(){
-            axios.post(`${this.baseUrl}/sort`, {el:this.dragItems, id:  window.location.href.split('/').pop()}).then((item) => {
-                this.$page.props.flash.message = $t('messages.success.sort')
-            })
+            router.post(`${this.baseUrl}/sort`, {el:this.dragItems, id:  window.location.href.split('/').pop()})
         },
         capitalized(name = ' ') {
             const capitalizedFirst = name[0].toUpperCase();

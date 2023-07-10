@@ -17,7 +17,12 @@ class Category extends Model implements HasMedia
     public $table = 'categories';
 
     protected $fillable = [
-        'active'
+        'active',
+        'parent_id'
+    ];
+    const  ACTIVE = [
+        0 => 'Inactive',
+        1 => 'Active',
     ];
     public function registerMediaConversions(Media $media = null): void
     {
@@ -38,8 +43,9 @@ class Category extends Model implements HasMedia
     /**
      * @return HasMany
      */
-    public function lang(): HasMany
+    public function translation(): HasMany
     {
         return $this->hasMany(CategoryLang::class);
     }
+
 }

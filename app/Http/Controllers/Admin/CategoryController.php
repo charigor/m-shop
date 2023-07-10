@@ -4,13 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Traits\MediaUploadingTrait;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
+use App\Http\Requests\Admin\CategoryCreateRequest;
+use App\Http\Requests\Admin\CategoryUpdateRequest;
+use App\Http\Requests\Admin\Image\CategoryUploadImageRequest;
+use App\Http\Resources\Category\CategoryResource;
+use App\Http\Resources\Category\CategoryResourceIndex;
 use App\Models\Category;
 use App\Models\CategoryLang;
 use App\Services\Crud\Category\CategoryService;
-use Cviebrock\EloquentSluggable\Services\SlugService;
+use Debugbar;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,32 +33,50 @@ class CategoryController extends Controller
     {
         $this->service = $categoryService;
     }
-    public function index(Request $request,$parent_id = null) {
+
+    /**
+     * @param Request $request
+     * @param null $parent_id
+     * @return \Inertia\Response
+     */
+    public function index(Request $request,$parent_id = null): \Inertia\Response
+    {
 
         abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = $this->service->getItems($request,$parent_id);
 
         return Inertia::render('Categories/Index', [
-            'categories' => CategoryResource::collection($data),
+            'categories' => CategoryResourceIndex::collection($data),
             'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'filter' => $request->get('filter'),
+            'active_options' => createOptions(Category::ACTIVE,'All'),
         ]);
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param CategoryCreateRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(CategoryCreateRequest $request): RedirectResponse
     {
-        $category = $this->service->createItem($request);
+        try {
+         $category =  $this->service->createItem($request);
 
-        return redirect()->route('category.edit', $category->id)->with('message',trans('messages.success.create'));;
+         return redirect()->route('category.edit', $category->id)->with('message',trans('messages.success.create'));
+        }catch(\Exception $e){
+            return redirect()->back()->with(['error' => $e->getMessage()]);
+        }
+
 
     }
 
-    public function update(Request $request, Category $category)
+    /**
+     * @param CategoryUpdateRequest $request
+     * @param Category $category
+     * @return RedirectResponse
+     */
+    public function update(CategoryUpdateRequest $request, Category $category): RedirectResponse
 
     {
         $this->service->updateItem($category,$request);
@@ -60,11 +85,11 @@ class CategoryController extends Controller
     /**
      * @return \Inertia\Response
      */
-    public function create()
+    public function create(): \Inertia\Response
     {
         return Inertia::render('Categories/Create', [
             'category' => CategoryResource::make(new Category()),
-            'categories' => CategoryResource::collection(Category::orderBy('id')->get())->resolve(),
+            'categories' => Category::with(['translation' => fn($q) =>$q->where('locale',app()->getLocale())])->get()->toTree(),
         ]);
     }
 
@@ -72,17 +97,17 @@ class CategoryController extends Controller
      * @param Category $category
      * @return \Inertia\Response
      */
-    public function edit(Category $category)
+    public function edit(Category $category): \Inertia\Response
     {
         return Inertia::render('Categories/Edit', [
-            'category' => CategoryResource::make($category->load('media'))->resolve(),
-            'categories' => CategoryResource::collection(Category::where('id', '!=' , $category->id)->get())->resolve(),
+            'category' => CategoryResource::make($category->load(['media']))->resolve(),
+            'categories' => Category::with(['translation' => fn($q) =>$q->where('locale',app()->getLocale())])->where('id', '!=' , $category->id)->get()->toTree(),
         ]);
     }
     /**
      * @param Request $request
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): RedirectResponse
     {
         Category::whereIn('id',$request->ids)->delete();
         return redirect()->route('category.index')->with('message',trans('messages.success.delete'));
@@ -90,19 +115,29 @@ class CategoryController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
-    public function sort(Request $request){
-        return $this->service->sortItem($request);
+    public function sort(Request $request)
+    {
+         $this->service->sortItem($request);
+         return back()->with('message',trans('messages.success.sort'));
     }
 
     /**
      * @param Request $request
      */
-    public function slug(Request $request): \Illuminate\Http\JsonResponse
+    public function slug(Request $request): JsonResponse
     {
         $slug =  $this->service->setSlug(CategoryLang::class,'link_rewrite',$request->title);
-        info($slug);
-        return response()->json(['slug' => $slug ?? ""]);
+        return response()->json(['slug' => $slug]);
+    }
+
+    /**
+     * @param CategoryUploadImageRequest $request
+     * @return JsonResponse
+     */
+    public  function storeMedia(CategoryUploadImageRequest $request): JsonResponse
+    {
+
+        return $this->saveMedia($request);
     }
 }

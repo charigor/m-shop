@@ -10,8 +10,12 @@ return [
     "no_items_found" => "Елементів не знайдено.",
     "action" => "Дія",
     "submit" => "Створити",
-    "please_confirm" => "Будь-ласка підтвердіть",
     "drop_files_here" => "Перетягніть файли сюди",
+    "no" => "Ні",
+    "yes" => "Так",
+    "please_confirm" => "Будь-ласка підтвердіть",
+    "expand" => "Розгорнути",
+    "collapse" => "Згорнути",
     "pagination" => [
         "Next &raquo;" => "Вперед &raquo;",
         "&laquo; Previous" => "&laquo; Назад",

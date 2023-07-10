@@ -6,15 +6,35 @@
 </template>
 
 <script setup>
-import {ref, onMounted, defineProps, reactive, defineComponent, defineEmits} from 'vue'
+import {ref, onMounted, defineProps, reactive, defineEmits} from 'vue'
+import { usePage } from '@inertiajs/vue3'
 import {Dropzone} from 'dropzone'
+import BaseButton from "@/Components/Partials/BaseButton.vue"
+import BaseIcon from "@/Components/Partials/BaseIcon.vue"
+import {
+    mdiPlusCircleOutline
+} from "@mdi/js";
 
 const dropRef = ref(null)
 const props = defineProps({
     path: String,
     csrf: String,
-    files: Array
+    files: Array,
+    acceptedFiles: {
+      type:  String,
+      default: ".jpeg,.jpg,.png,.gif"
+    },
+    maxFiles: {
+        type: String,
+        default: 1
+    },
+    viewType:{
+        type: String,
+        default: 'default'
+    }
+
 })
+
 let files = reactive(props.files)
 const emit = defineEmits(['loadImages','removeImage'])
 const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-complete">
@@ -48,46 +68,106 @@ onMounted(() => {
         let myDropzone = new Dropzone(dropRef.value, {
             previewTemplate: customPreview,
             addRemoveLinks: true,
+            acceptedFiles: props.acceptedFiles,
+            maxFiles: props.maxFiles,
             url: props.path,
+            uploadMultiple: false,
             method: 'POST',
             previewsContainer: dropRef.value.parentElement.querySelector('.preview-container'),
             headers: {
                 'X-CSRF-TOKEN': props.csrf
             },
+            accept: function(file, done) {
+                console.log(file)
+                done();
+            },
             success: function (file, response) {
+
                 file.file_name = response.name;
                 emit('loadImages', response.name)
+                if(props.viewType === 'cover') {
+                    document.querySelector('.fake-input-label').innerText = `${response.original_name}`
+                    dropRef.value.parentElement.classList.add(`dz-max-files-reached`);
+                }
+            },
+            error: function(response,error){
+                if(response.status === 'error'){
+                    usePage().props.errors.image = error.message
+                }
             },
             removedfile: function (file) {
-                console.log(file)
                 file.previewElement.remove()
                 if (file.status !== 'error') {
                     emit('removeImage', file.file_name)
                 }
+                if(props.viewType === 'cover') {
+                    document.querySelector('.fake-input-label').innerText = `No file chosen`
+                    dropRef.value.parentElement.classList.remove(`dz-max-files-reached`);
+                }
             },
+
             init: function () {
                 let media = JSON.parse(JSON.stringify(files));
+
                 for (let i in media) {
+
                     let file = media[i]
+
                     emit('loadImages', file.file_name)
 
                     this.options.addedfile.call(this, file)
                     this.options.thumbnail.call(this, file, file.preview_url)
                     file.previewElement.classList.add('dz-complete')
+
+
                 }
+
             }
+
         })
+
         if (dropRef.value.querySelector('.dz-default')) {
-            dropRef.value.querySelector('.dz-default').innerHTML = `
-            <div style="display: flex; justify-content: center;">
-              <svg width="10em" height="10em" viewBox="0 0 16 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
-                <path fill-rule="evenodd" d="m 8.0274054,0.49415269 a 5.53,5.53 0 0 0 -3.594,1.34200001 c -0.766,0.66 -1.321,1.52 -1.464,2.383 -1.676,0.37 -2.94199993,1.83 -2.94199993,3.593 0,2.048 1.70799993,3.6820003 3.78099993,3.6820003 h 8.9059996 c 1.815,0 3.313,-1.43 3.313,-3.2270003 0,-1.636 -1.242,-2.969 -2.834,-3.194 -0.243,-2.58 -2.476,-4.57900001 -5.1659996,-4.57900001 z m 2.3539996,5.14600001 -1.9999996,-2 a 0.5,0.5 0 0 0 -0.708,0 l -2,2 a 0.5006316,0.5006316 0 1 0 0.708,0.708 l 1.146,-1.147 v 3.793 a 0.5,0.5 0 0 0 1,0 v -3.793 l 1.146,1.147 a 0.5006316,0.5006316 0 0 0 0.7079996,-0.708 z"/>
-              </svg>
-            </div>
-            <p style="text-align: center; margin: 0;"><strong>Drag and drop files to upload</strong></p>
-            <p style="text-align: center; margin-top: 0;"><small style="color: #999;">Your files will be added automatically</small></p>
-            <button class="dz-button" type="button" style="border: 2px solid currentColor; padding: 10px; border-radius: 5px; font-weight: 700;">or select files</button>
-          `
+
+            if(dropRef.value.parentElement.classList.contains('square')) {
+                dropRef.value.querySelector('.dz-default').innerHTML = `
+
+                    <div style="width:10em;height:10em;" class="border-blue-600 border-2">
+                        <div class="h-full flex justify-center items-center">
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="40"
+                          height="40"
+                          class="inline-block align-self-center text-gray-500"
+                            >
+                        <path fill="#1d4ed8" d="${mdiPlusCircleOutline}" />
+                    </svg>
+                    </div>
+                </div>
+                `
+                dropRef.value.parentElement.classList.add(`flex`,`flex-wrap`,`items-center`);
+            }else if(dropRef.value.parentElement.classList.contains('cover')){
+                let label = files.length ? files[0].file_name :'No file chosen';
+
+                files.length ? dropRef.value.parentElement.classList.add(`dz-max-files-reached`) : '';
+                dropRef.value.querySelector('.dz-default').innerHTML = `
+                   <div  style="width:100%;" class="border-gray-600 border-2 text-left">
+                        <button class="dz-button" type="button">
+                            <span class="p-2 border-r-2 border-gray-600 inline-block">Choose File</span>
+                            <span class="fake-input-label ml-2 text-sm">${label}</span>
+                        </button>
+                   </div>`
+            }else{
+                dropRef.value.querySelector('.dz-default').innerHTML = `
+                <div style="display: flex; justify-content: center;">
+                  <svg width="10em" height="10em" viewBox="0 0 16 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
+                    <path fill-rule="evenodd" d="m 8.0274054,0.49415269 a 5.53,5.53 0 0 0 -3.594,1.34200001 c -0.766,0.66 -1.321,1.52 -1.464,2.383 -1.676,0.37 -2.94199993,1.83 -2.94199993,3.593 0,2.048 1.70799993,3.6820003 3.78099993,3.6820003 h 8.9059996 c 1.815,0 3.313,-1.43 3.313,-3.2270003 0,-1.636 -1.242,-2.969 -2.834,-3.194 -0.243,-2.58 -2.476,-4.57900001 -5.1659996,-4.57900001 z m 2.3539996,5.14600001 -1.9999996,-2 a 0.5,0.5 0 0 0 -0.708,0 l -2,2 a 0.5006316,0.5006316 0 1 0 0.708,0.708 l 1.146,-1.147 v 3.793 a 0.5,0.5 0 0 0 1,0 v -3.793 l 1.146,1.147 a 0.5006316,0.5006316 0 0 0 0.7079996,-0.708 z"/>
+                  </svg>
+                </div>
+                <p style="text-align: center; margin: 0;"><strong>Drag and drop files to upload</strong></p>
+                <p style="text-align: center; margin-top: 0;"><small style="color: #999;">Your files will be added automatically</small></p>
+                <button class="dz-button" type="button" style="border: 2px solid currentColor; padding: 10px; border-radius: 5px; font-weight: 700;">or select files</button>
+              `
+            }
         }
     }
 })
@@ -100,11 +180,39 @@ onMounted(() => {
     border-style: dashed;
     border-width: 2px;
     padding: 20px;
-    border-color: var(--vs-border-style)
+    border-color: var(--vs-border-style);
 }
-
+.square .custom-dropzone{
+    border:none;
+    padding: 0;
+    width: auto;
+    height: auto;
+    display:inline-block;
+    margin-right:20px;
+    margin-top: 0;
+}
+.cover .custom-dropzone{
+    border:none;
+    border-radius: 4px;
+    padding: 0;
+}
+.cover {
+    display: flex;
+    flex-direction:column-reverse;
+}
+.square {
+   display: flex;
+   flex-wrap: wrap;
+   align-items:center;
+}
+.square .preview-container,.cover .preview-container{
+    display:inline-block;
+    width: auto;
+    padding:0;
+}
 .dropzone {
     background: transparent;
+    min-height: auto;
 }
 
 .preview-container {
@@ -117,6 +225,9 @@ onMounted(() => {
 }
 .dz-preview.dz-processing.dz-image-preview.dz-complete{
     border-radius: 20px;
-
+}
+.dz-max-files-reached .dz-clickable{
+    pointer-events: none;
+    cursor: default;
 }
 </style>

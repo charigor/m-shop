@@ -1,7 +1,7 @@
 
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import BaseLink from "@/Components/Partials/BaseLink.vue"
 import BaseButton from "@/Components/Partials/BaseButton.vue"
 import { loadLanguageAsync } from 'laravel-vue-i18n';
@@ -14,9 +14,10 @@ import {defineProps,defineComponent} from "vue";
 
 
 const changeLocale = async function (code){
-   const response = await axios.post(`/admin/language`,{lang: code})
+  const response =  await axios.post(`/admin/language`,{lang: code})
     if(response.status === 200){
         this.loadLanguageAsync(response.data.locale);
+        router.reload({preserveState: true,  preserveScroll: true})
     }
 }
 </script>

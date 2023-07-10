@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, useSlots,reactive } from "vue";
 import { mdiClose } from "@mdi/js";
+import { usePage } from '@inertiajs/vue3'
 import { colorsBgLight, colorsOutline } from "@/colors";
 import BaseLevel from "@/Components/Partials/BaseLevel.vue";
 import BaseIcon from "@/Components/Partials/BaseIcon.vue";
@@ -15,8 +16,10 @@ const props = defineProps({
   color: {
     type: String,
     required: true,
-  }
+  },
+
 });
+
 
 const componentClass = computed(() =>
   props.outline ? colorsOutline[props.color] : colorsBgLight[props.color]
@@ -28,11 +31,12 @@ const componentClass = computed(() =>
 const slots = useSlots();
 
 const hasRightSlot = computed(() => slots.right);
+const show = ref(usePage().props.flash.message);
 </script>
 
 <template>
+
   <div
-    v-show="$page.props.flash.message"
     :class="componentClass"
     class="px-3 py-6 md:py-3 mb-6 last:mb-0 border rounded-lg transition-colors duration-150"
   >
@@ -58,5 +62,7 @@ const hasRightSlot = computed(() => slots.right);
         @click="$page.props.flash.message = ''"
       />
     </BaseLevel>
+
   </div>
+
 </template>

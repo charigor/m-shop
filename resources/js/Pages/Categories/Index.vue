@@ -22,12 +22,17 @@ const props = defineProps({
         type: [String,null],
         required: true,
     },
+    active_options: {
+        type: Object,
+        required: true,
+    },
 });
 const urlPrefix = window.location.href.split('?')[0];
 const columns = ref(
     [
     { value: true , label: 'id', type: 'number',sorting: true,trans : wTrans('page.category.table_fields.id')},
     { value: true , label: 'title',type: 'text',sorting: true,trans : wTrans('page.category.table_fields.title')},
+    { value: true , label: 'active',type: 'select',sorting: true,trans : wTrans('page.category.table_fields.active')},
     { value: true ,label: 'created_at',type: 'date',sorting: true,trans : wTrans('page.category.table_fields.created_at')}
 ])
 
@@ -59,6 +64,13 @@ defineComponent({
                         :href="'/admin/categories/create'"
                     >
                     </BaseLink>
+                </template>
+                <template v-slot:select_active="{ filter,value,key }">
+                    <select @change="filter"  aria-label="active" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                        <template  v-for="option in props.active_options" :key="option.key">
+                            <option :value="option.key">{{option.value}}</option>
+                        </template>
+                    </select>
                 </template>
             </DataTableDrag>
         </SectionMain>

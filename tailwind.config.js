@@ -27,9 +27,28 @@
 /* eslint-env node */
 
 const plugin = require("tailwindcss/plugin");
- const colors = require("tailwindcss/colors")
-
+const colors = require("tailwindcss/colors")
 module.exports = {
+    safelist: [
+        'bg-amber-700',
+        'bg-emerald-100',
+        'bg-emerald-200',
+        'bg-emerald-300',
+        'bg-emerald-400',
+        'bg-emerald-500',
+        'bg-emerald-600',
+        'bg-emerald-700',
+        'bg-emerald-800',
+        'bg-yellow-100',
+        'bg-yellow-200',
+        'bg-yellow-300',
+        'bg-yellow-400',
+        'bg-yellow-500',
+        'bg-yellow-600',
+        'bg-yellow-700',
+        'bg-yellow-800',
+        'bg-red-700',
+    ],
     content: [
         "./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}",
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
@@ -76,6 +95,7 @@ module.exports = {
             colors: {
                 "vtd-primary": colors.sky, // Light mode Datepicker color
                 "vtd-secondary": colors.gray, // Dark mode Datepicker color
+
             },
             display: ["group-hover"],
         },

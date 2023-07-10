@@ -3,15 +3,15 @@
 
 namespace App\Services\Crud\Category;
 
-
-use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use App\Models\CategoryLang;
 use App\Services\BaseCrudService;
 use App\Services\Datatables\Categories\Categories;
+use App\Services\TranslationService;
 use Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class CategoryService extends BaseCrudService
 {
@@ -25,27 +25,29 @@ class CategoryService extends BaseCrudService
      * @param null $params
      * @return mixed
      */
-    public function getItems($request, $params = null)
+    public function getItems($request, $params = null): mixed
     {
         return (new Categories)->table($request,$params);
     }
 
     /**
      * @param $request
-     * @return \Illuminate\Database\Eloquent\Builder|Model
+     * @return Builder|Model|void
      */
     public function createItem($request)
     {
-        $data = $request->all();
-        $category = $this->model::create($data);
-        if(!empty($data['parent']))
-        {
-            $node =  $this->model::find($data['parent']);
+        $data = $request->validated();
+        $category = $this->model::create(['parent_id' => $data['parent_id'], 'active' => $data['active']]);
+        $prepareData = (new TranslationService)->prepareFields($data['lang'], ['title', 'link_rewrite']);
+
+        $category->translation()->createMany($prepareData);
+        if (!$data['parent_id'] == 0) {
+            $node = $this->model::find($data['parent']);
             $node->appendNode($category);
         }
-        foreach($data['image'] as  $file){
-            if(file_exists(storage_path('tmp/uploads/'.$file))) $category->addMedia(storage_path('tmp/uploads/' . $file))->toMediaCollection('uploadfiles');
-        }
+
+        $this->addMedia($category, $data, ['cover_image', 'menu_thumbnail']);
+
         return $category;
     }
 
@@ -54,36 +56,42 @@ class CategoryService extends BaseCrudService
      * @param $request
      * @return mixed
      */
-    public function updateItem($model,$request){
-        $data = $request->all();
+    public function updateItem($model,$request): mixed
+    {
+        $data = $request->validated();
 
-        $model->update($data);
+        $model->update(['parent_id' => $data['parent_id'], 'active' => $data['active']]);
+        $prepareData = (new TranslationService)->prepareFields($data['lang'], ['title', 'link_rewrite']);
+        foreach ($prepareData as $item) {
+            $model->translation()->where('locale', $item['locale'])->update($item);
+        };
+        if (!$data['parent_id'] == 0) {
 
-        if(!empty($data['parent']))
-        {
-            $node =  $this->model::find($data['parent']);
+            $node = $this->model::find($data['parent_id']);
             $node->appendNode($model);
-        }else{
+        } else {
             $model->saveAsRoot();
         }
-        foreach($data['image'] as  $file){
-            if(file_exists(storage_path('tmp/uploads/'.$file))) $model->addMedia(storage_path('tmp/uploads/' . $file))->toMediaCollection('uploadfiles') ;
-        }
-        foreach($model->media as $media){
-            if(!in_array($media->file_name,$data['image'])) {$media->delete();}
-        }
+
+        $this->addMedia($model, $data, ['cover_image', 'menu_thumbnail']);
+
+        $this->removeMedia($model, $data, ['cover_image', 'menu_thumbnail']);
         return $model->refresh();
+
+
     }
 
     /**
      * @param $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function sortItem($request): \Illuminate\Http\Response
+    public function sortItem($request): Response
     {
-
         $data = $request->all();
 
+        foreach($data['el'] as $key => $item){
+            unset($data['el'][$key]['active']);
+        }
         if($data['id'] === 'categories')
         {
             $this->model::rebuildTree($data['el']);
@@ -99,7 +107,36 @@ class CategoryService extends BaseCrudService
      * @param $slug_field
      * @param $slug_from
      */
-    public function setSlug($model, $slug_field, $slug_from){
+    public function setSlug($model, $slug_field, $slug_from): string
+    {
         return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : "";
+    }
+
+    /**
+     * @param $model
+     * @param $data
+     * @param array $collections
+     */
+    public function removeMedia($model, $data, array $collections = []){
+        foreach($collections as $name){
+            foreach($model->getMedia($name) as $media){
+                if(!in_array($media->file_name,$data[$name])) {$media->delete();}
+            }
+        }
+
+    }
+
+    /**
+     * @param $model
+     * @param $data
+     * @param array $collections
+     */
+    public function addMedia($model, $data, array $collections = [])
+    {
+        foreach ($collections as $name) {
+            foreach ($data[$name] as $file) {
+                if (file_exists(storage_path('tmp/uploads/' . $file))) $model->addMedia(storage_path('tmp/uploads/' . $file))->toMediaCollection($name);
+            }
+        }
     }
 }
