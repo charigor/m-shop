@@ -20,6 +20,7 @@ const activeInactiveStyle = computed(() =>
         ? styleStore.asideMenuItemActiveStyle
         : ""
 );
+
 const props = defineProps({
   item: {
     type: Object,
@@ -40,14 +41,13 @@ const hasColor = computed(() => props.item && props.item.color);
 const asideMenuItemActiveStyle = computed(() =>
   hasColor.value ? "" : styleStore.asideMenuItemActiveStyle
 );
-
 const isDropdownActive = ref(false);
 
 const componentClass = computed(() => [
   props.isDropdownList ? "py-3 px-6 text-sm" : "py-3",
   hasColor.value
     ? getButtonColor(props.item.color, false, true)
-    : `${styleStore.asideMenuItemStyle} dark:text-slate-300 dark:hover:text-white`,
+    : `${styleStore.asideMenuItemStyle} `,
 ]);
 
 const hasDropdown = computed(() => !!props.item.menu);
@@ -89,14 +89,12 @@ const checkPermissions = computed(() => {
         v-if="item.icon"
         :path="item.icon"
         class="flex-none text-black dark:text-gray-300"
-        :class="activeInactiveStyle"
         w="w-16"
         :size="18"
       />
       <span
         class="grow text-ellipsis line-clamp-1 text-black dark:text-gray-300"
-        :class="activeInactiveStyle"
-        >{{ item.label }}</span
+        >{{ $t(`global.menu.${item.label}`) }}</span
       >
       <BaseIcon
         v-if="hasDropdown"

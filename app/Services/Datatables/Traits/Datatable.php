@@ -6,6 +6,7 @@ namespace App\Services\Datatables\Traits;
 use App\Services\Datatables\Filter;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
+use function PHPUnit\Framework\isEmpty;
 
 trait Datatable
 {
@@ -62,6 +63,7 @@ trait Datatable
                     if(isset($this->customFilters)) {
                         if(isset($this->customFilters[$column['name']])) {
                             $filter = new $this->customFilters[$column['name']]($column);
+
                             if($filter instanceof Filter) {
                                 $filter->filter($query);
                             }else{
@@ -138,7 +140,8 @@ trait Datatable
             $filter = $request->get('filter');
             foreach($filter as $key => $name){
                 if(isset($this->filters)) {
-                    if(isset($this->filters[$key]) && $name) {
+                    if(isset($this->filters[$key]) && !is_null($name)) {
+
                         $filter = new $this->filters[$key]($name);
                         if($filter instanceof Filter) {
                             $filter->filter($query);
@@ -170,7 +173,6 @@ trait Datatable
      * @return int|mixed
      */
     public function pagination(Request $request,$query){
-        Debugbar::info($request->all());
         if($request->has('perPage')) {
             $this->perPage =  $request->get('perPage') == '-1' ? $query->get()->count() : $request->get('perPage');
         }

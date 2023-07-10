@@ -10,7 +10,7 @@ export default {
         open: ['Dashboard'],
         admins: [
             ['Management', 'mdi-account-multiple-outline'],
-            ['Settings', 'mdi-cog-outline'],
+            ['settings', 'mdi-cog-outline'],
         ],
         cruds: [
             ['Create', 'mdi-plus-outline'],
@@ -36,6 +36,7 @@ export default {
     <Head title="Admin" />
 
     <AuthenticatedLayout>
+
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h2>
         </template>

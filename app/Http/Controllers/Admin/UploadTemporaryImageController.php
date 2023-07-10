@@ -9,9 +9,9 @@ class UploadTemporaryImageController extends Controller
 {
         public function __invoke(Request $request)
         {
-            if($request->hasFile('avatar'))
+            if($request->hasFile('image'))
             {
-                $image = $request->file('avatar');
+                $image = $request->file('image');
                 $fileName = $image->getClientOriginalName();
                 $folder = uniqid('image-',true);
                 $image->storeAs('/images/tmp/'.$folder,$fileName);

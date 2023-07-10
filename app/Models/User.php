@@ -46,7 +46,7 @@ class User extends Authenticatable implements HasMedia
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'created_at' => 'datetime:d-m-Y',
+        'created_at' => 'datetime:d-m-Y h:m:s',
     ];
 
 
@@ -54,11 +54,14 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Message::class);
     }
+
+    /**
+     * @throws \Spatie\Image\Exceptions\InvalidManipulation
+     */
     public function registerMediaConversions(Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
             ->nonQueued();
     }
 }

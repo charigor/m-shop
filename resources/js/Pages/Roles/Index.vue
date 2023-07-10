@@ -4,10 +4,12 @@
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTable from "@/Components/Partials/DataTable.vue";
+import BaseLink from '@/Components/Partials/BaseLink.vue'
 import {defineComponent, defineProps, ref} from "vue";
 import { Link } from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
+import {wTrans} from "laravel-vue-i18n";
 const props = defineProps({
     roles: {
         type: Object,
@@ -24,29 +26,38 @@ const props = defineProps({
 });
 const columns = ref(
     [
-    { value: true , label: 'id', type: 'number',sorting: true},
-    { value: true , label: 'name',type: 'text',sorting: true},
-    { value: true ,label: 'created_at',type: 'date',sorting: true}
+    { value: true , label: 'id', type: 'number',sorting: true,trans: wTrans('page.role.table_fields.id')},
+    { value: true , label: 'name',type: 'text',sorting: true,trans: wTrans('page.role.table_fields.name')},
+    { value: true , label: 'created_at',type: 'date',sorting: true,trans: wTrans('page.role.table_fields.created_at')}
 ])
 
 defineComponent({
     DataTable,
     SectionTitleLineWithButton,
     SectionMain,
+    BaseLink
 })
+const urlPrefix = window.location.href.split('?')[0];
+
 </script>
 <template>
     <LayoutAuthenticated>
         <SectionMain>
             <SectionTitleLineWithButton
                 :icon="mdiAccountBoxMultipleOutline"
-                title="Users"
+                :title="$t('page.role.title_plural')"
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.roles" :filter="props.filter" :search="props.search" :columns="columns" url-prefix="/admin/roles">
+            <DataTable  :data="props.roles" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/roles" :url-prefix="urlPrefix" table-name="Roles" delete-title="name">
                 <template #create>
-                    <Link :href="'/admin/roles/create'">Create New Role</Link>
+                    <BaseLink
+                        color="gray"
+                        small
+                        :label="$t('global.create')"
+                        :href="'/admin/roles/create'"
+                    >
+                    </BaseLink>
                 </template>
             </DataTable>
         </SectionMain>

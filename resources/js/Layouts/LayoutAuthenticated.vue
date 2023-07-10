@@ -8,11 +8,13 @@ import { useMainStore } from "@/stores/main.js";
 import { useStyleStore } from "@/stores/style.js";
 import BaseIcon from "@/Components/Partials/BaseIcon.vue";
 import FormControl from "@/Components/Partials/FormControl.vue";
+import NotificationSuccess from "@/Components/Partials/NotificationSucces.vue";
+import NotificationError from "@/Components/Partials/NotificationError.vue";
 import NavBar from "@/Components/Partials/NavBar.vue";
 import NavBarItemPlain from "@/Components/Partials/NavBarItemPlain.vue";
 import AsideMenu from "@/Components/Partials/AsideMenu.vue";
 import FooterBar from "@/Components/Partials/FooterBar.vue";
-
+import { colorsBgLight, colorsOutline } from "@/colors";
 router.on("navigate", () => {
     isAsideMobileExpanded.value = false;
     isAsideLgActive.value = false;
@@ -47,6 +49,7 @@ const menuClick = (event, item) => {
       router.post(route("logout"));
   }
 };
+
 </script>
 
 <template>
@@ -83,8 +86,10 @@ const menuClick = (event, item) => {
           display="hidden lg:flex xl:hidden"
           @click.prevent="isAsideLgActive = true"
         >
+
           <BaseIcon :path="mdiMenu" size="24" />
         </NavBarItemPlain>
+
       </NavBar>
       <AsideMenu :roles="$page"
         :is-aside-mobile-expanded="isAsideMobileExpanded"
@@ -94,7 +99,16 @@ const menuClick = (event, item) => {
         @aside-lg-close-click="isAsideLgActive = false"
       />
         <slot name="Head" />
-
+        <NotificationSuccess v-if="$page.props.flash.message" class="fixed right-5 text-white z-10" :class="colorsBgLight.success">
+            <div  class="alert pr-3 max-w-sm">
+                {{ $page.props.flash.message }}
+            </div>
+        </NotificationSuccess>
+        <NotificationError v-if="$page.props.flash.error" class="fixed right-5 dark:bg-red-500  text-white z-10" :class="colorsBgLight.danger">
+            <div  class="alert pr-3 max-w-sm">
+                {{ $page.props.flash.error }}
+            </div>
+        </NotificationError>
       <slot />
       <FooterBar>
         Get more with
