@@ -20,11 +20,11 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    filter: {
+    table_filter: {
         type: [Object,null],
         required: true,
     },
-    search: {
+    table_search: {
         type: [String,null],
         required: true,
     },
@@ -60,7 +60,7 @@ const modelName = 'Users';
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.users" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
+            <DataTable  :data="props.users" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
                 <template  #create>
                     <BaseLink
                         color="gray"

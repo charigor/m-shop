@@ -35,8 +35,8 @@ class UserController extends Controller
          return Inertia::render('Users/Index', [
             'roles' => RoleResource::collection(Role::all()->prepend(['id' => 0,'name' => 'All']))->resolve(),
             'users' => UserResource::collection((new Users)->table($request)),
-            'search' => $request->get('search'),
-            'filter' => $request->get('filter'),
+            'table_search' => $request->get('search'),
+            'table_filter' => $request->get('filter'),
         ]);
 
     }

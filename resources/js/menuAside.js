@@ -58,7 +58,7 @@ export default [
         menu: [
             {
                 icon:  mdiViewWeek,
-                route: "category.index",
+                route: "categories.index",
                 label: "categories",
                 roles: ['admin'],
             }

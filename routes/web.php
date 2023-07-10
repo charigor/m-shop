@@ -16,6 +16,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,18 +72,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/permissions/delete', [PermissionController::class, 'destroy'])->name('permission.delete');
 
         /*Categories*/
-        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
-        Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('category.sort');
-        Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('category.index');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
-        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
-        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
-        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia']);
-        Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('category.delete');
-        Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('category.slug');
+//        Route::post('/categories/upload', UploadTemporaryImageController::class);
+//        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
 
-        Route::get('/test', [TestController::class, 'index'])->name('test.index');
 
+//        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
+//        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
+//        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
+
+
+
+        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia'])->name('categories.media');
+        Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('categories.delete');
+        Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('categories.slug');
+        Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('categories.sort');
+        Route::resource('categories', CategoryController::class)->except('index','show','destroy');
+        Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('categories.index');
 
         Route::post('/upload', UploadTemporaryImageController::class);
         Route::post('/uploadEditorImage', UploadEditorImageController::class);
@@ -92,10 +97,14 @@ Route::middleware('auth')->group(function () {
         /*Lang*/
         Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
         Route::resource('lang', LangController::class)->except('show','destroy');
+
+
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);
+            App::setLocale($request->lang);
             return Response()->json(['locale' => session('locale')]);
         })->name('language');
+        Route::get('/test', [TestController::class, 'index'])->name('test.index');
     });
 
 

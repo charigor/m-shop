@@ -15,11 +15,11 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    filter: {
+    table_filter: {
         type: [Object,null],
         required: true,
     },
-    search: {
+    table_search: {
         type: [String,null],
         required: true,
     },
@@ -49,7 +49,7 @@ const urlPrefix = window.location.href.split('?')[0];
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.permissions" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/permissions" :url-prefix="urlPrefix" table-name="Permissions" delete-title="name">
+            <DataTable  :data="props.permissions" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/permissions" :url-prefix="urlPrefix" table-name="Permissions" delete-title="name">
                 <template #create>
                     <BaseLink
                         color="gray"

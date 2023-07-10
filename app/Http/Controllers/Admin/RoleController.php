@@ -35,8 +35,8 @@ class RoleController extends Controller
         abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         return Inertia::render('Roles/Index', [
             'roles' => RoleResource::collection((new Roles)->table($request)),
-            'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'table_search' => $request->get('search'),
+            'table_filter' => $request->get('filter')
         ]);
     }
 

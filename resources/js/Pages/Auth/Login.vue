@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, Head, Link } from '@inertiajs/vue3'
 import { mdiAccount, mdiAsterisk } from '@mdi/js'
-import LayoutGuest from '@/layouts/LayoutGuest.vue'
+import LayoutGuest from '@/Layouts/LayoutGuest.vue'
 import SectionFullScreen from '@/Components/Partials/SectionFullScreen.vue'
 import CardBox from '@/Components/Partials/CardBox.vue'
 import FormCheckRadioGroup from '@/Components/Partials/FormCheckRadioGroup.vue'
@@ -10,7 +10,7 @@ import FormControl from '@/Components/Partials/FormControl.vue'
 import BaseDivider from '@/Components/Partials/BaseDivider.vue'
 import BaseButton from '@/Components/Partials/BaseButton.vue'
 import BaseButtons from '@/Components/Partials/BaseButtons.vue'
-import FormValidationErrors from '@/components/FormValidationErrors.vue'
+import FormValidationErrors from '@/Components/FormValidationErrors.vue'
 import NotificationBarInCard from '@/Components/Partials/NotificationBarInCard.vue'
 import BaseLevel from '@/Components/Partials/BaseLevel.vue'
 

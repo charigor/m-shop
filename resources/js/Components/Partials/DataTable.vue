@@ -3,7 +3,7 @@
     <SectionMain>
         <div class="flex items-center justify-between mb-2 row">
             <div class="w-1/4 col-6">
-                <input  type="search" @input="search" :value="params.search" aria-label="Search" :placeholder="$t('global.search')+'...'" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                <input  type="search" @input="search_trigger" :value="params.search" aria-label="Search" :placeholder="$t('global.search')+'...'" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
             </div>
             <slot name="create"></slot>
         </div>
@@ -51,11 +51,11 @@
                 </td>
                 <template v-for="column in columns">
                     <td v-if="column.value">
-                        <input  v-if="column.type === 'number'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
-                        <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                        <input  v-if="column.type === 'number'" :type="column.type" @input="filter_trigger" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                        <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter_trigger" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
 
                         <template v-else-if="column.type === 'select'">
-                            <slot :name="`select_${column.label}`" :filter="filter"></slot>
+                            <slot :name="`select_${column.label}`" :filter="filter_trigger"></slot>
                         </template>
                         <VueDatePicker class="dp__theme_dark"  :dark="darkMode" v-else-if="column.type === 'date'"  range  :partial-range="false"   multi-calendars v-model="params.filter[column.label]" :aria-label="column.label" ></VueDatePicker>
                     </td>
@@ -323,7 +323,7 @@ export default {
                 }
             }
         },
-        search(event){
+        search_trigger(event){
             this.params.page = null
             this.params.search = event.target.value
         },
@@ -349,7 +349,7 @@ export default {
                 if(element) element.selectedIndex = null
             }
         },
-        filter(event){
+        filter_trigger(event){
             this.params.page = 1
             if(event.target.value == ''){
                 delete(this.params.filter[event.target.getAttribute('aria-label').toLowerCase()])
@@ -394,9 +394,6 @@ export default {
             this.params.perPage = e.target.value
         }
     },
-    mounted(){
-
-    }
 }
 </script>
 <style>

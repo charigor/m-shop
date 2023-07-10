@@ -11,7 +11,11 @@ return [
     "action" => "Action",
     "submit" => "Submit",
     "drop_files_here" => "Drop files here",
+    "no" => "No",
+    "yes" => "Yes",
     "please_confirm" => "Please confirm",
+    "expand" => "Expand",
+    "collapse" => "Collapse",
     "pagination" => [
         "Next &raquo;" => "Next &raquo;",
         "&laquo; Previous" => "&laquo; Previous",

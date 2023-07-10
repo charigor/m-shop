@@ -8,13 +8,13 @@ import { useMainStore } from "@/stores/main.js";
 import { useStyleStore } from "@/stores/style.js";
 import BaseIcon from "@/Components/Partials/BaseIcon.vue";
 import FormControl from "@/Components/Partials/FormControl.vue";
-import NotificationBar from "@/Components/Partials/NotificationBar.vue";
-
+import NotificationSuccess from "@/Components/Partials/NotificationSucces.vue";
+import NotificationError from "@/Components/Partials/NotificationError.vue";
 import NavBar from "@/Components/Partials/NavBar.vue";
 import NavBarItemPlain from "@/Components/Partials/NavBarItemPlain.vue";
 import AsideMenu from "@/Components/Partials/AsideMenu.vue";
 import FooterBar from "@/Components/Partials/FooterBar.vue";
-
+import { colorsBgLight, colorsOutline } from "@/colors";
 router.on("navigate", () => {
     isAsideMobileExpanded.value = false;
     isAsideLgActive.value = false;
@@ -99,11 +99,16 @@ const menuClick = (event, item) => {
         @aside-lg-close-click="isAsideLgActive = false"
       />
         <slot name="Head" />
-        <NotificationBar class="fixed right-5  bg-blue-500 z-10">
-            <div  class="alert pr-3">
+        <NotificationSuccess v-if="$page.props.flash.message" class="fixed right-5 text-white z-10" :class="colorsBgLight.success">
+            <div  class="alert pr-3 max-w-sm">
                 {{ $page.props.flash.message }}
             </div>
-        </NotificationBar>
+        </NotificationSuccess>
+        <NotificationError v-if="$page.props.flash.error" class="fixed right-5 dark:bg-red-500  text-white z-10" :class="colorsBgLight.danger">
+            <div  class="alert pr-3 max-w-sm">
+                {{ $page.props.flash.error }}
+            </div>
+        </NotificationError>
       <slot />
       <FooterBar>
         Get more with
