@@ -39,7 +39,7 @@ class PermissionController extends Controller
 
         $permission = Permission::create($request->validated());
 
-        return redirect()->route('permission.edit',$permission->id);
+        return redirect()->route('permission.edit',$permission->id)->with('message',trans('messages.success.create'));
     }
     /**
      * @return \Inertia\Response
@@ -70,7 +70,7 @@ class PermissionController extends Controller
     public function update(PermissionUpdateRequest $request, Permission $permission)
     {
         $permission->update($request->validated());
-        return redirect()->route('permission.index');
+        return redirect()->route('permission.index')->with('message',trans('messages.success.update'));
     }
 
     /**
@@ -80,6 +80,6 @@ class PermissionController extends Controller
     public function destroy(Request $request)
     {
         Permission::whereIn('id',$request->ids)->delete();
-        return redirect()->route('permission.index');
+        return redirect()->route('permission.index')->with('message',trans('messages.success.delete'));
     }
 }

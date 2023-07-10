@@ -9,7 +9,7 @@ export const useStyleStore = defineStore("style", {
     asideScrollbarsStyle: "",
     asideBrandStyle: "",
     asideMenuItemStyle: "",
-    asideMenuItemActiveStyle: "text-gray-800",
+    asideMenuItemActiveStyle: "text-black",
     asideMenuDropdownStyle: "",
     navBarItemLabelStyle: "",
     navBarItemLabelHoverStyle: "",
@@ -52,7 +52,7 @@ export const useStyleStore = defineStore("style", {
           "dark-scrollbars-compat"
         );
       }
-    },
+    }
 
   },
 });

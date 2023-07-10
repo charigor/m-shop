@@ -32,6 +32,7 @@ export const useMainStore = defineStore("main", {
       axios
         .get(`data-sources/${sampleDataKey}.json`)
         .then((r) => {
+
           if (r.data && r.data.data) {
             this[sampleDataKey] = r.data.data;
           }

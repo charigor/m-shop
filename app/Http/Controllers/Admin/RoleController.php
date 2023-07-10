@@ -42,13 +42,13 @@ class RoleController extends Controller
 
     /**
      * @param RoleCreateRequest $request
-     * @return RoleResource
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(RoleCreateRequest $request)
     {
         $data = $request->validated();
         $role = Role::create($data);
-        return redirect()->route('role.edit',$role->id);
+        return redirect()->route('role.edit',$role->id)->with('message',trans('messages.success.create'));
 
     }
     /**
@@ -74,13 +74,13 @@ class RoleController extends Controller
     /**
      * @param RoleUpdateRequest $request
      * @param Role $role
-     * @return RoleResource
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
         $role->update($request->validated());
         $role->permissions()->sync($request->permissions);
-        return redirect()->route('role.index');
+        return redirect()->route('role.index')->with('message',trans('messages.success.update'));
     }
 
     /**
@@ -90,6 +90,6 @@ class RoleController extends Controller
     public function destroy(Request $request)
     {
         Role::whereIn('id',$request->ids)->delete();
-        return redirect()->route('role.index');
+        return redirect()->route('role.index')->with('message',trans('messages.success.delete'));
     }
 }

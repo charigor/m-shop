@@ -36,7 +36,7 @@ class UserController extends Controller
             'roles' => RoleResource::collection(Role::all()->prepend(['id' => 0,'name' => 'All']))->resolve(),
             'users' => UserResource::collection((new Users)->table($request)),
             'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'filter' => $request->get('filter'),
         ]);
 
     }
@@ -47,7 +47,6 @@ class UserController extends Controller
     public function store(UserCreateRequest $request)
     {
         $data = $request->validated();
-
         $data['password'] = Hash::make( $data['password']);
         $user = User::create($data);
         $user->roles()->attach($request->roles);
@@ -56,7 +55,7 @@ class UserController extends Controller
             $path = Storage::path($image);
             $user->addMedia($path)->toMediaCollection('avatars');
         }
-        return redirect()->route('user.edit',$user->id);
+        return redirect()->route('user.edit',$user->id)->with('message',trans('messages.success.create'));
 
     }
     /**
@@ -88,21 +87,23 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
 
     {
-        info($request->get('avatar'));
         $data = $request->validated();
         if(isset($data['password'])){
             $data['password'] = Hash::make( $data['password']);
         }
         $user->update($data);
         $user->roles()->sync($data['roles']);
-        if (!empty($data['avatar'])) {
-            $image = array_column($data['avatar'], 'image')[0];
-            $user->clearMediaCollection('avatars');
-            $path = Storage::path($image);
-            $user->addMedia($path)->toMediaCollection('avatars');
-
+        if (!empty($data['avatar'])  && count($data['avatar']) >= 1) {
+            $image = array_column($data['avatar'], 'image');
+            if(isset($image[0])) {
+                $user->clearMediaCollection('avatars');
+                $path = Storage::path($image[0]);
+                $user->addMedia($path)->toMediaCollection('avatars');
+            }else{
+                $user->clearMediaCollection('avatars');
+            }
         }
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->with('message',trans('messages.success.update'));
     }
 
 
@@ -112,6 +113,6 @@ class UserController extends Controller
     public function destroy(Request $request)
     {
         User::whereIn('id',$request->ids)->delete();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->with('message',trans('messages.success.delete'));
     }
 }

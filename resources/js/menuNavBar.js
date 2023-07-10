@@ -40,11 +40,11 @@ export default [
       {
         icon: mdiAccount,
         label: "My Profile",
-        to: "/profile",
+        route: "profile.edit",
       },
       {
         icon: mdiCogOutline,
-        label: "Settings",
+        label: "settings",
       },
       {
         icon: mdiEmail,

@@ -127,11 +127,13 @@ onBeforeUnmount(() => {
         class="hidden lg:inline-flex transition-colors"
       />
     </div>
+
     <div
       v-if="item.menu"
       class="text-sm border-b border-gray-100 lg:border lg:bg-white lg:absolute lg:top-full lg:left-0 lg:min-w-full lg:z-20 lg:rounded-lg lg:shadow-lg lg:dark:bg-slate-800 dark:border-slate-700"
       :class="{ 'lg:hidden': !isDropdownActive }"
     >
+
       <NavBarMenuList :menu="item.menu" @menu-click="menuClickDropdown" />
     </div>
   </component>
