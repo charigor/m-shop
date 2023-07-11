@@ -2,15 +2,15 @@
 import { useForm, Head, Link } from '@inertiajs/vue3'
 import { mdiEmail } from '@mdi/js'
 import LayoutGuest from '@/Layouts/LayoutGuest.vue'
-import SectionFullScreen from '@/Components/SectionFullScreen.vue'
-import CardBox from '@/Components/CardBox.vue'
-import FormField from '@/Components/FormField.vue'
-import FormControl from '@/Components/FormControl.vue'
-import BaseDivider from '@/Components/BaseDivider.vue'
-import BaseButton from '@/Components/BaseButton.vue'
+import SectionFullScreen from '@/Components/Partials/SectionFullScreen.vue'
+import CardBox from '@/Components/Partials/CardBox.vue'
+import FormField from '@/Components/Partials/FormField.vue'
+import FormControl from '@/Components/Partials/FormControl.vue'
+import BaseDivider from '@/Components/Partials/BaseDivider.vue'
+import BaseButton from '@/Components/Partials/BaseButton.vue'
 import FormValidationErrors from '@/Components/FormValidationErrors.vue'
-import NotificationBarInCard from '@/Components/NotificationBarInCard.vue'
-import BaseLevel from '@/Components/BaseLevel.vue'
+import NotificationBarInCard from '@/Components/Partials/NotificationBarInCard.vue'
+import BaseLevel from '@/Components/Partials/BaseLevel.vue'
 
 defineProps({
   status: {
