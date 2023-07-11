@@ -42,7 +42,7 @@ class CategoryService extends BaseCrudService
 
         $category->translation()->createMany($prepareData);
         if (!$data['parent_id'] == 0) {
-            $node = $this->model::find($data['parent']);
+            $node = $this->model::find($data['parent_id']);
             $node->appendNode($category);
         }
 
