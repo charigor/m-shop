@@ -16,6 +16,9 @@ return [
     "please_confirm" => "Будь-ласка підтвердіть",
     "expand" => "Розгорнути",
     "collapse" => "Згорнути",
+    "no_file_chosen" => "Файл не вибрано",
+    "choose_file" => "Виберіть файл",
+    "remove_file" => "Remove file",
     "pagination" => [
         "Next &raquo;" => "Вперед &raquo;",
         "&laquo; Previous" => "&laquo; Назад",

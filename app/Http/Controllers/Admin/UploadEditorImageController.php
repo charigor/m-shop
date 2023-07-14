@@ -12,7 +12,7 @@ class UploadEditorImageController extends Controller
 {
         public function __invoke(Request $request)
         {
-
+            info($request->all());
             if($request->hasFile('upload'))
             {
                 $image = $request->file('upload');

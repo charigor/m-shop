@@ -16,6 +16,9 @@ return [
     "please_confirm" => "Please confirm",
     "expand" => "Expand",
     "collapse" => "Collapse",
+    "no_file_chosen" => "No file chosen",
+    "choose_file" => "Choose File",
+    "remove_file" => "Remove file",
     "pagination" => [
         "Next &raquo;" => "Next &raquo;",
         "&laquo; Previous" => "&laquo; Previous",

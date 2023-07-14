@@ -14,6 +14,7 @@ import {
 import debounce from "lodash.debounce";
 
 import {getActiveLanguage,wTrans} from "laravel-vue-i18n";
+import {useMainStore} from "@/stores/main";
 
 const props = defineProps({
     category: {
@@ -25,7 +26,7 @@ const props = defineProps({
         required: true,
     },
 });
-let locale = ref(getActiveLanguage())
+let locale = ref(useMainStore().lang)
 
 const form = reactive({
     parent_id: +null,
@@ -153,14 +154,14 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                  <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.description')}}</label>
                 <template v-for="language in $page.props.languages" :key="language.id">
                     <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
-                        <CKEditor v-model="form['lang'][language.code]['description']" :csrf="$page.props.csrf_token"/>
+                        <CKEditor v-model="form['lang'][language.code]['description']" :lang="useMainStore().lang" :csrf="$page.props.csrf_token"/>
                     </div>
                 </template>
                 </div>
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.cover_image')}}</label>
                     <div class="relative row mb-6 group pt-7">
-                        <Dropzone class="cover" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
+                        <Dropzone class="cover" :w="Number(250)" :h="Number(250)"  :maxFiles="Number(1)" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.cover_image">{{$page.props.errors.cover_image}}</p>
                     </div>
                 </div>

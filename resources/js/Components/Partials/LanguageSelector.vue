@@ -11,15 +11,22 @@ import {
 } from "@mdi/js";
 import {defineProps,defineComponent} from "vue";
 
+import { useMainStore } from "@/stores/main.js";
 
 
 const changeLocale = async function (code){
   const response =  await axios.post(`/admin/language`,{lang: code})
     if(response.status === 200){
         this.loadLanguageAsync(response.data.locale);
-        router.reload({preserveState: true,  preserveScroll: true})
+
+         router.reload({preserveState: true,  preserveScroll: true})
+        useMainStore().setLang({
+            lang: response.data.locale,
+        });
+
     }
 }
+
 </script>
 <template>
     <div class="block lg:flex items-center relative cursor-pointer text-black dark:text-white dark:hover:text-slate-400 hover:text-blue-500 py-2 px-3 lg:w-16 lg:justify-center">

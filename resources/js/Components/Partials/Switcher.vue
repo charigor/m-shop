@@ -19,11 +19,11 @@ const props = defineProps({
       required: true
     },
     valueA: {
-      type: String,
+      type: Number,
       required: true
     },
     valueB: {
-        type: String,
+        type: Number,
         required: true
     },
     labelA: {
@@ -56,17 +56,13 @@ const emit = defineEmits(['onChange'])
             <li>
                 <input v-model="val" type="radio" @change="$emit('onChange',$event.target.value)" :name="props.name" :id="`${props.name}_${props.labelA}_id`" :value="props.valueA" class="hidden peer">
                 <label :for="`${props.name}_${props.labelA}_id`" class="inline-flex items-center justify-between w-full px-5 py-1 text-gray-500 bg-white border border-gray-200  cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                          {{props.labelA}}
-                    </div>
+                    <div class="block" v-text="props.labelA"></div>
                 </label>
             </li>
             <li>
                 <input type="radio" v-model="val" @change="$emit('onChange',$event.target.value)" :name="props.name" :id="`${props.name}_${props.labelB}_id`" :value="props.valueB" class="hidden peer">
                 <label :for="`${props.name}_${props.labelB}_id`" class="inline-flex items-center justify-between w-full px-5 py-1 text-gray-500 bg-white border border-gray-200  cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <div class="block">
-                        {{props.labelB}}
-                    </div>
+                    <div class="block" v-text="props.labelB"></div>
                 </label>
             </li>
         </ul>
