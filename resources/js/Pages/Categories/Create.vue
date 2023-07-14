@@ -146,7 +146,7 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                     </h2>
                     <div v-show="accordionTrigger" class="flex items-center justify-between w-full py-4 px-4 font-medium text-left text-gray-500 border border-b-1 border-gray-200 rounded-b-xl   dark:border-gray-700 dark:text-gray-400">
                         <template v-for="node in categories">
-                            <TreeMenu  @input="changeParent" :parent="form.parent_id"  :nodes="node.children" :value="node.id" :label="node.translation[0].title" ></TreeMenu>
+                            <TreeMenu @input="changeParent" :parent="form.parent_id"  :nodes="node.children" :value="node.id" :label="node.translation[0].title" ></TreeMenu>
                         </template>
                     </div>
                 </div>
