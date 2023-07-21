@@ -5,10 +5,12 @@ use App\Http\Controllers\Admin\DeleteTemporaryImageController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Session;
@@ -29,15 +31,13 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('HomeView');
-//    return Inertia::render('Welcome');
-//    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');;
+Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/',[MainController::class, 'search'])->name('search');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/',[MainController::class, 'index']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -97,6 +97,9 @@ Route::middleware('auth')->group(function () {
         /*Lang*/
         Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
         Route::resource('lang', LangController::class)->except('show','destroy');
+        /*product*/
+        Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
+        Route::resource('product', ProductController::class)->only('create','store','edit','update');
 
 
         Route::post('/language', function(Request $request){

@@ -18,7 +18,9 @@ return [
     "collapse" => "Згорнути",
     "no_file_chosen" => "Файл не вибрано",
     "choose_file" => "Виберіть файл",
-    "remove_file" => "Remove file",
+    "remove_file" => "Видалити файл ",
+    "main_image"  => "Головне зображення",
+    "set_main_image"  => "Зробити зображення основним",
     "pagination" => [
         "Next &raquo;" => "Вперед &raquo;",
         "&laquo; Previous" => "&laquo; Назад",

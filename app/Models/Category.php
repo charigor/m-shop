@@ -9,10 +9,12 @@ use Kalnoy\Nestedset\NodeTrait;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
+use Laravel\Scout\Searchable;
 class Category extends Model implements HasMedia
 {
-    use HasFactory,NodeTrait,InteractsWithMedia;
+    use HasFactory,NodeTrait,InteractsWithMedia,Searchable {
+    \Laravel\Scout\Searchable::usesSoftDelete insteadof \Kalnoy\Nestedset\NodeTrait;
+}
 
     public $table = 'categories';
 
@@ -46,6 +48,9 @@ class Category extends Model implements HasMedia
     public function translation(): HasMany
     {
         return $this->hasMany(CategoryLang::class);
+    }
+    public function products(){
+        $this->hasMany(Product::class);
     }
 
 }

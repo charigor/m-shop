@@ -135,7 +135,7 @@ class CategoryService extends BaseCrudService
     {
         foreach ($collections as $name) {
             foreach ($data[$name] as $file) {
-                if (file_exists(storage_path('tmp/uploads/' . $file))) $model->addMedia(storage_path('tmp/uploads/' . $file))->toMediaCollection($name);
+                if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->toMediaCollection($name);
             }
         }
     }

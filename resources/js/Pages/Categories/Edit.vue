@@ -8,6 +8,7 @@ import TreeMenu from '@/Components/Partials/TreeMenu.vue'
 import {defineComponent, defineProps,ref,computed, reactive} from "vue";
 import {router, usePage} from '@inertiajs/vue3'
 import Dropzone from "@/Components/Partials/Dropzone/Dropzone.vue";
+import VueDropzone from '@/Components/Partials/VueDropzone/dropzone.vue'
 import Switcher from "@/Components/Partials/Switcher.vue";
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import debounce from "lodash.debounce";
@@ -31,8 +32,8 @@ let locale = ref(useMainStore().lang)
 const form = reactive({
     parent_id: +props.category.parent_id,
     active: props.category.active,
-    cover_image: [],
-    menu_thumbnail: [],
+    cover_image: props.category.cover_image.map(i => i.file_name),
+    menu_thumbnail: props.category.menu_thumbnail.map(i => i.file_name),
     lang: {},
     _method: 'put'
 });
@@ -156,17 +157,19 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                         </div>
                     </template>
                 </div>
+
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.cover_image')}}</label>
                     <div class="relative row mb-6 group pt-7">
-                        <Dropzone class="cover" :w="Number(250)" :h="Number(250)"  :maxFiles="Number(1)" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="props.category.cover_image" :csrf="$page.props.csrf_token"/>
+                        <VueDropzone :w="Number(250)" :h="Number(250)" :maxFiles="1" viewType="fakeInput" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="props.category.cover_image"></VueDropzone>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.cover_image">{{$page.props.errors.cover_image}}</p>
                     </div>
                 </div>
+
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.menu_thumbnail')}}</label>
-                    <div class="relative row mb-6 group">
-                        <Dropzone class="square"  @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="props.category.menu_thumbnail" :csrf="$page.props.csrf_token"/>
+                    <div class="relative row mb-6 group pt-7">
+                        <VueDropzone :w="Number(150)" :h="Number(150)" :multiple="Boolean(1)" :maxFiles="1" viewType="square" @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="props.category.menu_thumbnail" :csrf="$page.props.csrf_token"></VueDropzone>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.menu_thumbnail">{{$page.props.errors.menu_thumbnail}}</p>
                     </div>
                 </div>

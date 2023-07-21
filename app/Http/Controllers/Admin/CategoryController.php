@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\CategoryCreateRequest;
 use App\Http\Requests\Admin\CategoryUpdateRequest;
 use App\Http\Requests\Admin\Image\CategoryUploadImageRequest;
 use App\Http\Resources\Category\CategoryResource;
+use App\Http\Resources\Category\ProductResource;
 use App\Http\Resources\Category\CategoryResourceIndex;
 use App\Models\Category;
 use App\Models\CategoryLang;

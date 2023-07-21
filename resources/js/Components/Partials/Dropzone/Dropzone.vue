@@ -42,7 +42,7 @@ const props = defineProps({
 
 let files = reactive(props.files)
 const emit = defineEmits(['loadImages','removeImage'])
-const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-complete">
+const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-complete" >
 
         <div class="dz-image" style="width: ${props.w}px;height: ${props.h}px;">
           <img data-dz-thumbnail>
@@ -110,6 +110,9 @@ onMounted(() => {
                     dropRef.value.parentElement.classList.remove(`dz-max-files-reached`);
                 }
             },
+            show(){
+                console.log('sdffffffffff')
+            },
 
             init: function () {
                 let media = JSON.parse(JSON.stringify(files));
@@ -123,8 +126,6 @@ onMounted(() => {
                     this.options.addedfile.call(this, file)
                     this.options.thumbnail.call(this, file, file.preview_url)
                     file.previewElement.classList.add('dz-complete')
-
-
                 }
 
             }

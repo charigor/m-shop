@@ -19,6 +19,8 @@ return [
     "no_file_chosen" => "No file chosen",
     "choose_file" => "Choose File",
     "remove_file" => "Remove file",
+    "main_image"  => "Main image",
+    "set_main_image"  => "Set main image",
     "pagination" => [
         "Next &raquo;" => "Next &raquo;",
         "&laquo; Previous" => "&laquo; Previous",
