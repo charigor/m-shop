@@ -14,6 +14,7 @@ import {
     mdiAccountMultiple,
     mdiStoreEdit,
     mdiViewWeek,
+    mdiSvg,
     mdiBagPersonalTagOutline, mdiClockOutline, mdiCloud, mdiCrop, mdiMessage,mdiAccountSwitch,mdiAccountKey,mdiCogs,mdiWeb
 } from "@mdi/js";
 
@@ -60,6 +61,12 @@ export default [
                 icon:  mdiViewWeek,
                 route: "categories.index",
                 label: "categories",
+                roles: ['admin'],
+            },
+            {
+                icon:  mdiSvg,
+                route: "brand.index",
+                label: "brands",
                 roles: ['admin'],
             }
         ]

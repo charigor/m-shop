@@ -34,6 +34,7 @@ return [
             "permissions" => "Дозволи",
         "catalog" => "Каталог",
             "categories" => "Категорії",
+            "brands" => "Бренди",
         "settings" => "Налаштування",
         "messages" => "Сповіщення",
         "languages" => "Мови",

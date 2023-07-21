@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeleteTemporaryImageController;
 use App\Http\Controllers\Admin\LangController;
@@ -100,7 +101,10 @@ Route::middleware('auth')->group(function () {
         /*product*/
         Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
         Route::resource('product', ProductController::class)->only('create','store','edit','update');
-
+        /*brand*/
+        Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
+        Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
+        Route::resource('brand', BrandController::class)->except('show','destroy');
 
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);

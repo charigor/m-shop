@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Resources\Brand;
+
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class BrandResourceIndex extends JsonResource
+{
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function toArray(Request $request)
+    {
+        return parent::toArray($request);
+
+    }
+
+}

@@ -34,6 +34,7 @@ return [
         "permissions" => "Permissions",
         "catalog" => "Catalog",
         "categories" => "Categories",
+        "brands" => "Brands",
         "settings" => "Settings",
         "messages" => "Messages",
         "languages" => "Languages",
