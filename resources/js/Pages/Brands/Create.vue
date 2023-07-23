@@ -84,8 +84,8 @@ const tab = function (code){
                 </div>
                 <Switcher :value="form.active" :topLabel="$t('page.brand.fields.active')" name="cat_active" @onChange="(e) => form.active = e" :valueA="0" :valueB="1" :labelA="$t('global.no')"  :labelB="$t('global.yes')"/>
 
-                <div class="relative w-full mb-7 z-10 group">
-                 <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.brand.fields.short_description')}}</label>
+                <div class="relative w-full mb-7 z-0 group">
+                 <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-0 origin-[0]  left-0  0 absolute">{{$t('page.brand.fields.short_description')}}</label>
                     <template v-for="language in $page.props.languages" :key="language.id">
                         <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
                             <CKEditor v-model="form['lang'][language.code]['short_description']" :lang="useMainStore().lang" :csrf="$page.props.csrf_token"/>
@@ -93,8 +93,8 @@ const tab = function (code){
                         </div>
                     </template>
                 </div>
-                <div class="relative w-full mb-7 z-10 group">
-                    <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.brand.fields.description')}}</label>
+                <div class="relative w-full mb-7 z-0 group">
+                    <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-0 origin-[0]  left-0  0 absolute">{{$t('page.brand.fields.description')}}</label>
                     <template v-for="language in $page.props.languages" :key="language.id">
                         <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
                             <CKEditor v-model="form['lang'][language.code]['description']" :lang="useMainStore().lang" :csrf="$page.props.csrf_token"/>
@@ -103,7 +103,7 @@ const tab = function (code){
                     </template>
                 </div>
                 <div class="relative w-full mb-7 z-10 group">
-                    <VueDropzone :w="Number(250)" :h="Number(250)" viewType="fakeInput" :maxFiles="Number(1)" @removeImage="(file) => form.image = form.image.filter((item) => item !== file)" @loadImages="(file) => form.image.push(file)" path="/admin/brand/storeMedia" :files="[]"></VueDropzone>
+                    <VueDropzone :w="Number(250)" :h="Number(250)" viewType="fakeInput"  @removeImage="(file) => form.image = form.image.filter((item) => item !== file)" @loadImages="(file) => form.image.push(file)" path="/admin/brand/storeMedia" :files="[]"></VueDropzone>
                 </div>
                 <div v-for="language in $page.props.languages" :key="language.id">
                     <div class="relative z-0 w-full mb-6 group" v-show="locale === language.code">

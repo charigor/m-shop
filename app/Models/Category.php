@@ -12,9 +12,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Laravel\Scout\Searchable;
 class Category extends Model implements HasMedia
 {
-    use HasFactory,NodeTrait,InteractsWithMedia,Searchable {
-    \Laravel\Scout\Searchable::usesSoftDelete insteadof \Kalnoy\Nestedset\NodeTrait;
-}
+    use HasFactory,NodeTrait,InteractsWithMedia;
+//        Searchable {
+//    \Laravel\Scout\Searchable::usesSoftDelete insteadof \Kalnoy\Nestedset\NodeTrait;
+//}
 
     public $table = 'categories';
 

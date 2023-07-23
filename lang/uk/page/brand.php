@@ -6,7 +6,7 @@ return [
     "title_edit" => "Редагування Бренду",
     "table_fields" => [
         "id"   => "Id",
-        "image" => "Logo",
+        "image" => "Логотип",
         "name" => "Назва",
         "active" => "Статус",
         "created_at" => "Дата створення",

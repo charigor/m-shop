@@ -42,7 +42,9 @@ const columns = ref(
     { value: true ,label: 'created_at',type: 'date',sorting: true,trans : wTrans('page.brand.table_fields.created_at')},
     { value: true ,label: 'updated_at',type: 'date',sorting: true,trans : wTrans('page.brand.table_fields.updated_at')}
 ])
-
+function firstLower(lower){
+    return lower && lower[0].toLowerCase() + lower.slice(1) || lower;
+}
 defineComponent({
     DataTable,
     SectionTitleLineWithButton,
@@ -75,7 +77,7 @@ defineComponent({
                 <template v-slot:select_active="{ filter,value,key }">
                     <select @change="filter"  aria-label="active" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
                         <template  v-for="option in props.active_options" :key="option.key">
-                            <option :value="option.key">{{option.value}}</option>
+                            <option :value="option.key">{{$t(`global.${firstLower(option.value)}`)}}</option>
                         </template>
                     </select>
                 </template>

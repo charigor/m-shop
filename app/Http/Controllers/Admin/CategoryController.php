@@ -8,17 +8,14 @@ use App\Http\Requests\Admin\CategoryCreateRequest;
 use App\Http\Requests\Admin\CategoryUpdateRequest;
 use App\Http\Requests\Admin\Image\CategoryUploadImageRequest;
 use App\Http\Resources\Category\CategoryResource;
-use App\Http\Resources\Category\ProductResource;
 use App\Http\Resources\Category\CategoryResourceIndex;
 use App\Models\Category;
 use App\Models\CategoryLang;
 use App\Services\Crud\Category\CategoryService;
-use Debugbar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 

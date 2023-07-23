@@ -35,7 +35,6 @@ class BrandService extends BaseCrudService
         $data = $request->validated();
         $model = $this->model::create($data);
         $prepareData = (new TranslationService)->prepareFields($data['lang']);
-
         $model->translation()->createMany($prepareData);
 
         $this->addMedia($model, $data, ['image']);
@@ -51,7 +50,7 @@ class BrandService extends BaseCrudService
     public function updateItem($model,$request): mixed
     {
         $data = $request->validated();
-
+        $model->slug = null;
         $model->update($data);
         $prepareData = (new TranslationService)->prepareFields($data['lang']);
         foreach ($prepareData as $item) {

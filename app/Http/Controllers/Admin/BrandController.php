@@ -99,7 +99,10 @@ class BrandController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Brand::whereIn('id',$request->ids)->delete();
+        $brands =  Brand::whereIn('id',$request->ids)->get();
+        foreach($brands as $item){
+            $item->delete();
+        }
         return redirect()->route('brand.index')->with('message',trans('messages.success.delete'));
     }
     /**

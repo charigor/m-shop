@@ -22,7 +22,7 @@ trait MediaUploadingTrait
 
         $file = $request->file('file');
 
-        $name = now()->timestamp.'_'.uniqid() . '_' . trim($file->getClientOriginalName());
+        $name = now()->timestamp.'_'.uniqid().'_'.str_replace(' ','_',trim($file->getClientOriginalName()));
 
         $file->move($path, $name);
         return response()->json([

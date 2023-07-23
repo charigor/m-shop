@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,18 +12,28 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Brand extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia;
+    use HasFactory,InteractsWithMedia,Sluggable;
 
     public $table = 'brands';
 
     protected $fillable = [
         'name',
+        'slug',
         'active'
     ];
     const  ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name'
+            ]
+        ];
+    }
     public function registerMediaConversions(Media $media = null): void
     {
         $this

@@ -60,7 +60,7 @@ const modelName = 'Users';
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.users" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
+            <DataTable  :data="props.users" :filter="props.table_filter" with_total="true" :search="props.table_search" :columns="columns" base-url="/admin/users" :url-prefix="urlPrefix" table-name="Users" delete-title="name">
                 <template  #create>
                     <BaseLink
                         color="gray"

@@ -87,3 +87,7 @@ if (
 ) {
   styleStore.setDarkMode(true);
 }
+window.flower =  function(e)  {
+    return e && e[0].toLowerCase() + e.slice(1) || e;
+};
+

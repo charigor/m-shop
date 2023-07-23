@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\AttributeGroupController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeleteTemporaryImageController;
+use App\Http\Controllers\Admin\FeatureController;
+use App\Http\Controllers\Admin\FeatureValueController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -105,6 +109,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
         Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
         Route::resource('brand', BrandController::class)->except('show','destroy');
+        /*attribute groups*/
+        Route::post('/attribute_group/sort', [AttributeGroupController::class, 'sort'])->name('attribute_group.sort');
+        Route::post('/attribute_group/delete', [AttributeGroupController::class, 'destroy'])->name('attribute_group.delete');
+        Route::resource('attribute_group', AttributeGroupController::class)->except('destroy');
+
+        /*attribute*/
+        Route::post('/attribute_group/{id}/attribute/sort', [AttributeController::class, 'sort'])->name('attribute_group.attribute.sort');
+        Route::post('/attribute_group/{id}/attribute/delete', [AttributeController::class, 'destroy'])->name('attribute_group.attribute.delete');
+        Route::resource('attribute_group.attribute', AttributeController::class)->only('create','edit','store','update');
+        /*feature*/
+        Route::post('/feature/sort', [FeatureController::class, 'sort'])->name('feature.sort');
+        Route::post('/feature/delete', [FeatureController::class, 'destroy'])->name('feature.delete');
+        Route::resource('feature', FeatureController::class)->except('destroy');
+        /*feature value*/
+        Route::post('/feature/{id}/feature_value/delete', [FeatureValueController::class, 'destroy'])->name('feature.feature_value.delete');
+        Route::resource('feature.feature_value', FeatureValueController::class)->only('create','edit','store','update');
 
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);
