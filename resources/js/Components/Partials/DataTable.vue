@@ -110,6 +110,7 @@
                                 <span class="check" />
                             </label>
                         </td>
+
                         <template v-for="column in columns" >
                             <td class="border-b-0 before:hidden"  :class="{'w-px': (column.label === 'id'),'lg:w-auto': (column.label !== 'id')}" v-if="column.value">
                                 <Link class="flex items-center justify-center text-center px-6 py-4 focus:text-indigo-500" :href="link(element)">
@@ -419,8 +420,9 @@ export default {
         },
         confirmDelete()
         {
+
             const ids = this.selected.map(i => i['id']);
-            this.$inertia.post(`${this.urlPrefix}/delete`, {ids:ids})
+            this.$inertia.post(`${this.baseUrl}/delete`, {ids:ids})
             this.page = 1;
             this.selected = []
         },

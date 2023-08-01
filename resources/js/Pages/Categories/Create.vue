@@ -80,7 +80,7 @@ const changeSlug = debounce(async (lang) => {
 },200);
 
 const changeParent = (event) => {
-    form.parent_id = event?.target ? event.target.value: event ;
+    form.parent_id = event?.target ? event.target.value: event;
 }
 
 const accordionTrigger = ref(true)

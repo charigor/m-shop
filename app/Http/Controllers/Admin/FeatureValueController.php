@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\FeatureValueUpdateRequest;
 use App\Http\Resources\Admin\Feature\FeatureResource;
 use App\Http\Resources\Admin\FeatureValue\FeatureValueResource;
 use App\Models\Feature;
+use App\Models\FeatureProduct;
 use App\Models\FeatureValue;
 use App\Services\Crud\FeatureValue\FeatureValueService;
 use Illuminate\Http\RedirectResponse;
@@ -86,6 +87,10 @@ class FeatureValueController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         FeatureValue::whereIn('id',$request->ids)->delete();
+        foreach($request->ids as $id){
+            FeatureProduct::where('feature_value_id',$id)->delete();
+        }
+
         return back()->with('message',trans('messages.success.delete'));
     }
 }

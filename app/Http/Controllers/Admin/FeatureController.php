@@ -9,12 +9,18 @@ use App\Http\Resources\Admin\Feature\FeatureResource;
 use App\Http\Resources\Admin\Feature\FeatureTableResource;
 use App\Http\Resources\Admin\FeatureValue\FeatureValueResource;
 use App\Models\Feature;
+use App\Models\FeatureProduct;
+use App\Models\Product;
+use App\Models\User;
 use App\Services\Crud\Feature\FeatureService;
 use App\Services\Crud\FeatureValue\FeatureValueService;
+use App\Services\Test\ConcreateCalss;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class FeatureController extends Controller
@@ -32,6 +38,7 @@ class FeatureController extends Controller
      */
     public function index(Request $request)
     {
+
         abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = $this->service->getItems($request);
@@ -109,7 +116,13 @@ class FeatureController extends Controller
      */
     public function destroy(Request $request)
     {
+
         Feature::whereIn('id',$request->ids)->delete();
+
+//        foreach($request->ids as $id){
+//            FeatureProduct::where('feature_id',$id)->delete();
+//        }
         return redirect()->route('feature.index')->with('message',trans('messages.success.delete'));
     }
+
 }

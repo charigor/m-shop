@@ -47,6 +47,13 @@ class Brand extends Model implements HasMedia
     {
         return $this->hasMany(BrandLang::class);
     }
+    /**
+     * @return HasMany
+     */
+    public function products(): HasMany
+    {
+        return  $this->hasMany(Product::class);
+    }
 
     /**
      * The attributes that should be cast.

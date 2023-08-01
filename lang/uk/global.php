@@ -42,6 +42,7 @@ return [
             "permissions" => "Дозволи",
         "catalog" => "Каталог",
             "categories" => "Категорії",
+            "products" => "Товари",
             "brands" => "Бренди",
             "attribute_groups" => "Атрибути",
             "features" => "Характеристики",

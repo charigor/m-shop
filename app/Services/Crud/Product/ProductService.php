@@ -3,17 +3,16 @@
 
 namespace App\Services\Crud\Product;
 
-use App\Models\Category;
+
+use App\Models\FeatureProduct;
+use App\Models\FeatureValue;
 use App\Models\Product;
 use App\Services\BaseCrudService;
-use App\Services\Datatables\Categories\Categories;
+use App\Services\Datatables\Products\Products;
 use App\Services\TranslationService;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ProductService extends BaseCrudService
 {
@@ -29,7 +28,7 @@ class ProductService extends BaseCrudService
      */
     public function getItems($request, $params = null): mixed
     {
-        return '';
+        return (new Products)->table($request);
     }
 
     /**
@@ -39,12 +38,15 @@ class ProductService extends BaseCrudService
     public function createItem($request)
     {
 
-        $data = $request->all();
-
-        $model = $this->model::create(['name' => Str::random(8),'category_id' => 1, 'active' => $data['active'],'description' => Str::random(80)]);
+        $data = $request->validated();
+        $model = $this->model::create($data);
+        $prepareData = (new TranslationService)->prepareFields($data['lang'],['name','link_rewrite']);
+        $model->translation()->createMany($prepareData);
         $this->addMedia($model, $data, ['image']);
+        if($data['categories'])  $model->categories()->attach($data['categories']);
 
-        return  $model;
+        if($data['features']) $this->createUpdateProductFeature($model,$data);
+        return  $model->refresh();
     }
 
     /**
@@ -54,13 +56,18 @@ class ProductService extends BaseCrudService
      */
     public function updateItem($model,$request): mixed
     {
-        $data = $request->all();
+        $data = $request->validated();
 
-        $model->update(['active' => 1]);
+        $model->update($data);
 
+        $prepareData = (new TranslationService)->prepareFields($data['lang'],['name','link_rewrite']);
+        foreach ($prepareData as $item) {
+            $model->translation()->where('locale', $item['locale'])->update($item);
+        };
+        $model->categories()->sync($data['categories']);
 
+        $this->createUpdateProductFeature($model,$data);
         $this->addMedia($model, $data, ['image']);
-
         $this->removeMedia($model, $data, ['image']);
         return $model->refresh();
 
@@ -113,6 +120,20 @@ class ProductService extends BaseCrudService
                     }
                 }
             }
+        }
+    }
+    public function deleteProductFeature($model,$request)
+    {
+        $data = $request->input('feature');
+        return FeatureProduct::where('product_id',$model->id)->where('feature_id',$data['feature_id'])->where('feature_value_id',$data['feature_value_id'])->delete();
+
+
+    }
+    public function createUpdateProductFeature($model,$data){
+        foreach($data['features'] as $item) {
+            FeatureProduct::updateOrCreate(
+                ['product_id' => $model->id, 'feature_id' => $item['feature_id'], 'feature_value_id' => $item['feature_value_id']],
+                ['product_id' => $model->id, 'feature_id' => $item['feature_id'], 'feature_value_id' => $item['feature_value_id']]);
         }
     }
 }

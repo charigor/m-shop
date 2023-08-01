@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kalnoy\Nestedset\NodeTrait;
 use Spatie\MediaLibrary\HasMedia;
@@ -50,8 +51,13 @@ class Category extends Model implements HasMedia
     {
         return $this->hasMany(CategoryLang::class);
     }
-    public function products(){
-        $this->hasMany(Product::class);
+
+    /**
+     * @return BelongsToMany
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class);
     }
 
 }

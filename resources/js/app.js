@@ -5,10 +5,11 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import "../css/main.css";
 import { createPinia } from "pinia";
+import { InertiaProgress } from '@inertiajs/progress'
 import { useStyleStore } from "./stores/style.js";
 import { darkModeKey, styleKey } from "./config.js";
 import { createApp, h } from "vue";
-import { createInertiaApp } from "@inertiajs/vue3";
+import { createInertiaApp,router } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -69,11 +70,14 @@ createInertiaApp({
       .mount(el);
   },
   progress: {
-    color: "#4B5563",
+    color: "red",
+    delay: 250,
+    includeCSS: true,
+    showSpinner: true,
   },
 
 });
-
+InertiaProgress.init()
 const styleStore = useStyleStore(pinia);
 
 /* App style */
@@ -87,7 +91,5 @@ if (
 ) {
   styleStore.setDarkMode(true);
 }
-window.flower =  function(e)  {
-    return e && e[0].toLowerCase() + e.slice(1) || e;
-};
+
 

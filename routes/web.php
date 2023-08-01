@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SelectController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\App;
 */
 
 Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
 Route::get('/',[MainController::class, 'search'])->name('search');
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -51,7 +52,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/messages', [MessageController::class, 'index'])->name('message.index');
         Route::post('/messages', [MessageController::class, 'store'])->name('message.store');
-
+        Route::post('/messages/notifications', [MessageController::class, 'getNotify'])->name('message.notify');
+        Route::post('/messages/mark_read', [MessageController::class, 'markRead'])->name('message.mark_read');
         /*Users */
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
         Route::put('/users/{user}/update', [UserController::class, 'update'])->name('user.update');
@@ -103,8 +105,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
         Route::resource('lang', LangController::class)->except('show','destroy');
         /*product*/
+
+        Route::post('/product/{product}/feature/delete', [ProductController::class, 'deleteFeature'])->name('product.feature.delete');
+        Route::post('/product/slug', [ProductController::class, 'slug'])->name('product.slug');
         Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
-        Route::resource('product', ProductController::class)->only('create','store','edit','update');
+        Route::resource('product', ProductController::class)->except('show','destroy');
         /*brand*/
         Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
         Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
@@ -126,6 +131,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/feature/{id}/feature_value/delete', [FeatureValueController::class, 'destroy'])->name('feature.feature_value.delete');
         Route::resource('feature.feature_value', FeatureValueController::class)->only('create','edit','store','update');
 
+
+        Route::get('/select',[SelectController::class, 'load']);
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);
             App::setLocale($request->lang);

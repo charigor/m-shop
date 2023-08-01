@@ -25,7 +25,7 @@ import {
     mdiCogs,
     mdiWeb,
     mdiBrightnessAuto,
-    mdiFormatColumns
+    mdiFormatColumns, mdiGoodreads
 } from "@mdi/js";
 
 export default [
@@ -67,6 +67,12 @@ export default [
         label: "catalog",
         roles: ['admin'],
         menu: [
+            {
+                icon:  mdiGoodreads,
+                route: "product.index",
+                label: "products",
+                roles: ['admin'],
+            },
             {
                 icon:  mdiViewWeek,
                 route: "categories.index",

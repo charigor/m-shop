@@ -38,9 +38,11 @@ const props = defineProps({
     },
 
 })
+console.log(props.files);
 const state = reactive({
     files: props.files,
 });
+
 const disabled = computed (() => state.files.length >= props.maxFiles)
 
 const { getRootProps, getInputProps, isDragActive, ...rest } = useDropzone({
@@ -66,6 +68,10 @@ const url = "/admin/product/storeMedia"; // Your url on the server side
                 },
             })
       if(response){
+          if(x === 0 && !state.files.length){
+              checkedMain.value = response.data.name
+              emit('mainImage', response.data.name)
+          }
           state.files.push(response.data)
           emit('loadImages', response.data.name)
       }
@@ -121,7 +127,7 @@ const getImageFileName = (file) => {
 
 
 
-        <div class="prev-container files mb-4  relative" v-if="state.files.length > 0" v-click-outside="() => {showModal = false}">
+        <div class="prev-container files mb-4  relative" v-click-outside="() => {showModal = false}">
             <div class="dropzone dark:bg-transparent mt-4 block float-left border-r-2 py-1 cursor-pointer px-2 mr-5 border-gray-200 hover:dark:border-gray-400 hover:border-gray-400 dark:border-gray-600" :disabled="disabled" v-bind="getRootProps()" :style="`width: ${props.w+5}px; height: ${props.h}px;`">
                 <div :class="{isDragActive}" class="border-0 dark:bg-transparent h-full flex justify-center items-center">
                     <input v-bind="getInputProps()" />

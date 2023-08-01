@@ -42,6 +42,7 @@ return [
         "permissions" => "Permissions",
         "catalog" => "Catalog",
         "categories" => "Categories",
+        "products" => "Products",
         "brands" => "Brands",
         "attribute_groups" => "Attributes",
         "features" => "Features",
