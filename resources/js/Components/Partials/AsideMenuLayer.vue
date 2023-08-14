@@ -48,7 +48,7 @@ const asideLgCloseClick = (event) => {
         <div
           class="text-center flex-1 lg:text-left lg:pl-6 xl:text-center xl:pl-0"
         >
-          <b >One</b>
+          <span class="font-bold text-black dark:text-blue-200">M-SHOP</span>
         </div>
         <button
           class="hidden  lg:inline-block xl:hidden p-3"

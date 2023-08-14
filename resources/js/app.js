@@ -5,16 +5,16 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import "../css/main.css";
 import { createPinia } from "pinia";
+import { InertiaProgress } from '@inertiajs/progress'
 import { useStyleStore } from "./stores/style.js";
 import { darkModeKey, styleKey } from "./config.js";
 import { createApp, h } from "vue";
-import { createInertiaApp } from "@inertiajs/vue3";
+import { createInertiaApp,router } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import '@vuepic/vue-datepicker/dist/main.css'
 import VClickOutside from "@/VClickOutside.js"
 import { Link } from '@inertiajs/vue3';
-import  vSelect  from "vue-select";
 import { i18nVue } from 'laravel-vue-i18n'
 
 
@@ -39,8 +39,7 @@ window.Echo = new Echo({
     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 });
-const appName =
-  window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
+const appName = "Laravel";
 
 const pinia = createPinia();
 
@@ -64,26 +63,31 @@ createInertiaApp({
             }
         })
         .mixin({ methods: { route } })
-      .component("v-select", vSelect)
       .directive('click-outside',VClickOutside)
       .mount(el);
   },
   progress: {
-    color: "#4B5563",
+    color: "red",
+    delay: 250,
+    includeCSS: true,
+    showSpinner: true,
   },
 
 });
-
+InertiaProgress.init()
 const styleStore = useStyleStore(pinia);
+if (typeof window !== "undefined") {
+    /* App style */
+    styleStore.setStyle(localStorage[styleKey] ?? "basic");
 
-/* App style */
-styleStore.setStyle(localStorage[styleKey] ?? "basic");
-
-/* Dark mode */
-if (
-  (!localStorage[darkModeKey] &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
-  localStorage[darkModeKey] === "1"
-) {
-  styleStore.setDarkMode(true);
+    /* Dark mode */
+    if (
+        (!localStorage[darkModeKey] &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+        localStorage[darkModeKey] === "1"
+    ) {
+        styleStore.setDarkMode(true);
+    }
 }
+
+

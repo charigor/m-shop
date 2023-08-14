@@ -4,7 +4,6 @@
 namespace App\Services\Datatables\Traits;
 
 use App\Services\Datatables\Filter;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use function PHPUnit\Framework\isEmpty;
 
@@ -109,7 +108,6 @@ trait Datatable
      * @return mixed
      */
     public function search(Request $request,$query){
-        Debugbar::info($request->all());
         //1 version
 //        if($request->has('query')){
 //            if($request->has('search') && !empty($request->get('search')) && $request->get('query')){

@@ -1,16 +1,21 @@
 <template>
 
-    <SectionMain>
+    <SectionMain ref="root">
         <div class="flex items-center justify-between mb-2 row">
-            <div class="w-1/4 col-6">
-                <input  type="search" @input="search" :value="params.search" aria-label="Search" :placeholder="$t('global.search')+'...'" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            <div class="w-1/4 col-6 mr-2">
+                <input  type="search" @input="search_trigger" :value="params.search" aria-label="Search" :placeholder="$t('global.search')+'...'" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </div>
+            <div class="mr-auto flex  p-2  bg-gray-200 dark:bg-gray-700" v-if="this.with_total">
+                <div>{{$t('global.total')}}: <span>{{this.data.meta.total}}</span></div>
             </div>
             <slot name="create"></slot>
+
         </div>
         <div class="flex mb-2 justify-between row">
             <div class="col-6">
                 <TablePaginate @link="(e) => { this.params.page = e}" class="mt-6" :data="data?.meta"/>
             </div>
+
             <div class="w-1/6 mt-5 col-6">
                 <select @change="changePages" :value="params.perPage" class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50" placeholder="Per Page">
                     <option value="5" >5</option>
@@ -34,12 +39,15 @@
                 </th>
                 <template v-for="column in columns">
                     <th class="pb-4 pt-6 px-6" v-if="column.value">
-                        <button class="flex items-center" @click="sort(column.label)">
+                        <button class="flex items-center" v-if="column.sorting" @click="sort(column.label)">
                             <p>{{capitalized(column.trans)}}</p>
-                            <template v-if="column.sorting">
+                            <template>
                                 <BaseIcon  v-if="(params.field === column.label && params.direction === 'asc')" :path="mdiSortAscending" />
                                 <BaseIcon v-else-if="(params.field === column.label && params.direction === 'desc')"  :path="mdiSortDescending" />
                             </template>
+                        </button>
+                        <button v-else>
+                            {{capitalized(column.trans)}}
                         </button>
                     </th>
                 </template>
@@ -51,11 +59,11 @@
                 </td>
                 <template v-for="column in columns">
                     <td v-if="column.value">
-                        <input  v-if="column.type === 'number'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
-                        <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                        <input  v-if="column.type === 'number'" :type="column.type" @input="filter_trigger" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+                        <input  v-else-if="column.type === 'text'" :type="column.type" @input="filter_trigger" :value="params.filter[column.label]" :aria-label="column.label" :placeholder="column.trans" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
 
                         <template v-else-if="column.type === 'select'">
-                            <slot :name="`select_${column.label}`" :filter="filter"></slot>
+                            <slot :name="`select_${column.label}`" :filter="filter_trigger"></slot>
                         </template>
                         <VueDatePicker class="dp__theme_dark"  :dark="darkMode" v-else-if="column.type === 'date'"  range  :partial-range="false"   multi-calendars v-model="params.filter[column.label]" :aria-label="column.label" ></VueDatePicker>
                     </td>
@@ -66,7 +74,7 @@
                             <BaseButton
                                 :icon="mdiBackspace"
                                 middle
-                                color="gray"
+                                :color="this.warn ? 'warning' : 'gray'"
                                 @click="reset"
                             />
                             <BaseButton
@@ -95,18 +103,22 @@
             </tr>
             </thead>
                 <tbody>
-                    <tr v-if="data?.data.length" v-for="element in data.data" :key="element.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <tr v-if="data?.data.length" v-for="element in data.data" :key="element.id" class="hover:bg-gray-100">
                         <td>
                             <label class="checkbox">
                                 <input type="checkbox" :value="element" v-model="selected" />
                                 <span class="check" />
                             </label>
                         </td>
+
                         <template v-for="column in columns" >
                             <td class="border-b-0 before:hidden"  :class="{'w-px': (column.label === 'id'),'lg:w-auto': (column.label !== 'id')}" v-if="column.value">
                                 <Link class="flex items-center justify-center text-center px-6 py-4 focus:text-indigo-500" :href="link(element)">
                                     <div v-if="column.type === 'media'" class="center" style="width: 3rem">
                                        <img style="width: 3rem" :src="element['media'].length ? element['media'][0]['preview_url']: ''" alt="">
+                                    </div>
+                                    <div v-else-if="column.type === 'color'" class="center" style="width: 3rem">
+                                        <div class="h-8 w-8" :style="`background: ${element[column.label]}`"></div>
                                     </div>
                                     <div v-else>
                                         {{element[column.label] }}
@@ -117,6 +129,15 @@
                         <td >
                             <template class="flex items-center">
                                 <BaseButtons type="justify-start lg:justify-start" no-wrap>
+                                    <template v-if="with_show">
+                                        <BaseLink
+                                            color="gray"
+                                            middle
+                                            :href="`${baseUrl}/${element.id}`"
+                                            :icon="mdiMagnifyPlusOutline"
+                                        >
+                                        </BaseLink>
+                                    </template>
                                         <BaseLink
                                             color="gray"
                                             middle
@@ -196,6 +217,7 @@
     mdiFilter,
     mdiBackspace,
     mdiDotsVerticalCircle,
+    mdiMagnifyPlusOutline,
     mdiSortDescending,
     mdiSortAscending,
     mdiMagnify,
@@ -255,6 +277,14 @@ export default {
         draggable: {
             type:  Boolean,
             default: false
+        },
+        with_show: {
+            type:  Boolean,
+            default: false
+        },
+        with_total: {
+            type:  Boolean,
+            default: true
         }
     },
     data() {
@@ -277,6 +307,7 @@ export default {
             mdiChevronDown,
             mdiFilter,
             mdiBackspace,
+            mdiMagnifyPlusOutline,
             mdiDotsVerticalCircle,
             mdiSortDescending,
             mdiSortAscending,
@@ -287,7 +318,12 @@ export default {
         }
     },
     computed:{
-        ...mapState(useStyleStore, ['darkMode'])
+        ...mapState(useStyleStore, ['darkMode']),
+         warn: function()  {
+            for(let item in this.filter){if(this.filter[item]){return true}}
+            if(this.search) return true;
+            return false
+        }
 
     },
     watch: {
@@ -323,7 +359,7 @@ export default {
                 }
             }
         },
-        search(event){
+        search_trigger(event){
             this.params.page = null
             this.params.search = event.target.value
         },
@@ -345,11 +381,15 @@ export default {
         },
         resetSelects(filter){
             for(let item in filter){
-                let element =  document.querySelector(`select[aria-label=${item}]`);
+                let element;
+                if (typeof document !== 'undefined') {
+                     element =  document.querySelector(`select[aria-label=${item}]`);
+                }
+
                 if(element) element.selectedIndex = null
             }
         },
-        filter(event){
+        filter_trigger(event){
             this.params.page = 1
             if(event.target.value == ''){
                 delete(this.params.filter[event.target.getAttribute('aria-label').toLowerCase()])
@@ -384,8 +424,9 @@ export default {
         },
         confirmDelete()
         {
+
             const ids = this.selected.map(i => i['id']);
-            this.$inertia.post(`${this.urlPrefix}/delete`, {ids:ids})
+            this.$inertia.post(`${this.baseUrl}/delete`, {ids:ids})
             this.page = 1;
             this.selected = []
         },
@@ -394,14 +435,11 @@ export default {
             this.params.perPage = e.target.value
         }
     },
-    mounted(){
-
-    }
 }
 </script>
 <style>
 .dark .dp__theme_dark {
---dp-background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+--dp-background-color: rgb(55 65 81);
 --dp-text-color: rgb(229 231 235 / var(--tw-text-opacity));
 --dp-hover-color: #484848;
 --dp-hover-text-color: #ffffff;
@@ -409,7 +447,7 @@ export default {
 --dp-primary-color: #005cb2;
 --dp-primary-text-color: #ffffff;
 --dp-secondary-color: #a9a9a9;
---dp-border-color: rgb(75 85 99 / var(--tw-border-opacity));
+--dp-border-color: rgb(75 85 99 );
 --dp-menu-border-color: #2d2d2d;
 --dp-border-color-hover: #aaaeb7;
 --dp-disabled-color: #737373;

@@ -1,12 +1,13 @@
 <script setup>
 
+import { useMainStore } from "@/stores/main.js";
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import CKEditor from '@/Components/Partials/CKEditor/CKEditor.vue';
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import TreeMenu from '@/Components/Partials/TreeMenu.vue'
-import {defineComponent, defineProps,ref, reactive} from "vue";
-import { router } from '@inertiajs/vue3'
-import Dropzone from "@/Components/Partials/Dropzone/Dropzone.vue";
+import {defineComponent, defineProps,ref,computed, reactive} from "vue";
+import {router, usePage} from '@inertiajs/vue3'
+import VueDropzone from '@/Components/Partials/VueDropzone/dropzone.vue'
 import Switcher from "@/Components/Partials/Switcher.vue";
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import debounce from "lodash.debounce";
@@ -25,23 +26,35 @@ const props = defineProps({
         required: true,
     },
 });
-let locale = ref(getActiveLanguage())
+let locale = ref(useMainStore().lang)
 
 const form = reactive({
     parent_id: +props.category.parent_id,
     active: props.category.active,
-    cover_image: [],
-    menu_thumbnail: [],
+    cover_image: props.category.cover_image.map(i => i.file_name),
+    menu_thumbnail: props.category.menu_thumbnail.map(i => i.file_name),
     lang: {},
     _method: 'put'
 });
 
-for(let item in props.category.translation){
-    form['lang'][item] = props.category.translation[item]
+for(let item in usePage().props.languages){
+    let code = usePage().props.languages[item]['code'];
+    if(props.category.translation.hasOwnProperty(code)){
+        form['lang'][code] = props.category.translation[code]
+    }else{
+        form['lang'][code] =  {
+            title : '',
+            description:'',
+            link_rewrite:'',
+            meta_title: '',
+            meta_description: '',
+            meta_keywords: '',
+        }
+    }
 }
 const urlPrefix = '/admin/categories';
 const submit = () => {
-    router.put(`${urlPrefix}/${props.category.id}/update`, form, {preserveState: true})
+    router.put(`${urlPrefix}/${props.category.id}`, form, {preserveState: true})
 }
 defineComponent({
     TreeMenu,
@@ -49,7 +62,6 @@ defineComponent({
     SectionTitleLineWithButton,
     SectionMain,
     CKEditor,
-    Dropzone,
     Switcher
 
 })
@@ -68,6 +80,7 @@ const changeParent = (event) => {
 const accordionTrigger = ref(true)
 
 const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title: wTrans('page.category.root')}],children: props.categories}]);
+
 </script>
 <template>
     <LayoutAuthenticated>
@@ -138,21 +151,23 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                     <template  v-for="language in $page.props.languages" :key="language.id">
 
                         <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
-                            <CKEditor v-model="form['lang'][language.code]['description']" :csrf="$page.props.csrf_token"/>
+                            <CKEditor v-model="form['lang'][language.code]['description']" :lang="language.code"  :csrf="$page.props.csrf_token"/>
                         </div>
                     </template>
                 </div>
+
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.cover_image')}}</label>
                     <div class="relative row mb-6 group pt-7">
-                        <Dropzone class="cover" maxFiles="1" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="props.category.cover_image" :csrf="$page.props.csrf_token"/>
+                        <VueDropzone :w="Number(250)" :h="Number(250)" :maxFiles="1" viewType="fakeInput" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="props.category.cover_image"></VueDropzone>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.cover_image">{{$page.props.errors.cover_image}}</p>
                     </div>
                 </div>
+
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.menu_thumbnail')}}</label>
-                    <div class="relative row mb-6 group">
-                        <Dropzone class="square"  @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="props.category.menu_thumbnail" :csrf="$page.props.csrf_token"/>
+                    <div class="relative row mb-6 group pt-7">
+                        <VueDropzone :w="Number(150)" :h="Number(150)" :multiple="Boolean(1)" :maxFiles="1" viewType="square" @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="props.category.menu_thumbnail" :csrf="$page.props.csrf_token"></VueDropzone>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.menu_thumbnail">{{$page.props.errors.menu_thumbnail}}</p>
                     </div>
                 </div>

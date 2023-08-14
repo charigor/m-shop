@@ -6,15 +6,13 @@
 </template>
 
 <script setup>
-import {ref, onMounted, defineProps, reactive, defineEmits} from 'vue'
+import {ref, onMounted,onUpdated,computed, defineProps, reactive, defineEmits} from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import {Dropzone} from 'dropzone'
-import BaseButton from "@/Components/Partials/BaseButton.vue"
-import BaseIcon from "@/Components/Partials/BaseIcon.vue"
 import {
     mdiPlusCircleOutline
 } from "@mdi/js";
-
+import {wTrans,trans,wTransChoice} from "laravel-vue-i18n";
 const dropRef = ref(null)
 const props = defineProps({
     path: String,
@@ -25,21 +23,28 @@ const props = defineProps({
       default: ".jpeg,.jpg,.png,.gif"
     },
     maxFiles: {
-        type: String,
+        type: Number,
         default: 1
     },
     viewType:{
         type: String,
         default: 'default'
+    },
+    w: {
+        type: Number,
+        default: 120
+    },
+    h: {
+        type: Number,
+        default: 120
     }
-
 })
 
 let files = reactive(props.files)
 const emit = defineEmits(['loadImages','removeImage'])
-const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-complete">
+const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-complete" >
 
-        <div class="dz-image">
+        <div class="dz-image" style="width: ${props.w}px;height: ${props.h}px;">
           <img data-dz-thumbnail>
         </div>
         <div class="dz-details">
@@ -62,9 +67,9 @@ const customPreview = `<div class="dz-preview dz-processing dz-image-preview dz-
           </svg>
         </div>
       </div>`
-
 onMounted(() => {
     if (dropRef.value !== null) {
+
         let myDropzone = new Dropzone(dropRef.value, {
             previewTemplate: customPreview,
             addRemoveLinks: true,
@@ -86,8 +91,11 @@ onMounted(() => {
                 file.file_name = response.name;
                 emit('loadImages', response.name)
                 if(props.viewType === 'cover') {
-                    document.querySelector('.fake-input-label').innerText = `${response.original_name}`
-                    dropRef.value.parentElement.classList.add(`dz-max-files-reached`);
+                    if (typeof document !== 'undefined') {
+                        document.querySelector('.fake-input-label').innerText = `${response.original_name}`
+                    }
+                        dropRef.value.parentElement.classList.add(`dz-max-files-reached`);
+
                 }
             },
             error: function(response,error){
@@ -101,9 +109,14 @@ onMounted(() => {
                     emit('removeImage', file.file_name)
                 }
                 if(props.viewType === 'cover') {
-                    document.querySelector('.fake-input-label').innerText = `No file chosen`
+                    if (typeof document !== 'undefined') {
+                        document.querySelector('.fake-input-label').innerText = wTrans('global.no_file_chosen')
+                    }
                     dropRef.value.parentElement.classList.remove(`dz-max-files-reached`);
                 }
+            },
+            show(){
+                console.log('sdffffffffff')
             },
 
             init: function () {
@@ -118,8 +131,6 @@ onMounted(() => {
                     this.options.addedfile.call(this, file)
                     this.options.thumbnail.call(this, file, file.preview_url)
                     file.previewElement.classList.add('dz-complete')
-
-
                 }
 
             }
@@ -146,16 +157,16 @@ onMounted(() => {
                 `
                 dropRef.value.parentElement.classList.add(`flex`,`flex-wrap`,`items-center`);
             }else if(dropRef.value.parentElement.classList.contains('cover')){
-                let label = files.length ? files[0].file_name :'No file chosen';
+
 
                 files.length ? dropRef.value.parentElement.classList.add(`dz-max-files-reached`) : '';
-                dropRef.value.querySelector('.dz-default').innerHTML = `
+                dropRef.value.querySelector('.dz-default').innerHTML =  `
                    <div  style="width:100%;" class="border-gray-600 border-2 text-left">
                         <button class="dz-button" type="button">
-                            <span class="p-2 border-r-2 border-gray-600 inline-block">Choose File</span>
-                            <span class="fake-input-label ml-2 text-sm">${label}</span>
+                            <span class="p-2 border-r-2 border-gray-600 inline-block">Choose file</span>
+                            <span class="fake-input-label ml-2 text-sm"> ${files.length ? files[0].file_name : 'No file chosen'}</span>
                         </button>
-                   </div>`
+                   </div>`;
             }else{
                 dropRef.value.querySelector('.dz-default').innerHTML = `
                 <div style="display: flex; justify-content: center;">
@@ -171,7 +182,6 @@ onMounted(() => {
         }
     }
 })
-
 
 </script>
 
@@ -221,7 +231,7 @@ onMounted(() => {
 
 .dark .dropzone .dz-preview.dz-image-preview{
 
-    background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+    background-color: rgb(15 23 42);
 }
 .dz-preview.dz-processing.dz-image-preview.dz-complete{
     border-radius: 20px;
@@ -229,5 +239,10 @@ onMounted(() => {
 .dz-max-files-reached .dz-clickable{
     pointer-events: none;
     cursor: default;
+}
+
+.cover .dropzone .dz-preview .dz-image img {
+    height: 100%;
+    object-fit: cover;
 }
 </style>

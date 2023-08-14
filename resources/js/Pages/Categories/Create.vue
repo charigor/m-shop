@@ -4,6 +4,7 @@ import SectionMain from '@/Components/Partials/SectionMain.vue'
 import {defineComponent, defineProps, ref, reactive} from "vue";
 import { router,usePage } from '@inertiajs/vue3'
 import Dropzone from '@/Components/Partials/Dropzone/Dropzone.vue'
+import VueDropzone from '@/Components/Partials/VueDropzone/dropzone.vue'
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import CKEditor from '@/Components/Partials/CKEditor/CKEditor.vue';
 import TreeMenu from '@/Components/Partials/TreeMenu.vue'
@@ -14,6 +15,7 @@ import {
 import debounce from "lodash.debounce";
 
 import {getActiveLanguage,wTrans} from "laravel-vue-i18n";
+import {useMainStore} from "@/stores/main";
 
 const props = defineProps({
     category: {
@@ -25,7 +27,7 @@ const props = defineProps({
         required: true,
     },
 });
-let locale = ref(getActiveLanguage())
+let locale = ref(useMainStore().lang)
 
 const form = reactive({
     parent_id: +null,
@@ -78,7 +80,7 @@ const changeSlug = debounce(async (lang) => {
 },200);
 
 const changeParent = (event) => {
-    form.parent_id = event?.target ? event.target.value: event ;
+    form.parent_id = event?.target ? event.target.value: event;
 }
 
 const accordionTrigger = ref(true)
@@ -145,7 +147,7 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                     </h2>
                     <div v-show="accordionTrigger" class="flex items-center justify-between w-full py-4 px-4 font-medium text-left text-gray-500 border border-b-1 border-gray-200 rounded-b-xl   dark:border-gray-700 dark:text-gray-400">
                         <template v-for="node in categories">
-                            <TreeMenu  @input="changeParent" :parent="form.parent_id"  :nodes="node.children" :value="node.id" :label="node.translation[0].title" ></TreeMenu>
+                            <TreeMenu @input="changeParent" :parent="form.parent_id"  :nodes="node.children" :value="node.id" :label="node.translation[0].title" ></TreeMenu>
                         </template>
                     </div>
                 </div>
@@ -153,21 +155,24 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                  <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.description')}}</label>
                 <template v-for="language in $page.props.languages" :key="language.id">
                     <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
-                        <CKEditor v-model="form['lang'][language.code]['description']" :csrf="$page.props.csrf_token"/>
+                        <CKEditor v-model="form['lang'][language.code]['description']" :lang="useMainStore().lang" :csrf="$page.props.csrf_token"/>
                     </div>
                 </template>
                 </div>
                 <div class="relative w-full mb-7 z-10 group">
+                <VueDropzone :maxFiles="Number(1)" @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="[]"></VueDropzone>
+                </div>
+                <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.cover_image')}}</label>
                     <div class="relative row mb-6 group pt-7">
-                        <Dropzone class="cover" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
+                        <Dropzone class="cover" :w="Number(250)" :h="Number(250)"  :maxFiles="Number(1)" viewType="cover" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.cover_image">{{$page.props.errors.cover_image}}</p>
                     </div>
                 </div>
                 <div class="relative w-full mb-7 z-10 group">
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.menu_thumbnail')}}</label>
                     <div class="relative row mb-6 group">
-                        <Dropzone class="square"  @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
+                        <Dropzone class="square" :maxFiles="Number(3)" @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="[]" :csrf="$page.props.csrf_token"/>
                         <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.menu_thumbnail">{{$page.props.errors.menu_thumbnail}}</p>
                     </div>
                 </div>

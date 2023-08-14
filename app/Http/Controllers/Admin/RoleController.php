@@ -32,11 +32,11 @@ class RoleController extends Controller
 
     public function index(Request $request)
     {
-        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
+//        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         return Inertia::render('Roles/Index', [
             'roles' => RoleResource::collection((new Roles)->table($request)),
-            'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'table_search' => $request->get('search'),
+            'table_filter' => $request->get('filter')
         ]);
     }
 
@@ -46,6 +46,7 @@ class RoleController extends Controller
      */
     public function store(RoleCreateRequest $request)
     {
+//        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         $data = $request->validated();
         $role = Role::create($data);
         return redirect()->route('role.edit',$role->id)->with('message',trans('messages.success.create'));
@@ -66,6 +67,7 @@ class RoleController extends Controller
      */
     public function create()
     {
+//        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         return Inertia::render('Roles/Create', [
             'role' => RoleResource::make(new Role())->resolve(),
         ]);

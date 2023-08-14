@@ -42,7 +42,7 @@ class CategoryService extends BaseCrudService
 
         $category->translation()->createMany($prepareData);
         if (!$data['parent_id'] == 0) {
-            $node = $this->model::find($data['parent']);
+            $node = $this->model::find($data['parent_id']);
             $node->appendNode($category);
         }
 
@@ -135,7 +135,7 @@ class CategoryService extends BaseCrudService
     {
         foreach ($collections as $name) {
             foreach ($data[$name] as $file) {
-                if (file_exists(storage_path('tmp/uploads/' . $file))) $model->addMedia(storage_path('tmp/uploads/' . $file))->toMediaCollection($name);
+                if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->toMediaCollection($name);
             }
         }
     }

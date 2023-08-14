@@ -17,6 +17,7 @@ class CategoryResourceIndex extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         $defaultData = [
             'id'      => $this['id'],
             'active'  => Category::ACTIVE[$this['active']],
@@ -25,7 +26,8 @@ class CategoryResourceIndex extends JsonResource
         ];
 
         $additionalData = [
-            'translation' => $this->translation->keyBy('locale')
+            'translation' => $this->translation->keyBy('locale'),
+            'children' => $this->children
         ];
 
         return array_merge($defaultData,$additionalData);

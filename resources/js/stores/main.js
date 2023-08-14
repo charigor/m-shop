@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-
+import {getActiveLanguage,wTrans} from "laravel-vue-i18n";
 export const useMainStore = defineStore("main", {
   state: () => ({
     /* User */
     userName: null,
     userEmail: null,
     userAvatar: null,
+    _lang: getActiveLanguage(),
 
     /* Field focus with ctrl+k (to register only once) */
     isFieldFocusRegistered: false,
@@ -27,7 +28,11 @@ export const useMainStore = defineStore("main", {
         this.userAvatar = payload.avatar;
       }
     },
-
+   setLang(payload){
+      if (payload.lang) {
+          this._lang = payload.lang;
+      }
+    },
     fetch(sampleDataKey) {
       axios
         .get(`data-sources/${sampleDataKey}.json`)
@@ -42,4 +47,7 @@ export const useMainStore = defineStore("main", {
         });
     },
   },
+    getters: {
+        lang: (state) => state._lang
+    },
 });

@@ -11,18 +11,18 @@ trait MediaUploadingTrait
     public function saveMedia(Request $request)
     {
 
-        $path = storage_path('tmp/uploads/');
+        $path = storage_path('app/public/tmp/uploads/');
 
         try {
             if (!file_exists($path)) {
-                mkdir($path, 0755, true);
+                mkdir($path, 0777, true);
             }
         } catch (\Exception $e) {
         }
 
         $file = $request->file('file');
 
-        $name = now()->timestamp.'_'.uniqid() . '_' . trim($file->getClientOriginalName());
+        $name = now()->timestamp.'_'.uniqid().'_'.str_replace(' ','_',trim($file->getClientOriginalName()));
 
         $file->move($path, $name);
         return response()->json([

@@ -12,10 +12,13 @@ import { Image, ImageCaption, ImageStyle, ImageToolbar, ImageUpload, ImageResize
 import { Link } from '@ckeditor/ckeditor5-link';
 import { List } from '@ckeditor/ckeditor5-list';
 import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
+import { Alignment } from '@ckeditor/ckeditor5-alignment';
 
-import { Alignment } from '@ckeditor/ckeditor5-alignment'; // <--- ADDED
 
-export default class ClassicEditor extends ClassicEditorBase {}
+import {getActiveLanguage} from "laravel-vue-i18n"; // <--- ADDED
+export default class ClassicEditor extends ClassicEditorBase {
+
+}
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
@@ -90,7 +93,9 @@ ClassicEditor.defaultConfig = {
         ]
     },
 
-
     // This value must be kept in sync with the language defined in webpack.config.js.
-    language: 'en'
+
 };
+
+
+

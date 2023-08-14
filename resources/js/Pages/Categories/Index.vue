@@ -1,7 +1,7 @@
 <script setup>
 
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
-import { Link } from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue'
 import BaseButton from '@/Components/Partials/BaseButton.vue'
 import { wTrans } from 'laravel-vue-i18n';
@@ -9,16 +9,20 @@ import BaseLink from '@/Components/Partials/BaseLink.vue'
 import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTableDrag from "@/Components/Partials/DataTableDrag.vue";
 import {defineComponent, defineProps, ref} from "vue";
+import {
+    mdiAnimationOutline
+
+} from "@mdi/js";
 const props = defineProps({
     categories: {
         type: Object,
         required: true,
     },
-    filter: {
+    table_filter: {
         type: [Object,null],
         required: true,
     },
-    search: {
+    table_search: {
         type: [String,null],
         required: true,
     },
@@ -27,7 +31,7 @@ const props = defineProps({
         required: true,
     },
 });
-const urlPrefix = window.location.href.split('?')[0];
+const urlPrefix = usePage().props.ziggy.location.split('?')[0];
 const columns = ref(
     [
     { value: true , label: 'id', type: 'number',sorting: true,trans : wTrans('page.category.table_fields.id')},
@@ -50,12 +54,12 @@ defineComponent({
     <LayoutAuthenticated>
         <SectionMain>
             <SectionTitleLineWithButton
-                :icon="mdiAccountBoxMultipleOutline"
+                :icon="mdiAnimationOutline"
                 :title="$t('page.category.title_plural')"
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTableDrag  :data="props.categories" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/categories" :url-prefix="urlPrefix" table-name="Categories" delete-title="name">
+            <DataTableDrag  :data="props.categories" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/categories" :url-prefix="urlPrefix" table-name="Categories" delete-title="name">
                 <template #create>
                     <BaseLink
                         color="gray"

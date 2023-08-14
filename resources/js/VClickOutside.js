@@ -7,13 +7,17 @@ export default {
                 }
             }
 // register click and touch events
-            document.body.addEventListener('click', el.clickOutsideEvent)
-            document.body.addEventListener('touchstart', el.clickOutsideEvent)
+            if (typeof document !== 'undefined') {
+                document.body.addEventListener('click', el.clickOutsideEvent)
+                document.body.addEventListener('touchstart', el.clickOutsideEvent)
+            }
         },
         unmounted (el,{value}) {
 // unregister click and touch events before the element is unmounted
-            document.body.removeEventListener('click', el.clickOutsideEvent)
-            document.body.removeEventListener('touchstart', el.clickOutsideEvent)
+            if (typeof document !== 'undefined') {
+                document.body.removeEventListener('click', el.clickOutsideEvent)
+                document.body.removeEventListener('touchstart', el.clickOutsideEvent)
+            }
         }
 
     }

@@ -6,7 +6,7 @@ import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTable from "@/Components/Partials/DataTable.vue";
 import BaseLink from '@/Components/Partials/BaseLink.vue'
 import {defineComponent, defineProps, ref} from "vue";
-import { Link } from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiWeb } from "@mdi/js";
 import {wTrans} from "laravel-vue-i18n";
@@ -27,11 +27,11 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    filter: {
+    table_filter: {
         type: [Object,null],
         required: true,
     },
-    search: {
+    table_search: {
         type: [String,null],
         required: true,
     },
@@ -52,7 +52,7 @@ defineComponent({
     SectionMain,
     BaseLink
 })
-const urlPrefix = window.location.href.split('?')[0];
+const urlPrefix = usePage().props.ziggy.location.split('?')[0];
 
 </script>
 <template>
@@ -65,7 +65,7 @@ const urlPrefix = window.location.href.split('?')[0];
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.langs" :filter="props.filter" :search="props.search" :columns="columns" base-url="/admin/lang" :url-prefix="urlPrefix" table-name="Langs" delete-title="name">
+            <DataTable  :data="props.langs" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/lang" :url-prefix="urlPrefix" table-name="Langs" delete-title="name">
                 <template #create>
                     <BaseLink
                         color="gray"

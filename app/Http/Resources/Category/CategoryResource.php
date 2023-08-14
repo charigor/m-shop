@@ -22,6 +22,7 @@ class CategoryResource extends JsonResource
             'translation' => $this->translation->keyBy('locale'),
             'cover_image' => $this->getMedia('cover_image'),
             'menu_thumbnail' => $this->getMedia('menu_thumbnail'),
+            'children' => $this->children ?? ""
         ];
 
         return array_merge($defaultData,$additionalData);

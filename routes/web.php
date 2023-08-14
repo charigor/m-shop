@@ -1,14 +1,22 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\AttributeGroupController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeleteTemporaryImageController;
+use App\Http\Controllers\Admin\FeatureController;
+use App\Http\Controllers\Admin\FeatureValueController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SelectController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Session;
@@ -29,15 +37,13 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('HomeView');
-//    return Inertia::render('Welcome');
-//    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');;
-
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified']);
+Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
+Route::get('/',[MainController::class, 'search'])->name('search');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/',[MainController::class, 'index']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -46,7 +52,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('/messages', [MessageController::class, 'index'])->name('message.index');
         Route::post('/messages', [MessageController::class, 'store'])->name('message.store');
-
+        Route::post('/messages/notifications', [MessageController::class, 'getNotify'])->name('message.notify');
+        Route::post('/messages/mark_read', [MessageController::class, 'markRead'])->name('message.mark_read');
         /*Users */
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
         Route::put('/users/{user}/update', [UserController::class, 'update'])->name('user.update');
@@ -73,19 +80,21 @@ Route::middleware('auth')->group(function () {
 
         /*Categories*/
 //        Route::post('/categories/upload', UploadTemporaryImageController::class);
-        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
-        Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('category.sort');
-        Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('category.index');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
-        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
-        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
-        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia']);
-        Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('category.delete');
-        Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('category.slug');
+//        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
 
 
-        Route::get('/test', [TestController::class, 'index'])->name('test.index');
+//        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
+//        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
+//        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
 
+
+
+        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia'])->name('categories.media');
+        Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('categories.delete');
+        Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('categories.slug');
+        Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('categories.sort');
+        Route::resource('categories', CategoryController::class)->except('index','show','destroy');
+        Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('categories.index');
 
         Route::post('/upload', UploadTemporaryImageController::class);
         Route::post('/uploadEditorImage', UploadEditorImageController::class);
@@ -95,11 +104,42 @@ Route::middleware('auth')->group(function () {
         /*Lang*/
         Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
         Route::resource('lang', LangController::class)->except('show','destroy');
+        /*product*/
+
+        Route::post('/product/{product}/feature/delete', [ProductController::class, 'deleteFeature'])->name('product.feature.delete');
+        Route::post('/product/slug', [ProductController::class, 'slug'])->name('product.slug');
+        Route::post('/product/delete', [ProductController::class, 'destroy'])->name('product.delete');
+        Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
+        Route::resource('product', ProductController::class)->except('show','destroy');
+        /*brand*/
+        Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
+        Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
+        Route::resource('brand', BrandController::class)->except('show','destroy');
+        /*attribute groups*/
+        Route::post('/attribute_group/sort', [AttributeGroupController::class, 'sort'])->name('attribute_group.sort');
+        Route::post('/attribute_group/delete', [AttributeGroupController::class, 'destroy'])->name('attribute_group.delete');
+        Route::resource('attribute_group', AttributeGroupController::class)->except('destroy');
+
+        /*attribute*/
+        Route::post('/attribute_group/{id}/attribute/sort', [AttributeController::class, 'sort'])->name('attribute_group.attribute.sort');
+        Route::post('/attribute_group/{id}/attribute/delete', [AttributeController::class, 'destroy'])->name('attribute_group.attribute.delete');
+        Route::resource('attribute_group.attribute', AttributeController::class)->only('create','edit','store','update');
+        /*feature*/
+        Route::post('/feature/sort', [FeatureController::class, 'sort'])->name('feature.sort');
+        Route::post('/feature/delete', [FeatureController::class, 'destroy'])->name('feature.delete');
+        Route::resource('feature', FeatureController::class)->except('destroy');
+        /*feature value*/
+        Route::post('/feature/{id}/feature_value/delete', [FeatureValueController::class, 'destroy'])->name('feature.feature_value.delete');
+        Route::resource('feature.feature_value', FeatureValueController::class)->only('create','edit','store','update');
+
+
+        Route::get('/select',[SelectController::class, 'load']);
         Route::post('/language', function(Request $request){
             Session()->put('locale',$request->lang);
             App::setLocale($request->lang);
             return Response()->json(['locale' => session('locale')]);
         })->name('language');
+        Route::get('/test', [TestController::class, 'index'])->name('test.index');
     });
 
 
@@ -119,4 +159,10 @@ Route::middleware('auth')->group(function () {
 //    });
 });
 
+
+
+
+Route::get('category/{slug}',[\App\Http\Controllers\Front\CategoryController::class ,'show'])->name('front.category.show');
+Route::get('brand',[\App\Http\Controllers\Front\BrandController::class ,'index'])->name('front.brand.index');
+Route::get('brand/{brand:slug}',[\App\Http\Controllers\Front\BrandController::class ,'show'])->name('front.brand.show');
 require __DIR__.'/auth.php';

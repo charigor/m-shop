@@ -22,9 +22,13 @@ watch(
     () => props.show,
     () => {
         if (props.show) {
-            document.body.style.overflow = 'hidden';
+            if (typeof document !== 'undefined') {
+                document.body.style.overflow = 'hidden';
+            }
         } else {
-            document.body.style.overflow = null;
+            if (typeof document !== 'undefined') {
+                document.body.style.overflow = null;
+            }
         }
     }
 );
@@ -41,11 +45,13 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+onMounted(() => {   if (typeof document !== 'undefined') {document.addEventListener('keydown', closeOnEscape)}} );
 
 onUnmounted(() => {
-    document.removeEventListener('keydown', closeOnEscape);
-    document.body.style.overflow = null;
+    if (typeof document !== 'undefined') {
+        document.removeEventListener('keydown', closeOnEscape);
+        document.body.style.overflow = null;
+    }
 });
 
 const maxWidthClass = computed(() => {
