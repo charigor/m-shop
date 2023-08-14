@@ -14,7 +14,18 @@ import {
     mdiAccountMultiple,
     mdiStoreEdit,
     mdiViewWeek,
-    mdiBagPersonalTagOutline, mdiClockOutline, mdiCloud, mdiCrop, mdiMessage,mdiAccountSwitch,mdiAccountKey,mdiCogs,mdiWeb
+    mdiSvg,
+    mdiBagPersonalTagOutline,
+    mdiClockOutline,
+    mdiCloud,
+    mdiCrop,
+    mdiMessage,
+    mdiAccountSwitch,
+    mdiAccountKey,
+    mdiCogs,
+    mdiWeb,
+    mdiBrightnessAuto,
+    mdiFormatColumns, mdiGoodreads
 } from "@mdi/js";
 
 export default [
@@ -57,11 +68,35 @@ export default [
         roles: ['admin'],
         menu: [
             {
+                icon:  mdiGoodreads,
+                route: "product.index",
+                label: "products",
+                roles: ['admin'],
+            },
+            {
                 icon:  mdiViewWeek,
-                route: "category.index",
+                route: "categories.index",
                 label: "categories",
                 roles: ['admin'],
-            }
+            },
+            {
+                icon:  mdiSvg,
+                route: "brand.index",
+                label: "brands",
+                roles: ['admin'],
+            },
+            {
+                icon:   mdiBrightnessAuto,
+                route: "attribute_group.index",
+                label: "attribute_groups",
+                roles: ['admin'],
+            },
+            {
+                icon:  mdiFormatColumns,
+                route: "feature.index",
+                label: "features",
+                roles: ['admin'],
+            },
         ]
 
     },

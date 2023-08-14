@@ -1,0 +1,17 @@
+.category_menu >li:hover .submenu  {
+    visibility:visible;
+}
+.submenu > ul{
+    padding: 20px 20px 0;
+    columns: 240px auto;
+    column-gap: 20px;
+}
+.submenu > ul li {
+    display: table;
+    break-inside: avoid-column;
+    padding-bottom: 20px;
+}
+p{
+    display: inline-block;
+    margin-bottom: 1em;
+}

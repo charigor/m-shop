@@ -12,12 +12,10 @@ use App\Http\Resources\Category\CategoryResourceIndex;
 use App\Models\Category;
 use App\Models\CategoryLang;
 use App\Services\Crud\Category\CategoryService;
-use Debugbar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,11 +43,10 @@ class CategoryController extends Controller
         abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = $this->service->getItems($request,$parent_id);
-
         return Inertia::render('Categories/Index', [
             'categories' => CategoryResourceIndex::collection($data),
-            'search' => $request->get('search'),
-            'filter' => $request->get('filter'),
+            'table_search' => $request->get('search'),
+            'table_filter' => $request->get('filter'),
             'active_options' => createOptions(Category::ACTIVE,'All'),
         ]);
     }
@@ -63,7 +60,7 @@ class CategoryController extends Controller
         try {
          $category =  $this->service->createItem($request);
 
-         return redirect()->route('category.edit', $category->id)->with('message',trans('messages.success.create'));
+         return redirect()->route('categories.edit', $category->id)->with('message',trans('messages.success.create'));
         }catch(\Exception $e){
             return redirect()->back()->with(['error' => $e->getMessage()]);
         }
@@ -80,7 +77,7 @@ class CategoryController extends Controller
 
     {
         $this->service->updateItem($category,$request);
-        return redirect()->route('category.index')->with('message',trans('messages.success.update'));
+        return redirect()->route('categories.index')->with('message',trans('messages.success.update'));
     }
     /**
      * @return \Inertia\Response
@@ -110,7 +107,7 @@ class CategoryController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Category::whereIn('id',$request->ids)->delete();
-        return redirect()->route('category.index')->with('message',trans('messages.success.delete'));
+        return redirect()->route('categories.index')->with('message',trans('messages.success.delete'));
     }
 
     /**

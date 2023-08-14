@@ -1,9 +1,9 @@
 <?php
 return [
-    "title" => "Category",
+    "title" => "category",
     "title_plural" => "Categories",
-    "title_create" => "Category create",
-    "title_edit"   => "Category edit",
+    "title_create" => "category create",
+    "title_edit"   => "category edit",
     "no_parents" => "No parents",
     "root" => "Root",
     "table_fields" => [
@@ -16,14 +16,14 @@ return [
     ],
     "fields" => [
         "title" => "Title",
-        "parent" => "Parent Category",
+        "parent" => "Parent category",
         "description" => "Description",
         "active" => "Displayed",
         "link_rewrite" => "Friendly URL",
         "meta_title"  => "Meta title",
         "meta_description"  => "Meta description",
         "meta_keywords"  => "Meta keywords",
-        "cover_image" => "Category cover image",
+        "cover_image" => "category cover image",
         "menu_thumbnail" => "Menu thumbnail"
     ]
 ];

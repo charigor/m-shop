@@ -6,7 +6,11 @@ import vue from '@vitejs/plugin-vue';
 import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5';
 import i18n from 'laravel-vue-i18n/vite';
 export default defineConfig({
-
+    server: {
+        hmr: {
+            host: 'localhost'
+        }
+    },
     plugins: [
         laravel({
             input: 'resources/js/app.js',
@@ -30,4 +34,4 @@ export default defineConfig({
     //         '@': fileURLToPath( new URL( './src', import.meta.url ) )
     //     }
     // }
-});
+})

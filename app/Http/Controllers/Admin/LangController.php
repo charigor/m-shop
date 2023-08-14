@@ -39,8 +39,8 @@ class LangController extends Controller
             'date_format_options' => createOptions(Lang::DATE_FORMAT,'All'),
             'date_format_full_options' => createOptions(Lang::DATE_FORMAT_FULL,'All'),
             'active_options' => createOptions(Lang::ACTIVE,'All'),
-            'search' => $request->get('search'),
-            'filter' => $request->get('filter')
+            'table_search' => $request->get('search'),
+            'table_filter' => $request->get('filter')
         ]);
     }
 

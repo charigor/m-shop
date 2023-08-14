@@ -16,7 +16,7 @@ class StoreMessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $message;
+    private Message $message;
 
     /**
      * Create a new event instance.
@@ -42,9 +42,6 @@ class StoreMessageEvent implements ShouldBroadcast
         return 'store_message';
     }
 
-    /**
-     * @return array
-     */
     public function broadcastWith()
     {
         return ['message' => MessageResponse::make($this->message)->resolve()];

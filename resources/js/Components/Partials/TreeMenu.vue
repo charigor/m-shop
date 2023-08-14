@@ -8,15 +8,15 @@
                 </span>
             </li>
         </ul>
-
-            <TreeMenu
-                v-for="node in nodes"
+        <template v-for="node in nodes">
+            <TreeMenu v-if="node.translation.length"
                 :nodes="node.children"
-                :label="node.translation[0].title"
+                :label="node.translation[0]?.title"
                 :value="node.id"
                 :parent="parent"
             >
             </TreeMenu>
+        </template>
 
     </div>
 </template>
