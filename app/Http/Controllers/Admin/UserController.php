@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UserUpdateRequest;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Notifications\TestNotify;
 use App\Services\Datatables\Users\Users;
 use App\Services\Test\TestService;
 use Barryvdh\Debugbar\Facades\Debugbar;
@@ -17,6 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -31,6 +33,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+
 //        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
          return Inertia::render('Users/Index', [
             'roles' => RoleResource::collection(Role::all()->prepend(['id' => 0,'name' => 'All']))->resolve(),

@@ -1,0 +1,4 @@
+.category_menu >li:hover .submenu  {
+    visibility:visible;
+}
+

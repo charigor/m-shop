@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\Datatables\FeatureValues\FeatureValues;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +16,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory,Searchable,InteractsWithMedia;
+    use HasFactory,InteractsWithMedia;
     public $table = 'products';
 
     protected $fillable = [
@@ -76,7 +78,13 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(ProductLang::class);
     }
-
+    /**
+     * @return Model|null
+     */
+    public function getTranslateAttribute(): Model|null
+    {
+        return $this->translation()->where('locale',app()->getLocale())?->first();
+    }
     /**
      * @return BelongsToMany
      */
@@ -91,7 +99,18 @@ class Product extends Model implements HasMedia
     {
         return $this->belongsToMany(Feature::class)->withPivot('feature_value_id');
     }
+    public function featureValues(): BelongsToMany
+    {
+        return $this->belongsToMany(FeatureValue::class,'feature_product')->withPivot('feature_id');
+    }
 
+    /**
+     * @param Builder $query
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('active', array_search('Active',self::ACTIVE));
+    }
 //    public function toSearchableArray(): array
 //    {
 //        return [

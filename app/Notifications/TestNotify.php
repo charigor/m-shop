@@ -2,14 +2,14 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
+
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TestNotify extends Notification implements ShouldQueue
+
+class TestNotify extends Notification implements ShouldBroadcast
 {
-    use Queueable;
     private array $enrollmentData;
     /**
      * Create a new notification instance.
@@ -19,37 +19,23 @@ class TestNotify extends Notification implements ShouldQueue
         $this->enrollmentData = $enrollmentData;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
-        return ['database'];
+        return ['broadcast'];
     }
 
-//    /**
-//     * Get the mail representation of the notification.
-//     */
-//    public function toMail(object $notifiable): MailMessage
+
+//    public function broadcastOn(): array
 //    {
-//        return (new MailMessage)
-//                    ->line($this->enrollmentData['body'])
-//                    ->action($this->enrollmentData['text'], $this->enrollmentData['url'])
-//                    ->line($this->enrollmentData['thanks']);
+//        return [
+//            new Channel('store_message'),
+//        ];
 //    }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toDatabase(object $notifiable): array
+    public function toBroadcast($notifiable): BroadcastMessage
     {
-        return [
-            'name' => 'Igor',
-            'message' => $this->enrollmentData['body'],
-        ];
+        return new BroadcastMessage([
+            'message' => $this->enrollmentData['body']. "Message for ".$this->enrollmentData['name']
+        ]);
     }
 }

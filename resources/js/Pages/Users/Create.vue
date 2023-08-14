@@ -13,6 +13,7 @@ import 'filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css';
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import vueFilePond , { setOptions } from 'vue-filepond';
+import vSelect from "vue-select";
 const FilePond = vueFilePond(FilePondPluginImagePreview,FilePondPluginFilePoster);
 
 

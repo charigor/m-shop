@@ -4,32 +4,29 @@
  import {createPinia} from "pinia";
 
  const svgToDataUri = require('mini-svg-data-uri')
- // const cat = window.localStorage.getItem("darkMode");
- // console.log(cat)
 
-//
-// export const styleKey = "style";
-//
-// export const containerMaxW = "xl:max-w-6xl xl:mx-auto";
-// /** @type {import('tailwindcss').Config} */
-// export default {
-//     content: [
-//         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-//         './storage/framework/views/*.php',
-//         './resources/views/**/*.blade.php',
-//         './resources/js/**/*.vue',
-//     ],
-//
-//     theme: {
-//         extend: {
-//             fontFamily: {
-//                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-//             },
-//         },
-//     },
-//
-//     plugins: [forms],
-// };
+
+export const containerMaxW = "xl:max-w-6xl xl:mx-auto";
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        './vendor/wire-elements/modal/resources/views/*.blade.php',
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
+        './resources/views/**/*.blade.php',
+        './resources/js/**/*.vue',
+    ],
+
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            },
+        },
+    },
+
+    plugins: [forms],
+};
 /* eslint-env node */
 
 const plugin = require("tailwindcss/plugin");
@@ -61,12 +58,15 @@ module.exports = {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/views/front/*.blade.php',
         './resources/js/**/*.vue',
         './node_modules/vue-tailwind-datepicker/**/*.js',
     ],
     darkMode: "class", // or 'media' or 'class'
     theme: {
-
+        container: {
+            center: true,
+        },
         asideScrollbars: {
             light: "light",
             gray: "gray",
@@ -103,6 +103,11 @@ module.exports = {
             colors: {
                 "vtd-primary": colors.sky, // Light mode Datepicker color
                 "vtd-secondary": colors.gray, // Dark mode Datepicker color
+                'main': {
+                    'light': '#ffffff',
+                     'dark': '#0f172a'
+
+                },
 
             },
             display: ["group-hover"],
@@ -118,6 +123,11 @@ module.exports = {
                 )}")`,
             })
         },
+        size: {
+            height: {
+              '278px': '278px'
+            }
+        }
     },
     plugins: [
         require("@tailwindcss/forms"),

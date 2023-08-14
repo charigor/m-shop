@@ -1,6 +1,6 @@
 <template>
 
-    <SectionMain>
+    <SectionMain ref="root">
         <div class="flex items-center justify-between mb-2 row">
             <div class="w-1/4 col-6 mr-2">
                 <input  type="search" @input="search_trigger" :value="params.search" aria-label="Search" :placeholder="$t('global.search')+'...'" class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
@@ -381,7 +381,11 @@ export default {
         },
         resetSelects(filter){
             for(let item in filter){
-                let element =  document.querySelector(`select[aria-label=${item}]`);
+                let element;
+                if (typeof document !== 'undefined') {
+                     element =  document.querySelector(`select[aria-label=${item}]`);
+                }
+
                 if(element) element.selectedIndex = null
             }
         },

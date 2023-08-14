@@ -55,7 +55,7 @@ class ProductUpdateRequest extends FormRequest
             ['depth' => 'numeric|min:0|max:1000'],
             ['weight' => 'numeric|min:0|max:1000'],
             ['unity' => 'string|nullable'],
-            ['unit_price_ratio' => 'numeric|min:0'],
+            ['unit_price_ratio' => 'numeric|min:0|nullable'],
             ['tax_id' => 'integer|nullable'],
             ['brand_id' => 'integer|nullable'],
             ['features' => 'array'],

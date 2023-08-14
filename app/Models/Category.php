@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -52,6 +53,20 @@ class Category extends Model implements HasMedia
         return $this->hasMany(CategoryLang::class);
     }
 
+    /**
+     * @return Model|null
+     */
+//    public function getTranslateAttribute(): Model|null
+//    {
+//        return $this->translation()->where('locale',app()->getLocale())?->first();
+//    }
+    /**
+     * @param Builder $query
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('active', array_search('Active',self::ACTIVE));
+    }
     /**
      * @return BelongsToMany
      */

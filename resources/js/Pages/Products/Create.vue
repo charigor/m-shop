@@ -156,6 +156,7 @@ const changeTax = (e) => {
                 main
             >
             </SectionTitleLineWithButton>
+            {{$page.props.errors}}
             <div class="flex justify-between">
                 <ul class="flex flex-wrap  justify-start text-sm font-medium text-center mb-1"  role="tablist">
                     <li role="product">

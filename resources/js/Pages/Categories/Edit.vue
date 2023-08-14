@@ -7,7 +7,6 @@ import SectionMain from '@/Components/Partials/SectionMain.vue'
 import TreeMenu from '@/Components/Partials/TreeMenu.vue'
 import {defineComponent, defineProps,ref,computed, reactive} from "vue";
 import {router, usePage} from '@inertiajs/vue3'
-import Dropzone from "@/Components/Partials/Dropzone/Dropzone.vue";
 import VueDropzone from '@/Components/Partials/VueDropzone/dropzone.vue'
 import Switcher from "@/Components/Partials/Switcher.vue";
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
@@ -63,7 +62,6 @@ defineComponent({
     SectionTitleLineWithButton,
     SectionMain,
     CKEditor,
-    Dropzone,
     Switcher
 
 })

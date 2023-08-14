@@ -401,7 +401,10 @@ export default {
         },
         resetSelects(filter){
             for(let item in filter){
-                let element =  document.querySelector(`select[aria-label=${item}]`);
+                let element
+                if (typeof document !== 'undefined') {
+                   element = document.querySelector(`select[aria-label=${item}]`);
+                }
                 if(element) element.selectedIndex = null
             }
         },

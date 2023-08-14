@@ -1,7 +1,7 @@
 <script setup>
 
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
-import { Link } from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
 import SectionTitleLineWithButton from '@/Components/Partials/SectionTitleLineWithButton.vue';
 import DataTable from "@/Components/Partials/DataTable.vue";
 import { wTrans } from 'laravel-vue-i18n';
@@ -27,7 +27,7 @@ const props = defineProps({
         required: true,
     },
 });
-const urlPrefix = window.location.href.split('?')[0];
+const urlPrefix = usePage().props.ziggy.location.split('?')[0];
 
 const getLastParam = (url) => {
     let res = url.split("/");

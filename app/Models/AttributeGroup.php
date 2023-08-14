@@ -10,6 +10,7 @@ class AttributeGroup extends Model
 {
     use HasFactory;
     public $table = 'attribute_groups';
+    public $timestamps = false;
     protected $fillable = [
         'is_color_group',
         'group_type',

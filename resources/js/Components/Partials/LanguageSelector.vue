@@ -17,7 +17,7 @@ import { useMainStore } from "@/stores/main.js";
 const changeLocale = async function (code){
   const response =  await axios.post(`/admin/language`,{lang: code})
     if(response.status === 200){
-        this.loadLanguageAsync(response.data.locale);
+        await loadLanguageAsync(response.data.locale);
 
          router.reload({preserveState: true,  preserveScroll: true})
         useMainStore().setLang({

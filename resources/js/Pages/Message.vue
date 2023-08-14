@@ -18,7 +18,9 @@ import {
     mdiChevronDown,
     mdiFilter,
     mdiBackspace,
-    mdiSend
+    mdiSend,
+    mdiChartTimelineVariant
+
 
 } from "@mdi/js";
 
@@ -79,19 +81,28 @@ export default {
             }
         },
         created() {
-            window.Echo.channel('store_message').listen('.store_message',res => {
-                this.messages.unshift(res.message)
-            });
+            // window.Echo.channel('store_message').listen('.store_message',res => {
+            //     console.log(res);
+            //     this.messages.unshift(res.message)
+            // });
+            // window.Echo.channel('store_message').listen('.store_message',res => {
+            //         console.log(res);
+            //         // this.messages.unshift(res.message)
+            //     });
+            window.Echo.private(`App.Models.User.1`)
+                .notification((notification) => {
+                    console.log(notification);
+                });
         },
-        mounted() {
-            this.getMessage()
-            this.timer = setInterval(() => {
-                this.getMessage()
-            }, 10000)
-        },
-        beforeDestroy() {
-            clearInterval(this.timer)
-        }
+        // mounted() {
+        //     this.getMessage()
+        //     this.timer = setInterval(() => {
+        //         this.getMessage()
+        //     }, 10000)
+        // },
+        // beforeDestroy() {
+        //     clearInterval(this.timer)
+        // }
 }
 </script>
 

@@ -7,7 +7,7 @@ import DataTable from "@/Components/Partials/DataTable.vue";
 import BaseButton from "@/Components/Partials/BaseButton.vue";
 import BaseLink from "@/Components/Partials/BaseLink.vue";
 import {defineComponent, defineProps, ref} from "vue";
-import { Link } from '@inertiajs/vue3';
+import { Link, router, usePage} from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
 import {wTrans} from "laravel-vue-i18n";
@@ -46,7 +46,9 @@ defineComponent({
     BaseButton,
     BaseLink
 })
-const urlPrefix = window.location.href.split('?')[0];
+
+const urlPrefix = usePage().props.ziggy.location.split('?')[0];
+console.log( urlPrefix)
 const baseUrl = '/admin/users'
 const deleteTitle = 'name'
 const modelName = 'Users';

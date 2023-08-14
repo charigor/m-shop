@@ -46,7 +46,7 @@ const menuClick = (event, item) => {
 </script>
 
 <template>
-  <div
+  <div ref="root"
     :class="{
       dark: styleStore.darkMode,
       'overflow-hidden lg:overflow-visible': isAsideMobileExpanded,

@@ -39,4 +39,5 @@ class Feature extends Model
     {
         return $this->belongsToMany(Product::class)->withPivot('feature_value_id');
     }
+
 }

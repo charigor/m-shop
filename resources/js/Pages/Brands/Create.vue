@@ -8,6 +8,7 @@ import VueDropzone from '@/Components/Partials/VueDropzone/dropzone.vue'
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import CKEditor from '@/Components/Partials/CKEditor/CKEditor.vue';
 import TreeMenu from '@/Components/Partials/TreeMenu.vue'
+import Switcher from "@/Components/Partials/Switcher.vue";
 import {
     mdiAnimationOutline,
     mdiSvg

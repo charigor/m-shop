@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified']);
 Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
 Route::get('/',[MainController::class, 'search'])->name('search');
 Route::get('/dashboard', function () {
@@ -108,6 +108,7 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/product/{product}/feature/delete', [ProductController::class, 'deleteFeature'])->name('product.feature.delete');
         Route::post('/product/slug', [ProductController::class, 'slug'])->name('product.slug');
+        Route::post('/product/delete', [ProductController::class, 'destroy'])->name('product.delete');
         Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
         Route::resource('product', ProductController::class)->except('show','destroy');
         /*brand*/
@@ -158,4 +159,10 @@ Route::middleware('auth')->group(function () {
 //    });
 });
 
+
+
+
+Route::get('category/{slug}',[\App\Http\Controllers\Front\CategoryController::class ,'show'])->name('front.category.show');
+Route::get('brand',[\App\Http\Controllers\Front\BrandController::class ,'index'])->name('front.brand.index');
+Route::get('brand/{brand:slug}',[\App\Http\Controllers\Front\BrandController::class ,'show'])->name('front.brand.show');
 require __DIR__.'/auth.php';

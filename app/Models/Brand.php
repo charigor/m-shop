@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -54,7 +55,21 @@ class Brand extends Model implements HasMedia
     {
         return  $this->hasMany(Product::class);
     }
+    /**
+     * @return Model|null
+     */
+    public function getTranslateAttribute(): Model|null
+    {
+        return $this->translation()->where('locale',app()->getLocale())?->first();
+    }
 
+    /**
+     * @param Builder $query
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('active', array_search('Active',self::ACTIVE));
+    }
     /**
      * The attributes that should be cast.
      *

@@ -15,7 +15,6 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import '@vuepic/vue-datepicker/dist/main.css'
 import VClickOutside from "@/VClickOutside.js"
 import { Link } from '@inertiajs/vue3';
-import  vSelect  from "vue-select";
 import { i18nVue } from 'laravel-vue-i18n'
 
 
@@ -40,8 +39,7 @@ window.Echo = new Echo({
     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 });
-const appName =
-  window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
+const appName = "Laravel";
 
 const pinia = createPinia();
 
@@ -65,7 +63,6 @@ createInertiaApp({
             }
         })
         .mixin({ methods: { route } })
-      .component("v-select", vSelect)
       .directive('click-outside',VClickOutside)
       .mount(el);
   },
@@ -79,17 +76,18 @@ createInertiaApp({
 });
 InertiaProgress.init()
 const styleStore = useStyleStore(pinia);
+if (typeof window !== "undefined") {
+    /* App style */
+    styleStore.setStyle(localStorage[styleKey] ?? "basic");
 
-/* App style */
-styleStore.setStyle(localStorage[styleKey] ?? "basic");
-
-/* Dark mode */
-if (
-  (!localStorage[darkModeKey] &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
-  localStorage[darkModeKey] === "1"
-) {
-  styleStore.setDarkMode(true);
+    /* Dark mode */
+    if (
+        (!localStorage[darkModeKey] &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+        localStorage[darkModeKey] === "1"
+    ) {
+        styleStore.setDarkMode(true);
+    }
 }
 
 

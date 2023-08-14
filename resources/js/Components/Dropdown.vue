@@ -22,8 +22,13 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
-onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
+onMounted(() =>{
+    if (typeof document !== 'undefined') {
+        document.addEventListener('keydown', closeOnEscape)
+    }
+
+});
+onUnmounted(() =>{ if (typeof document !== 'undefined') { document.removeEventListener('keydown', closeOnEscape)}});
 
 const widthClass = computed(() => {
     return {
@@ -45,7 +50,7 @@ const open = ref(false);
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative" ref="root">
         <div @click="open = !open">
             <slot name="trigger" />
         </div>

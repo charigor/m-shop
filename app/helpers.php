@@ -14,3 +14,9 @@ if(!function_exists('modifyRequestForPivot')){
         return collect($data)->keyBy($key)->map(fn($item) => [$value => $item[$value]]);
     }
 }
+if(!function_exists('priceFormat')){
+    function priceFormat($number)
+    {
+        return number_format((float) $number, 2, '.', '');
+    }
+}

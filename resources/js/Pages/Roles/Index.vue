@@ -6,7 +6,7 @@ import SectionMain from '@/Components/Partials/SectionMain.vue'
 import DataTable from "@/Components/Partials/DataTable.vue";
 import BaseLink from '@/Components/Partials/BaseLink.vue'
 import {defineComponent, defineProps, ref} from "vue";
-import { Link } from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import { mdiAccountBoxMultipleOutline } from "@mdi/js";
 import {wTrans} from "laravel-vue-i18n";
@@ -37,7 +37,7 @@ defineComponent({
     SectionMain,
     BaseLink
 })
-const urlPrefix = window.location.href.split('?')[0];
+const urlPrefix = usePage().props.ziggy.location.split('?')[0];
 
 </script>
 <template>

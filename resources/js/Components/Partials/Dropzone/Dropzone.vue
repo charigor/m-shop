@@ -91,8 +91,11 @@ onMounted(() => {
                 file.file_name = response.name;
                 emit('loadImages', response.name)
                 if(props.viewType === 'cover') {
-                    document.querySelector('.fake-input-label').innerText = `${response.original_name}`
-                    dropRef.value.parentElement.classList.add(`dz-max-files-reached`);
+                    if (typeof document !== 'undefined') {
+                        document.querySelector('.fake-input-label').innerText = `${response.original_name}`
+                    }
+                        dropRef.value.parentElement.classList.add(`dz-max-files-reached`);
+
                 }
             },
             error: function(response,error){
@@ -106,7 +109,9 @@ onMounted(() => {
                     emit('removeImage', file.file_name)
                 }
                 if(props.viewType === 'cover') {
-                    document.querySelector('.fake-input-label').innerText = wTrans('global.no_file_chosen')
+                    if (typeof document !== 'undefined') {
+                        document.querySelector('.fake-input-label').innerText = wTrans('global.no_file_chosen')
+                    }
                     dropRef.value.parentElement.classList.remove(`dz-max-files-reached`);
                 }
             },
