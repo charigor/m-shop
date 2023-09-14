@@ -32,11 +32,12 @@ class TestServiceProvider extends ServiceProvider
             }
                 return new PrivateService();
         });
-        $this->app->singleton('shopLanguages',function($app) {
-            return Lang::whereActive(1)->get()->pluck('code');
-        });
-        View::share( 'shopLanguages', Lang::whereActive(1)->get()->pluck('code') );
-
+        if (!$this->app->runningInConsole()) {
+            $this->app->singleton('shopLanguages', function ($app) {
+                return Lang::whereActive(1)->get()->pluck('code');
+            });
+            View::share('shopLanguages', Lang::whereActive(1)->get()->pluck('code'));
+        }
 
     }
 }

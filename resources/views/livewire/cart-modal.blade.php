@@ -43,11 +43,11 @@
                                             </div>
                                         </td>
                                         <td class="p-2">
-                                            <div class="flex border">
+                                            <div class="flex border justify-between">
                                                 <button type="button" class="{{$product['quantity'] == 1 ? 'pointer-events-none': ''}} ml-2 mr-4" wire:click.prevent="$emit('decrease',{{$product['product_id']}})">
                                                     <i class="mdi mdi-minus"></i>
                                                 </button>
-                                                <input type="number" class="w-[50px] border-0" min="1" value="{{$product['quantity']}}">
+                                                <input type="number" class="w-[50px] border-0" min="1" readonly value="{{$product['quantity']}}">
                                                 <button type="button" class="mr-2" wire:click.prevent="$emit('increase',{{$product['product_id']}})">
                                                     <i class="mdi mdi-plus"></i>
                                                 </button>
@@ -71,7 +71,7 @@
                                     </td>
                                     <td colspan="2" class="pt-2 text-right">
 
-                                        <button  type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Оформити замовлення</button>
+                                        <a href="{{route('front.checkout.index')}}"  type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Оформити замовлення</a>
                                     </td>
                                 </tr>
                             </tfoot>

@@ -1,6 +1,53 @@
 <div class="mb-5 flex">
     <div class="w-[250px] p-2">
-            @include('front.partials.catalog_aside')
+        <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
+            <div class="bg-light-100 text-main-dark" >
+                @foreach($allFilters as $key => $item)
+
+                    @if($key === 'price' && count($item))
+                        <br>
+                        <span class="text-xs bg-white-100 p-2 border whitespace-nowrap">Ціна:</span>
+                        <span class="text-xs bg-green-100 p-2 border whitespace-nowrap">{{$item[0] }} - {{$item[1]}} </span><span class="rounded-circle p-2 cursor-pointer text-xs border bg-green-100">x</span>
+                    @endif
+
+                    @if($key === 'brand' && count($item))
+                        <br>
+                            <span class="text-xs bg-white-100 p-2 border whitespace-nowrap">Бренд:</span>
+                        @foreach($item as $elem)
+                            <span class="text-xs bg-green-100 p-2 border whitespace-nowrap">{{$elem->name}} </span><span class="rounded-circle p-2 cursor-pointer text-xs border bg-green-100">x</span>
+                        @endforeach
+                    @endif
+                    @if($key === 'feature')
+                            @foreach($item as  $key => $elem)
+                            <br>
+                                <span class="text-xs bg-white-100 p-2 border whitespace-nowrap">{{$key}}:</span>
+                                @foreach($elem as $e)
+
+                                <span class="text-xs bg-green-100 p-2 border whitespace-nowrap">{{$e->value_name}} </span><span class="rounded-circle p-2 cursor-pointer text-xs border bg-green-100">x</span>
+                                @endforeach
+                            @endforeach
+                    @endif
+                @endforeach
+            </div>
+        </div>
+        <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
+            <div class="bg-light-100 text-main-dark" >
+                <div class="font-semibold rounded-lg text-md px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Ціна</div>
+                                <!-- Dropdown menu -->
+                <div  class="z-10  transition-all bg-white ml-3" :class="!open ? 'invisible' : 'visible'" x-show.transition="open">
+                    <div  class="relative flex items-center">
+                        <input id="item-price-min"  wire:model="price.0" value="{{$price[0]}}"
+                               type="text"
+                               class="w-[45%] text-xs text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                        <span class="px-2">-</span>
+                        <input id="item-price-max" wire:model="price.1" value="{{$price[1]}}"
+                               type="text"
+                               class="w-[45%] text-xs  text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                        <button wire:click="updatePrice"   class="font-semibold  border text-xs rounded-lg text-md px-2.5 ml-2  py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">ok </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
             <div class="bg-light-100 text-main-dark" x-data="{ open: true }">
                 <button @click.prevent="open = !open" id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
@@ -17,11 +64,11 @@
                         @foreach($brands as $brand)
                                 <li class="px-1 ml-4">
                                     <div class="relative flex items-center">
-                                        <input id="checkbox-item-{{$brand->id}}" {{!$brand->products_count ? 'disabled': '' }} wire:model.debounce.250ms="filter"
-                                               type="checkbox" value="{{json_encode(['brand' => ''.$brand->id.''])}}"
-                                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="checkbox-item-{{$brand->id}}"
-                                               class="flex font-semibold items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$brand->name}}   <span class="ml-2 mb-[2px] text-xs text-cyan-600">{{$brand->products_count}}</span></label>
+                                        <input id="checkbox-item-{{$brand->id}}" {{!$brand->products_count ? 'disabled': '' }}   wire:model.debounce.250ms="filter.brand"
+                                               type="checkbox" value="{{$brand->id}}"
+                                               class="w-4 h-4  disabled:opacity-25 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="checkbox-item-{{$brand->id}}" {{!$brand->products_count ? 'disabled': '' }}
+                                        class="disabled:opacity-25 flex font-semibold items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$brand->name}}   <span class="ml-2 mb-[2px] text-xs text-cyan-600">{{$brand->products_count}}</span></label>
 
                                     </div>
                                 </li>
@@ -30,6 +77,7 @@
                 </div>
             </div>
         </div>
+
         @foreach($features as $feature)
             <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
                 <div class="bg-light-100 text-main-dark" x-data="{ open: true }">
@@ -39,7 +87,7 @@
                         <svg x-bind:class="! open ? '' : 'rotate-90'" class="w-2.5 h-2.5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        {{$feature->trans->name}}
+                        {{$feature->translate->name}}
                     </button>
                     <!-- Dropdown menu -->
                     <div  class="z-10  transition-all bg-white ml-3" :class="!open ? 'invisible' : 'visible'" x-show.transition="open">
@@ -49,11 +97,11 @@
 
                                     <li class="px-1 ml-4">
                                         <div class="relative flex items-center">
-                                            <input id="checkbox-item-{{$value->id}}" {{!$value->featureValuesProduct->count() ? 'disabled': '' }} wire:model.debounce.250ms="filter"
-                                                   type="checkbox" value="{{json_encode([$feature->id => ''.$value->id.''])}}"
-                                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                            <label for="checkbox-item-{{$value->id}}"
-                                                   class="flex font-semibold items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$value->trans->value}}   <span class="ml-2 mb-[2px] text-xs text-cyan-600">{{$value->featureValuesProduct->count()}}</span></label>
+                                            <input id="checkbox-item-{{$value->id}}"  {{!$value->feature_values_product_count ? 'disabled': '' }}  wire:model.debounce.250ms="filter.feature"
+                                                   type="checkbox" value="{{$value->id}}"
+                                                   class="disabled:opacity-25 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                            <label for="checkbox-item-{{$value->id}}" {{!$value->feature_values_product_count ? 'disabled': '' }}
+                                                   class="disabled:opacity-25 flex font-semibold items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$value->translate->value}} <span class="ml-2 mb-[2px] text-xs text-cyan-600">{{$value->feature_values_product_count}}</span></label>
 
                                         </div>
                                     </li>
@@ -109,10 +157,10 @@
                         </div>
                         <div class="flex items-center justify-center mt-[10px]">
                             <span class="text-md font-bold text-gray-900 align-self-center leading-5 mr-[10px]">
-                                {{$product->price}}
+                                {{priceFormat($product->price)}}
                             </span>
                             <span class="text-md font-normal text-gray-900 align-self-center line-through leading-5 mr-[10px]">
-                                {{$product->price}}
+                                {{priceFormat($product->price)}}
                             </span>
                         </div>
                         <div class="mt-2">

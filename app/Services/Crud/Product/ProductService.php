@@ -39,12 +39,17 @@ class ProductService extends BaseCrudService
     {
 
         $data = $request->validated();
+
+//         $data['features'] = json_encode(collect($data['features'])->map(function($item){
+//            $item = ['feature_id' =>  $item['feature_id'] ,'feature_value' => $item['feature_value_id']];
+//            return $item;
+//        }));
         $model = $this->model::create($data);
         $prepareData = (new TranslationService)->prepareFields($data['lang'],['name','link_rewrite']);
         $model->translation()->createMany($prepareData);
         $this->addMedia($model, $data, ['image']);
         if($data['categories'])  $model->categories()->attach($data['categories']);
-
+//
         if($data['features']) $this->createUpdateProductFeature($model,$data);
         return  $model->refresh();
     }

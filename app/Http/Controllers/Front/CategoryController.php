@@ -28,7 +28,21 @@ class CategoryController extends Controller
 
         if(is_null($category->parent_id))
         {
-            return  view('front.category.subcategories',compact('category'));
+            $childCategories =   Category::with(['media'])
+                ->selectRaw(
+                    'categories.*,
+                                          category_lang.title,
+                                          category_lang.locale,
+                                          category_lang.description,
+                                          category_lang.meta_description,
+                                          category_lang.meta_keywords,
+                                          category_lang.meta_title,
+                                          category_lang.link_rewrite')
+                ->leftJoin('category_lang', 'category_lang.category_id', '=', 'categories.id')
+                ->where('locale',app()->getLocale())
+                ->where('parent_id',$category->id)
+                ->get();
+            return  view('front.category.subcategories',compact('category','childCategories'));
         }
         else
         {

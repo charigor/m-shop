@@ -26,7 +26,7 @@ class FeatureCreateRequest extends FormRequest
             $this->langArr['lang.' . $lang . '.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
         return  array_merge(
-            $this->langArr
+            $this->langArr,['guard_name' => 'required||unique:permissions,guard_name']
         );
     }
     public function attributes(): array

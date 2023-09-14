@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-         \App\Models\User::factory(100)->create();
+        \App\Models\Brand::factory(10)->create();
+//         \App\Models\User::factory(100)->create();
 //        \App\Models\Product::factory(10000)->create();
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

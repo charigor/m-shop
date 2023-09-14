@@ -11,7 +11,7 @@ class Cart extends Component
     public $total = 0;
     public $totalQuantity = 0;
     protected $listeners = ['cartAddedOrUpdated'];
-    protected \App\Services\Cart\Cart $cartService;
+    protected  $cartService;
     public function boot(\App\Services\Cart\Cart $cart)
     {
         $this->cartService = $cart;

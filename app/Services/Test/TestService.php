@@ -6,7 +6,7 @@ namespace App\Services\Test;
 
 class TestService
 {
-    public $t;
+    protected int $t;
     public function __construct($num)
     {
             $this->t = $num;
