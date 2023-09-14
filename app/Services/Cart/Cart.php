@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\Cookie;
 class Cart implements CartInterface
 {
     public int|null $cookieCart;
-    public \App\Models\Cart $model;
-    public \App\Models\CartItem $modelItem;
+    public $model;
+    public $modelItem;
     public function __construct(){
-        $this->model = new \App\Models\Cart();
-        $this->modelItem = new \App\Models\CartItem();
+        $this->model = new \App\Models\Cart;
+        $this->modelItem = new \App\Models\CartItem;
         if(Cookie::get('cart')){
             $this->cookieCart = Cookie::get('cart');
         }else{
-            $cart = $this->model::create(['customer_id' => Auth::check() ? Auth::user()->id : null]);
+            $cart = \App\Models\Cart::create(['customer_id' => Auth::check() ? Auth::user()->id : null]);
             Cookie::queue('cart', $cart->id, 100);
             $this->cookieCart = $cart->id;
         }

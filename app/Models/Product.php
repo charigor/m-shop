@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Services\Datatables\FeatureValues\FeatureValues;
+use App\Services\Filter\SearchRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +24,7 @@ class Product extends Model implements HasMedia
     protected $fillable = [
         'brand_id',
         'tax_id',
+        'features',
         'quantity',
         'reference',
         'price',
@@ -51,6 +54,7 @@ class Product extends Model implements HasMedia
     protected $casts = [
         'created_at' => 'datetime:d-m-Y h:m:s',
         'updated_at' => 'datetime:d-m-Y h:m:s',
+        'features' => 'array',
     ];
 
 //    protected $with = [
@@ -111,6 +115,7 @@ class Product extends Model implements HasMedia
     {
         $query->where('active', array_search('Active',self::ACTIVE));
     }
+
 //    public function toSearchableArray(): array
 //    {
 //        return [

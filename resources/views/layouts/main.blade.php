@@ -24,18 +24,20 @@
 <body class="font-sans antialiased">
 
 <div>
-    <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
-        @include('front.partials.top-panel')
-    </div>
-    <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
-        @include('front.partials.navigation')
-    </div>
+    @section('header')
+        <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
+            @include('front.partials.top-panel')
+        </div>
+        <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
+            @include('front.partials.navigation')
+        </div>
 
-        @include('front.partials.header_middle')
-    </div>
-
-        @include('front.partials.header_bottom')
-    </div>
+            @include('front.partials.header_middle')
+        </div>
+            @include('front.partials.header_bottom')
+        </div>
+    @endsection
+    @yield('header')
     <main>
         <div class="container">
             @yield('content')
@@ -45,7 +47,41 @@
 
 
 @livewireScripts
+<script>
+    var
+        getNextArr = function(prevArr){ // функция для построения следующего массива из предыдущего
+            var
+                newLen =  prevArr.length + 9, // длинна следующего массива будет больше на 9
+                arr = []; // заготовка результата
 
+            for(var i=0; i<newLen; i++){
+                var q = 0; // заготовка нового значения
+                for(j=0; j<10; j++) // берем 10 нужных значений
+                    if(prevArr[i-j]) // ...если они существуют в предыдущем массиве
+                        q+=prevArr[i-j]; // добавляем
+                arr[i] = q; // или arr.push(q);
+            }
+
+            return arr;
+        },
+        luckyTickets = function(num){ // собственно сам  счетчик
+            var
+                arr = [], // первый массив
+                result = 0; // то, что мы вернем
+            for(i=0;i<10;i++) arr.push(1); // впихиваем в первый массив 10 единиц
+
+            for(i=0;i<(num/2-1);i++) // нужное количество раз
+
+                arr = getNextArr(arr); // строим следующие массивы
+            // console.log(arr);
+            arr.forEach(function(v){
+                console.log(Math.pow(v,2));
+                result+=Math.pow(v,2);
+            }); // сводим квадраты значений в получившемся массиве
+            return result;
+        };
+    console.log( luckyTickets(6) ); // 8.014950093120178e+297 **
+</script>
 </body>
 </html>
 

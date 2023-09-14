@@ -25,7 +25,7 @@ class FeatureUpdateRequest extends FormRequest
             $this->langArr['lang.' . $lang . '.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
         return  array_merge(
-            $this->langArr
+            $this->langArr,['guard_name' => 'required||unique:features,guard_name,'.$this->id]
         );
     }
     public function attributes(): array

@@ -31,9 +31,14 @@ class FeatureValue extends Model
     {
         return $this->belongsTo(Feature::class,'feature_id');
     }
+
     /**
-     * @return BelongsToMany
+     * @return Model|null
      */
+    public function getTranslateAttribute(): Model|null
+    {
+        return $this->translation()->where('locale',app()->getLocale())?->first();
+    }
     public function featureValuesProduct(): BelongsToMany
     {
         return $this->belongsToMany(Product::class,'feature_product')->withPivot('feature_id');

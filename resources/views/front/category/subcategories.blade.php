@@ -5,7 +5,8 @@
         <h1 class="font-semibold my-2 text-2xl">{{$category->title}}</h1>
     </div>
     <div class="flex flex-wrap mb-5 ">
-        @foreach($category->children as $cat)
+        @foreach($childCategories as $cat)
+
             <div class="h-auto pb-[25px] xs:w-[100%] sm:w-[33.33%] md:w-[25%] lg:w-[20%] xl:w-[16.66667%] group hover:shadow-2xl transition-all">
                 <div>
                     <div class="pb-[10px] relative">

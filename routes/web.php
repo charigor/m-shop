@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\UploadTemporaryImageController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Models\Brand;
+use App\Services\Filter\SearchRepository;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -37,13 +39,13 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-Route::get('/main', [MainController::class, 'index'])->middleware(['auth', 'verified']);
+
 Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
-Route::get('/',[MainController::class, 'search'])->name('search');
+//Route::get('/',[MainController::class, 'search'])->name('search');
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/',[MainController::class, 'index']);
+//Route::get('/',[MainController::class, 'index']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -160,9 +162,11 @@ Route::middleware('auth')->group(function () {
 });
 
 
-
-
-Route::get('category/{slug}',[\App\Http\Controllers\Front\CategoryController::class ,'show'])->name('front.category.show');
-Route::get('brand',[\App\Http\Controllers\Front\BrandController::class ,'index'])->name('front.brand.index');
-Route::get('brand/{brand:slug}',[\App\Http\Controllers\Front\BrandController::class ,'show'])->name('front.brand.show');
+Route::group(['as' => 'front.'],function () {
+    Route::get('main', [MainController::class, 'index'])->name('main');
+    Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
+    Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
+    Route::get('brand/{brand:slug}', [\App\Http\Controllers\Front\BrandController::class, 'show'])->name('brand.show');
+});
 require __DIR__.'/auth.php';

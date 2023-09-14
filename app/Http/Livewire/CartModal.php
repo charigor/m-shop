@@ -11,7 +11,7 @@ class CartModal extends  ModalComponent
     public $summary;
     public $listeners = ['cartAddedOrUpdated'];
 
-    protected \App\Services\Cart\Cart $cartService;
+    protected $cartService;
     public function boot(\App\Services\Cart\Cart $cart)
     {
         $this->cartService = $cart;

@@ -15,6 +15,7 @@ class Feature extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'guard_name',
         'position'
     ];
     /**
@@ -38,6 +39,13 @@ class Feature extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot('feature_value_id');
+    }
+    /**
+     * @return Model|null
+     */
+    public function getTranslateAttribute(): Model|null
+    {
+        return $this->translation()->where('locale',app()->getLocale())?->first();
     }
 
 }
