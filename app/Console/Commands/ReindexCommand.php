@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Brand;
+use App\Models\Product;
+use App\Models\ProductLang;
 use Elastic\Elasticsearch\Client;
 use Illuminate\Console\Command;
 
@@ -35,13 +37,13 @@ class ReindexCommand extends Command
     {
         $this->info('Indexing all brands. This might take a while...');
 
-        foreach (Brand::cursor() as $article)
+        foreach (ProductLang::cursor() as $product)
         {
             $this->elasticsearch->index([
-                'index' => $article->getSearchIndex(),
-                'type' => $article->getSearchType(),
-                'id' => $article->getKey(),
-                'body' => $article->toSearchArray(),
+                'index' => $product->getSearchIndex(),
+                'type' => $product->getSearchType(),
+                'id' => $product->getKey(),
+                'body' => $product->toSearchArray(),
             ]);
 
             // PHPUnit-style feedback
@@ -49,5 +51,81 @@ class ReindexCommand extends Command
         }
 
         $this->info("\nDone!");
+//$data = {
+//	"mappings": {
+//		"dynamic": true,
+//		"properties": {
+//			"title": {
+//				"type": "text",
+//				"copy_to": "all_filters"
+//			},
+//			"description": {
+//				"type": "text",
+//				"copy_to": "all_filters"
+//			},
+//			"reference": {
+//				"type": "keyword",
+//				"copy_to": "all_filters"
+//			},
+//			"price": {
+//				"type": "float"
+//			},
+//			"active": {
+//				"type": "integer"
+//				"null_value": 0
+//			},
+//			"quantity": {
+//				"type": "integer"
+//			},
+//			"labels": {
+//				"type": "nested",
+//				"properties": {
+//					"label": {
+//						"type": "keyword",
+//						"copy_to": "all_filters"
+//					},
+//					"color": {
+//						"type": "keyword"
+//					}
+//				}
+//			},
+//			"images": {
+//				"type": "nested",
+//				"properties": {
+//					"is_main": {
+//						"type": "boolean",
+//						"null_value": false
+//					},
+//					"thumbnail": {
+//						"type": "text"
+//					},
+//					"medium": {
+//						"type": "text"
+//					},
+//					"original": {
+//						"type": "text"
+//					}
+//				}
+//			},
+//			"filters": {
+//				"type": "nested",
+//				"properties": {
+//					"name": {
+//						"type": "keyword",
+//						"copy_to": "all_filters"
+//					},
+//					"value": {
+//						"type": "keyword",
+//						"copy_to": "all_filters"
+//					},
+//					"pretty_name": {
+//						"type": "keyword",
+//						"copy_to": "all_filters"
+//					}
+//				}
+//			}
+//		}
+//	}
+//}'
     }
 }

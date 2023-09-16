@@ -21,6 +21,7 @@ class FeatureProduct extends Model
     {
         return $this->hasMany(Product::class,'product_id');
     }
+
 //    public static function getData($where = null)
 //    {
 //        $query =  DB::table('feature_product');

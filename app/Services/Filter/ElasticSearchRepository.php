@@ -3,6 +3,8 @@
 namespace App\Services\Filter;
 
 use App\Models\Brand;
+use App\Models\Product;
+use App\Models\ProductLang;
 use App\Services\Filter\BrandSearchRepository;
 use App\Services\Filter\SearchRepository;
 use Elastic\Elasticsearch\Client;
@@ -13,6 +15,7 @@ class ElasticSearchRepository implements BrandSearchRepository
 {
 
     private Client $elasticsearch;
+    public Object $product;
 
     public function __construct(Client $elasticsearch)
     {
@@ -28,7 +31,7 @@ class ElasticSearchRepository implements BrandSearchRepository
 
     private function searchOnElasticsearch(string $query = '')
     {
-        $model = new Brand;
+        $model = new ProductLang;
 
         $items = $this->elasticsearch->search([
             'index' => $model->getSearchIndex(),
@@ -36,19 +39,28 @@ class ElasticSearchRepository implements BrandSearchRepository
             "tokenizer" => "ngram",
             'body' => [
                 'query' => [
-                    'multi_match' => [
-                        'fields' => ['name^1'],
-                        'type' => 'phrase_prefix',
-                        'query' => $query,
-                    ],
+                    "multi_match" => [
+                    "query" =>   $query,
+                    "fields" => [ "name", "description" ],
+                     "type" =>    "phrase_prefix"
+                    ]
+
+//                    'multi_match' => [
+//                        'fields' => ['name^1'],
+//                        'type' => 'phrase_prefix',
+//                        'query' => $query,
+//
+//                    ],
+
                 ],
 //                'from' => 0,
 //                'size' => 2,
+
                 'highlight' => [
                     'fields' => [
                         'name' => new \stdClass()
                     ]
-                ]
+                ],
             ],
         ]);
         return $items;
@@ -56,12 +68,19 @@ class ElasticSearchRepository implements BrandSearchRepository
 
     private function buildCollection($items): Collection
     {
-        info($items);
         $ids = Arr::pluck($items['hits']['hits'], '_id');
+//        dd(Product::with('translation')->whereHas('translation',fn($q) => $q->whereIn('id',$ids)->where('locale',app()->getLocale()))->get());
 
-        return Brand::findMany($ids)
+        return  Product::query()->selectRaw('product_lang.id, product_lang.product_id, product_lang.name, product_lang.description')
+            ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')
+            ->whereIn('product_lang.id',$ids)->get()
             ->sortBy(function ($article) use ($ids) {
                 return array_search($article->getKey(), $ids);
             });
+//        return Product::with('translation')->whereHas('translation',fn($q) => $q->whereIn('id',$ids)->where('locale',app()->getLocale()))->get()
+//            ->sortBy(function ($article) use ($ids) {
+//                return array_search($article->getKey(), $ids);
+//            });
     }
+
 }

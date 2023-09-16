@@ -17,7 +17,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Brand extends Model implements HasMedia
 {
     use HasFactory,InteractsWithMedia,Sluggable;
-    use Searchable;
 
     public $table = 'brands';
 

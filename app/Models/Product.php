@@ -18,7 +18,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia;
+    use HasFactory,InteractsWithMedia,Searchable;
     public $table = 'products';
 
     protected $fillable = [
@@ -27,6 +27,7 @@ class Product extends Model implements HasMedia
         'features',
         'quantity',
         'reference',
+        'description',
         'price',
         'unity',
         'unit_price_ratio',
@@ -108,6 +109,7 @@ class Product extends Model implements HasMedia
         return $this->belongsToMany(FeatureValue::class,'feature_product')->withPivot('feature_id');
     }
 
+
     /**
      * @param Builder $query
      */
@@ -116,15 +118,12 @@ class Product extends Model implements HasMedia
         $query->where('active', array_search('Active',self::ACTIVE));
     }
 
-//    public function toSearchableArray(): array
-//    {
-//        return [
-//            'name' => $this->name,
-//            'description' => $this->description,
-//            'category' => [
-//                'trans' => $this->category->translation,
-//            ]
-//        ];
-//    }
+    public function toSearchableArray(): array
+    {
+        return [
+            'lang' => $this->translation()->get(),
+            'price' => $this->price,
+        ];
+    }
 
 }

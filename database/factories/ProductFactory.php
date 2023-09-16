@@ -19,10 +19,18 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->text(20),
+            'brand_id' => 1,
+            'tax_id' => 1,
+            'quantity' => 3,
+            'reference' => Str::random(5),
+            'price' => 1000.00,
+            'unity' => Str::random(5),
+            'unit_price_ratio' => 0,
+            'width' => 0,
+            'height' => 0,
+            'depth' => 0,
+            'weight' => 0,
             'active' => rand(0,1),
-            'category_id' => Category::all()->random()->id,
-            'description' => fake()->text(199)
         ];
     }
 
