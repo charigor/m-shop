@@ -7,10 +7,11 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\TestNotify;
-
 use App\Services\Filter\BrandSearchRepository;
 //use App\Services\Filter\SearchRepository;
+use App\Services\Filter\ElasticSearchRepository;
 use App\Services\Test\TestService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -75,11 +76,80 @@ class MainController extends Controller
 
         return $result;
     }
+//    public function indexProduct(int $id)
+//    {
+//        $this->product = Product::find($id);
+//        $this->product->load('featureValues.feature');
+//
+//        $filters = $this->product->featureValues()->get()->map(function($value) {
+//            return [
+//                'name' => $value->feature->guard_name,
+//                'pretty_name' => $value->feature->translate->name,
+//                'value' => $value->translate->value
+//            ];
+//        })->toArray();
+//        $filters[] = [
+//            'name' => 'type',
+//            'pretty_name' => 'type',
+//            'value' => 'product'
+//        ];
+//        $filters[] = [
+//            'name' => 'brand',
+//            'pretty_name' => 'brand',
+//            'value' => $this->product->brand->name
+//        ];
+//         $this->product->categories()->get()->map(function($value) use(&$filters) {
+//        $filters[] =  [
+//                'name' => 'category',
+//                'pretty_name' =>  'category',
+//                'value' => $value->categories->translate->name
+//            ];
+//        })->toArray();
+//         $document = [
+//             'index' => 'mshop',
+//             'id' => $this->product->id,
+//             'body' => [
+//                 'title' => $this->product->translate->name,
+//                 'description' => $this->product->translate->description,
+//                 'price' => $this->product->price,
+//                 'filters' => $filters
+//             ]
+//         ];
+//         if(count($filters) === 0 ) {
+//             unset ($document['body']['filters']);
+//         }
+////        if(count($filters) === 0 ) {
+////            unset ($document['body']['filters']);
+////        }
+//        try {
+//            $results = $this->getElasticSearchIndex()->index($document);
+//            if (in_array($results['result'], ['created', 'updated'])) {
+//                return response()->api(
+//                    is_success: true,
+//                    message: 'Product indexed successfully with status:' . $results['result'],
+//                    code: 200
+//                );
+//            }
+//        }catch(Exception $e) {
+//            return response()->api(
+//                is_success: false,
+//                message: 'Product indexed failed',
+//                code: 500,
+//                data: $e->getMessage()
+//            );
+//        }
+//    }
     public function index(Request $request,BrandSearchRepository $searchRepository){
+//        $res = (new \App\Services\Filter\ElasticSearchService)->indexProduct(1);
+        $request = Request::create('localhost', 'POST', ['weight' => '20']);
+       $r =  (new \App\Services\Filter\ElasticSearchService)->search($request);
+
+dd($r);
 
         echo memory_get_usage() . "\n";
         echo '<pre>';
         $btime = microtime(true);
+        $r = '100';
         echo $this->luckyTickets(6);
         echo '('.round(microtime(true) - $btime, 4).' сек.)';
         echo '</pre>';
@@ -88,7 +158,7 @@ class MainController extends Controller
 //
 //        $odd = max($arr);
 //
-//        echo "Нечетные:\n";
+//        echo "Нечетные:\n";PPP
 //        print_r($odd);
 //
 //        $even = array_filter($arr, function($x) { return $x % 2 === 0;});
@@ -130,10 +200,12 @@ class MainController extends Controller
         $query->where('locale',app()->getLocale());
     }])->get();
         return view('front.main', [
-            'brands' => request()->has('q')
+            'products' => request()->has('q')
                 ? $searchRepository->search(request('q'))
-                : Brand::all(),
-            'products' =>   $products
+                : Product::query()->selectRaw('product_lang.id, product_lang.product_id, product_lang.name, product_lang.description')
+                    ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')->get()
+,
+//            'products' =>   $products
         ]);
 
 //        return Inertia::render('MainView', [

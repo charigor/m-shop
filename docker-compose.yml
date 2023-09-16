@@ -6,8 +6,8 @@ services:
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-                NODE_VERSION: '19'
-        image: sail-8.2/app
+                NODE_VERSION: '18'
+        image: sail-xdebug-8.2/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -15,6 +15,7 @@ services:
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
             WWWUSER: '${WWWUSER}'
+            PHP_IDE_CONFIG: "serverName=PHPSTORM"
             LARAVEL_SAIL: 1
             XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'

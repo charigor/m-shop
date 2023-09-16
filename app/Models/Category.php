@@ -75,4 +75,9 @@ class Category extends Model implements HasMedia
         return $this->belongsToMany(Product::class);
     }
 
+    public function getTranslateAttribute(): Model|null
+    {
+        return $this->translation()->where('locale',app()->getLocale())?->first();
+    }
+
 }

@@ -19,14 +19,17 @@
                         <p class="text-sm">Using search: <strong>"{{ request('q') }}"</strong>. <a class="border-b border-indigo-800 text-indigo-800" href="{{ route('front.main') }}">Clear filters</a></p>
                     @endif
                     <div class="mt-8 space-y-8">
-                        @forelse ($brands as $article)
+                        @forelse ($products as $product)
+                            @if(request()->has('q'))
                             <article class="space-y-1">
                                 <h2 class="font-semibold text-2xl">
-                                    @if(request()->has('q'))
-                                       {!! str_replace(request('q'), "<span class='text-yellow-300'>" . request('q'). "</span>",  $article->name)!!}
-                                    @endif
+                                    {!! str_replace(request('q'), "<span class='text-yellow-300'>" . request('q'). "</span>",  $product->name)!!}
                                 </h2>
+                                <div>
+                                    <p>{{$product->description}}</p>
+                                </div>
                             </article>
+                            @endif
                         @empty
                             <p>No articles found</p>
                         @endforelse

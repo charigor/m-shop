@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Filter\Searchable;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductLang extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory, Sluggable, Searchable;
     public $table = 'product_lang';
     public $timestamps = false;
     protected $fillable = [
