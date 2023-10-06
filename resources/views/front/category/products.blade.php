@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <livewire:filter-products :category_id="$category->id"/>
+    <livewire:filter-products :category_slug="$category->translate->link_rewrite"/>
 
     <div>
         {!!$category->description!!}

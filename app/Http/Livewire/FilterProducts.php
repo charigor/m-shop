@@ -3,23 +3,29 @@
 namespace App\Http\Livewire;
 
 use App\Models\Brand;
+use App\Models\Category;
+use App\Models\CategoryLang;
 use App\Models\Feature;
 use App\Models\FeatureValue;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Livewire\Component;
 
 class FilterProducts extends Component
 {
-    public Collection $products;
-    public string $sortBy = 'name';
-    public string $category_id = '';
-    public array $price = [],$filter = ['brand' => [], 'price' => [], 'feature' => []];
-    protected string $lastFilter = '', $prevFilter = '';
+    public array $products;
 
-    protected $queryString = ['category_id' => ['except' => '', 'as' => 'cat_id'], 'filter' => ['except' => '', 'as' => 'f']];
-    public $listeners = ['cartAddedOrUpdated', 'increase' => 'addQuantity', 'decrease' => 'removeQuantity'];
+    public string $sortBy = 'name';
+    public string $category_slug = '';
+    public array $price,$filter = ['brand' => []];
+    protected string $lastFilter = '', $prevFilter = '';
+    public array $facet = [];
+
+
+    protected $queryString = [ 'filter' => ['except' => '', 'as' => 'f']];
+    public $listeners = ['cartAddedOrUpdated', 'increase' => 'addQuantity', 'decrease' => 'removeQuantity','filter'];
     protected \App\Services\Cart\Cart $cartService;
 
     public function boot(\App\Services\Cart\Cart $cart): void
@@ -27,29 +33,35 @@ class FilterProducts extends Component
         $this->cartService = $cart;
     }
 
-    public function mount($category_id): void
+    public function mount($category_slug): void
     {
 
-        $this->category_id = $category_id;
-        $this->price[0] = $this->filter['price'][0] ?? priceFormat(Product::when($this->category_id, fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))->active()->min('price'));
-        $this->price[1] = $this->filter['price'][1] ?? priceFormat(Product::when($this->category_id, fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))->active()->max('price'));
+//        $request = Request::create('localhost', 'POST', $this->getFilterParams());
+//        $this->facet =  (new \App\Services\Filter\ElasticSearchService)->search($request);
+
+
+        $this->category_slug = $category_slug;
+        $this->price[0] = $this->filter['price'][0] ?? priceFormat(Product::when($this->category_slug, fn($q) => $q->whereHas('categories.translation', fn($q) => $q->where('link_rewrite', $this->category_slug)))->active()->min('price'));
+        $this->price[1] = $this->filter['price'][1] ?? priceFormat(Product::when($this->category_slug, fn($q) => $q->whereHas('categories.translation', fn($q) => $q->where('link_rewrite', $this->category_slug)))->active()->max('price'));
 
     }
 
     public function updating($name, $value)
     {
-        if ($name === 'filter.brand') {
-            session(['lastFilter' => 'brand']);
-            $this->lastFilter = $value ? 'brand' : null;
-        }
-        if ($name === 'filter.price') {
-            session(['lastFilter' => 'price']);
-            $this->lastFilter = $value ? 'price' : null;
-        }
-        if ($name === 'filter.feature') {
-            session(['lastFilter' => $value]);
-            $this->lastFilter = $value ? 'feature_' . FeatureValue::where('id', $value)->first()->feature_id : null;
-        }
+//        if ($name === 'filter.brand') {
+//            session(['lastFilter' => 'brand']);
+//            $this->lastFilter = $value ? 'brand' : null;
+//        }
+//        if ($name === 'filter.price') {
+//            session(['lastFilter' => 'price']);
+//            $this->lastFilter = $value ? 'price' : null;
+//        }
+//        if ($name === 'filter.feature') {
+//            session(['lastFilter' => $value]);
+//            $this->lastFilter = $value ? 'feature_' . FeatureValue::where('id', $value)->first()->feature_id : null;
+//        }
+//        dump($this->getFilterParams());
+
     }
 
     public function updatePrice(): void
@@ -105,86 +117,95 @@ class FilterProducts extends Component
     public function render(): View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
     {
 
-        if ($value = session()->get('lastFilter')) {
-            if (($value !== 'brand' && $value !== 'price')) {
-                $this->lastFilter = $value ? 'feature_' . FeatureValue::where('id', $value)->first()->feature_id : null;
-            } else {
-                $this->lastFilter = $value;
-            }
-        }
-        $this->products = Product::query()->selectRaw(
-            'products.*,
-             product_lang.name,
-             product_lang.locale,
-             product_lang.product_id,
-             product_lang.description,
-             product_lang.meta_keywords,
-             product_lang.meta_description')
-            ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')
-            ->active()
-            ->when($this->category_id, fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))
-            ->when(isset($this->filter['brand']), function ($q) {
-                $q->when((count($this->filter['brand'])), fn($q) => $q->whereHas('brand', fn($q) => $q->whereIn('brand_id', $this->filter['brand'])));
-            })
-            ->when(isset($this->filter['price']), function ($q) {
-                $q->when(($this->filter['price'] && count($this->filter['price'])), fn($q) => $q->whereBetween('price', $this->filter['price']));
-            })
-            ->when(isset($this->filter['feature']), function ($q) {
-                $q->when(($this->filter['feature']), function ($q) {
-                    $q->whereHas('featureValues', fn($q) => $q->whereIn('id', $this->filter['feature']));
-                });
-            })
-            ->when(($this->sortBy && $this->sortBy === 'cheap'), fn($q) => $q->orderBy('price', 'asc'))
-            ->when(($this->sortBy && $this->sortBy === 'expensive'), fn($q) => $q->orderBy('price', 'desc'))
-            ->when(($this->sortBy && $this->sortBy === 'name'), fn($q) => $q->orderBy('name', 'asc'))
-            ->where('locale', app()->getLocale())->groupBy('products.id')->get();
-        $ids = $this->products->pluck('id');
-        $brands = Brand::active()
-            ->withCount([
-                    'products' => fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id))
-                        ->when(($this->lastFilter !== 'brand' && $this->prevFilter !== 'brand'), function ($q) use ($ids) {
-                            $q->whereIn('id', $ids);
-                        })
-                        ->when((!empty($this->filter['price'])), function ($q) {
-                            $q->whereBetween('price', $this->filter['price']);
-                        })
-                        ->when(isset($this->filter['feature']), function ($q) {
-                            $q->when($this->filter['feature'], function ($q) {
-                                $q->whereHas('featureValues', fn($q) => $q->whereIn('id', $this->filter['feature']));
-                            });
-                        })
-                ]
-            )
-            ->get();
-        $features = Feature::whereHas('products', fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))
-            ->with('featureValue', fn($q) => $q->withCount(['featureValuesProduct' =>
-                function ($q) use ($ids) {
-                    $q->when((strpos($this->lastFilter, "feature") !== false && (strpos($this->prevFilter, "feature") !== false || !$this->prevFilter)),
-                        function ($q) use ($ids) {
-                            $q->when(((($this->lastFilter != $this->prevFilter) && $this->prevFilter === null) || ($this->prevFilter === $this->lastFilter)), function ($q) use ($ids) {
-                                $pieces = explode("_", $this->lastFilter);
-                                $q->when(isset($pieces[1]), function ($q) use ($pieces, $ids) {
-                                    $q->where(function ($q) use ($pieces, $ids) {
-                                        $q->whereIn('product_id', $ids)->orWhere('feature_id', $pieces[1]);
-                                    });
-                                });
+//        if ($value = session()->get('lastFilter')) {
+//            if (($value !== 'brand' && $value !== 'price')) {
+//                $this->lastFilter = $value ? 'feature_' . FeatureValue::where('id', $value)->first()->feature_id : null;
+//            } else {
+//                $this->lastFilter = $value;
+//            }
+//        }
+//        $this->products = Product::query()->selectRaw(
+//            'products.*,
+//             product_lang.name,
+//             product_lang.locale,
+//             product_lang.product_id,
+//             product_lang.description,
+//             product_lang.meta_keywords,
+//             product_lang.meta_description')
+//            ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')
+//            ->active()
+//            ->when($this->category_id, fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))
+//            ->when(isset($this->filter['brand']), function ($q) {
+//                $q->when((count($this->filter['brand'])), fn($q) => $q->whereHas('brand', fn($q) => $q->whereIn('brand_id', $this->filter['brand'])));
+//            })
+//            ->when(isset($this->filter['price']), function ($q) {
+//                $q->when(($this->filter['price'] && count($this->filter['price'])), fn($q) => $q->whereBetween('price', $this->filter['price']));
+//            })
+//            ->when(isset($this->filter['feature']), function ($q) {
+//                $q->when(($this->filter['feature']), function ($q) {
+//                    $q->whereHas('featureValues', fn($q) => $q->whereIn('id', $this->filter['feature']));
+//                });
+//            })
+//            ->when(($this->sortBy && $this->sortBy === 'cheap'), fn($q) => $q->orderBy('price', 'asc'))
+//            ->when(($this->sortBy && $this->sortBy === 'expensive'), fn($q) => $q->orderBy('price', 'desc'))
+//            ->when(($this->sortBy && $this->sortBy === 'name'), fn($q) => $q->orderBy('name', 'asc'))
+//            ->where('locale', app()->getLocale())->groupBy('products.id')->get();
+//        $ids = $this->products->pluck('id');
+//        $brands = Brand::active()
+//            ->withCount([
+//                    'products' => fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id))
+//                        ->when(($this->lastFilter !== 'brand' && $this->prevFilter !== 'brand'), function ($q) use ($ids) {
+//                            $q->whereIn('id', $ids);
+//                        })
+//                        ->when((!empty($this->filter['price'])), function ($q) {
+//                            $q->whereBetween('price', $this->filter['price']);
+//                        })
+//                        ->when(isset($this->filter['feature']), function ($q) {
+//                            $q->when($this->filter['feature'], function ($q) {
+//                                $q->whereHas('featureValues', fn($q) => $q->whereIn('id', $this->filter['feature']));
+//                            });
+//                        })
+//                ]
+//            )
+//            ->get();
+//        $features = Feature::whereHas('products', fn($q) => $q->whereHas('categories', fn($q) => $q->where('category_id', $this->category_id)))
+//            ->with('featureValue', fn($q) => $q->withCount(['featureValuesProduct' =>
+//                function ($q) use ($ids) {
+//                    $q->when((strpos($this->lastFilter, "feature") !== false && (strpos($this->prevFilter, "feature") !== false || !$this->prevFilter)),
+//                        function ($q) use ($ids) {
+//                            $q->when(((($this->lastFilter != $this->prevFilter) && $this->prevFilter === null) || ($this->prevFilter === $this->lastFilter)), function ($q) use ($ids) {
+//                                $pieces = explode("_", $this->lastFilter);
+//                                $q->when(isset($pieces[1]), function ($q) use ($pieces, $ids) {
+//                                    $q->where(function ($q) use ($pieces, $ids) {
+//                                        $q->whereIn('product_id', $ids)->orWhere('feature_id', $pieces[1]);
+//                                    });
+//                                });
+//
+//                            });
+//                        })
+//                        ->when((!empty($this->filter['brand'])), function ($q) {
+//                            $q->whereIn('brand_id', $this->filter['brand']);
+//                        })
+//                        ->when((!empty($this->filter['price'])), function ($q) {
+//                            $q->whereBetween('price', $this->filter['price']);
+//                        });
+//                }]))
+//            ->get();
+//
+//        $this->prevFilter = $this->lastFilter;
+//
+//
+//        $allFilters = $this->getAllFilters();
+        $request = Request::create('localhost', 'POST',  $this->getFilterParams());
+        $this->facet =  (new \App\Services\Filter\ElasticSearchService)->search($request);
+        $this->products = $this->facet['documents'];
 
-                            });
-                        })
-                        ->when((!empty($this->filter['brand'])), function ($q) {
-                            $q->whereIn('brand_id', $this->filter['brand']);
-                        })
-                        ->when((!empty($this->filter['price'])), function ($q) {
-                            $q->whereBetween('price', $this->filter['price']);
-                        });
-                }]))
-            ->get();
+        return view('livewire.filter-products', [
+            'facet' => $this->facet['facets'],'products'
 
-        $this->prevFilter = $this->lastFilter;
-
-
-        $allFilters = $this->getAllFilters();
-        return view('livewire.filter-products', ['products' => $this->products, 'brands' => $brands, 'features' => $features,'allFilters' => $allFilters]);
+//                'brands' => $brands, 'features' => $features,'allFilters' => $allFilters
+            ]
+        );
     }
     public function getAllFilters(): array
     {
@@ -201,6 +222,23 @@ class FilterProducts extends Component
                 $result['feature'] =  FeatureValue::whereIn('id',$item)->with('feature')->get()->map(function($item) { return json_decode(json_encode(['feature_value_id' => $item->id,'guard_name' => $item->feature->guard_name,'name' => $item->feature->translate->name,'value_name' => $item->translate->value]));})->groupBy('guard_name');
             }
         }
+        return $result;
+    }
+//    public function filter($name,$value){
+//        dd($name);
+//    }
+    public function getFilterParams(): array
+    {
+        $result = [
+            'category' => $this->category_slug,
+//            'type' => 'product'
+//            'brand' => 'Imogene Miller,Coby Ziemann MD'
+
+        ];
+        foreach($this->filter as $key => $item){
+                json_encode(($result[$key] = implode(',',$this->filter[$key])));
+        }
+
         return $result;
     }
 }

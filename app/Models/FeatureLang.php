@@ -26,4 +26,5 @@ class FeatureLang extends Model
     {
         return $this->belongsTo(Feature::class);
     }
+
 }

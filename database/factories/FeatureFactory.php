@@ -17,7 +17,8 @@ class FeatureFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'guard_name' => fake()->name(),
+            'position' => rand(0,5)
         ];
     }
 }

@@ -140,20 +140,27 @@ class MainController extends Controller
 //        }
 //    }
     public function index(Request $request,BrandSearchRepository $searchRepository){
-//        $res = (new \App\Services\Filter\ElasticSearchService)->indexProduct(1);
-        $request = Request::create('localhost', 'POST', ['weight' => '20']);
-       $r =  (new \App\Services\Filter\ElasticSearchService)->search($request);
+        $res = (new \App\Services\Filter\ElasticSearchService)->indexProduct(49);
 
-dd($r);
+//        $request = Request::create('localhost', 'POST', [
+//            'category' => 'кОРМА'
+////            ,'brand' => 'Imogene Miller'
+////            ,'Laney Blanda' => 'Prohaskaberg'
+//        ]);
+//
+//       $r =  (new \App\Services\Filter\ElasticSearchService)->search($request);
 
-        echo memory_get_usage() . "\n";
-        echo '<pre>';
-        $btime = microtime(true);
-        $r = '100';
-        echo $this->luckyTickets(6);
-        echo '('.round(microtime(true) - $btime, 4).' сек.)';
-        echo '</pre>';
-        echo memory_get_usage() . "\n";
+//
+//dd($r);
+
+//        echo memory_get_usage() . "\n";
+//        echo '<pre>';
+//        $btime = microtime(true);
+//        $r = '100';
+//        echo $this->luckyTickets(6);
+//        echo '('.round(microtime(true) - $btime, 4).' сек.)';
+//        echo '</pre>';
+//        echo memory_get_usage() . "\n";
 //        $arr = [1,2,3,4,5,6,7,8,9];
 //
 //        $odd = max($arr);
@@ -166,12 +173,12 @@ dd($r);
 //        echo "Четные:\n";
 //        print_r($even);
 
-        $str = '❤hello world';
-        $r = '';
-        for ($i = mb_strlen($str); $i>=0; $i--) {
-            $r .= mb_substr($str, $i, 1);
-        }
-        print_r( $r);
+//        $str = '❤hello world';
+//        $r = '';
+//        for ($i = mb_strlen($str); $i>=0; $i--) {
+//            $r .= mb_substr($str, $i, 1);
+//        }
+//        print_r( $r);
 
 
 //        $start = microtime(true);
@@ -200,12 +207,12 @@ dd($r);
         $query->where('locale',app()->getLocale());
     }])->get();
         return view('front.main', [
-            'products' => request()->has('q')
-                ? $searchRepository->search(request('q'))
-                : Product::query()->selectRaw('product_lang.id, product_lang.product_id, product_lang.name, product_lang.description')
-                    ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')->get()
-,
-//            'products' =>   $products
+//            'products' => request()->has('q')
+//                ? $searchRepository->search(request('q'))
+//                : Product::query()->selectRaw('product_lang.id, product_lang.product_id, product_lang.name, product_lang.description')
+//                    ->leftJoin('product_lang', 'product_lang.product_id', '=', 'products.id')->get()
+//,
+            'products' =>   $products
         ]);
 
 //        return Inertia::render('MainView', [
