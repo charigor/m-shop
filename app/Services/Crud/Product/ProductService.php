@@ -62,12 +62,11 @@ class ProductService extends BaseCrudService
     public function updateItem($model,$request): mixed
     {
         $data = $request->validated();
-
         $model->update($data);
 
         $prepareData = (new TranslationService)->prepareFields($data['lang'],['name','link_rewrite']);
         foreach ($prepareData as $item) {
-            $model->translation()->where('locale', $item['locale'])->update($item);
+            $model->translation()->updateOrCreate(['locale' => $item['locale']],$item);
         };
         $model->categories()->sync($data['categories']);
 

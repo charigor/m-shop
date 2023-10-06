@@ -196,10 +196,10 @@ onMounted(() => {
                         </li>
                     </ul>
                 </div>
+
                 <form @submit.prevent="submit()" class="mb-4 p-8 border border-gray-200 dark:border-gray-700">
                     <Switcher :value="form.active" :topLabel="$t(`page.${pageName}.fields.active`)" name="active" @onChange="(e) => form.active = e" :valueA="0" :valueB="1" :labelA="$t('global.no')"  :labelB="$t('global.yes')"/>
                     <div class="grid grid-cols-4 gap-10">
-
                         <template v-if="activeTab === 'main'">
                             <div class="col-span-3" >
 
