@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Services\Filter\SearchRepository;
-use App\Services\Filter\Searchable;
+
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,6 +28,7 @@ class Brand extends Model implements HasMedia
         0 => 'Inactive',
         1 => 'Active',
     ];
+    const MODEL_NAME = 'brand';
 
     public function sluggable(): array
     {
@@ -93,8 +93,4 @@ class Brand extends Model implements HasMedia
         }
     }
 
-    public function toElasticsearchDocumentArray(): array
-    {
-        // TODO: Implement toElasticsearchDocumentArray() method.
-    }
 }

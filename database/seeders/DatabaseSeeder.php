@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\FeatureLang;
-use App\Models\FeatureProduct;
+use App\Models\FeatureValueProduct;
 use App\Models\Lang;
 use Database\Factories\FeatureLangFactory;
 use Illuminate\Database\Seeder;
@@ -77,7 +77,7 @@ class DatabaseSeeder extends Seeder
 //            $product->translation()->saveMany($productLang);
 //            $featureValues = \App\Models\FeatureValue::all()->random(rand(1,5));
 //            foreach($featureValues as $item){
-//                FeatureProduct::create(
+//                FeatureValueProduct::create(
 //                    [
 //                        'product_id' => $product->id,
 //                        'feature_value_id' => $item->id,

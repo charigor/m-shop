@@ -130,13 +130,8 @@ const changeSlug = debounce(async (lang) => {
     let response =  await  axios.post(`/admin/${pageName}/slug`, {'name': form['lang'][lang]['name'] })
     form['lang'][lang]['link_rewrite'] = response.data.slug
 },200);
-const removeFeature = (object) => {
-
-    if(object.product_id === undefined){
-        form.features = form.features.filter(i => i !== object);
-        return false
-    }
-    router.post(`${urlPrefix}/${props.product.id}/feature/delete`, {feature:object},{preserveState: false,  preserveScroll: true})
+const removeFeature = (index) => {
+    form.features.splice(index,1)
 }
 const setRatio = (e) => {
     form.unit_price_ratio = (form.price / e.target.value).toFixed(6);
@@ -307,7 +302,7 @@ onMounted(() => {
                                                 class="border-0 "
                                                 :icon="mdiTrashCan"
                                                 :iconSize="20"
-                                                @click="removeFeature(form.features[index])"
+                                                @click="removeFeature(index)"
                                             />
                                         </div>
                                     </div>
@@ -319,7 +314,6 @@ onMounted(() => {
                                         @click="form.features.push({feature_id: null,feature_value_id: null})"
                                     />
                                 </div>
-
                             </div>
                             <div class="col-span-1">
                                 <div class="p-3">

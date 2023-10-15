@@ -4,6 +4,7 @@
 namespace App\Services\Crud\Feature;
 
 use App\Models\Feature;
+use App\Models\Product;
 use App\Services\BaseCrudService;
 use App\Services\Datatables\Features\Features;
 use App\Services\Datatables\Attributes\Attributes;
@@ -79,5 +80,17 @@ class FeatureService extends BaseCrudService
         }
 
         return response()->noContent();
+    }
+
+    /**
+     * @param $request
+     * @return mixed
+     */
+    public function deleteItems($request): mixed
+    {
+        $products =  Product::whereHas('featureValues',function($q) use($request){ $q->whereIn('id',$request->ids);})->get();
+        $result = $this->model->whereIn('id',$request->ids)->delete();
+        $products->searchable();
+        return $result;
     }
 }

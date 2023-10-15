@@ -9,7 +9,8 @@
             <div class="flex">
                 <ul class="flex ml-auto">
                     @foreach($shopLanguages as $item)
-                        <li class="p-2 px-1"><a href="#">{{$item}}</a></li>
+
+                        <li class="p-2 px-1"><a class="{{$item == app()->getLocale() ? 'bg-cyan-600 p-2' : 'p-2'}}" href="{{route('front.language.locale',$item)}}">{{$item}}</a></li>
                     @endforeach
                 </ul>
             </div>

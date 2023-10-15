@@ -4,6 +4,7 @@
 namespace App\Services\Crud\Category;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Services\BaseCrudService;
 use App\Services\Datatables\Categories\Categories;
 use App\Services\TranslationService;
@@ -138,5 +139,12 @@ class CategoryService extends BaseCrudService
                 if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->toMediaCollection($name);
             }
         }
+    }
+    public function deleteItems($request)
+    {
+        $products =  Product::whereHas('categories',function($q) use($request){ $q->whereIn('id',$request->ids);})->get();
+        $result = $this->model->whereIn('id',$request->ids)->delete();
+        $products->searchable();
+        return $result;
     }
 }

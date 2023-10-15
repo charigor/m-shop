@@ -24,7 +24,6 @@ return new class extends Migration
             $table->decimal('height',5, 1)->default(0,0);
             $table->decimal('depth',5, 1)->default(0,0);
             $table->decimal('weight',7, 3)->default(0,000);
-            $table->json('features');
             $table->tinyInteger('active')->default(0);
             $table->timestamps();
         });

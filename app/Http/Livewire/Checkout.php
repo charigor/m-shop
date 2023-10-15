@@ -2,19 +2,26 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Product;
-use Livewire\Component;
+use Spatie\LivewireWizard\Components\WizardComponent;
 
-class Checkout extends Component
+class Checkout extends  WizardComponent
 {
-    public $fullname = null,$email=null;
-    public function mount()
-    {
 
-    }
-    public function render()
+    public function steps() : array
     {
-        info($this->fullname);
-        return view('livewire.checkout');
+        return [
+            CheckoutStepComponent::class,
+            DeliveryAddressStepComponent::class,
+            PaymentOrderStepComponent::class,
+        ];
     }
+//    public function mount()
+//    {
+//        $this->fullname = auth()->user()->name;
+//        $this->email = auth()->user()->email;
+//    }
+//    public function render()
+//    {
+//        return view('livewire.checkout');
+//    }
 }

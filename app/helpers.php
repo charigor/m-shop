@@ -15,8 +15,8 @@ if(!function_exists('modifyRequestForPivot')){
     }
 }
 if(!function_exists('priceFormat')){
-    function priceFormat($number)
+    function priceFormat($number,$n = 2)
     {
-        return number_format((float) $number, 2, '.', '');
+        return number_format((float) $number, $n, '.', '');
     }
 }

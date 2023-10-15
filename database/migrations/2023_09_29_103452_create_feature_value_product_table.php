@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('feature_product', function (Blueprint $table) {
+        Schema::create('feature_value_product', function (Blueprint $table) {
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('feature_id')->constrained()->onDelete('cascade');
-            $table->bigInteger('feature_value_id');
+            $table->foreignId('feature_value_id')->constrained()->onDelete('cascade');
+            $table->bigInteger('feature_id');
+            $table->primary(['product_id','feature_id','feature_value_id']);
         });
     }
 
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('feature_product');
+        Schema::dropIfExists('feature_value_product');
     }
 };

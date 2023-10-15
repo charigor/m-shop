@@ -19,6 +19,7 @@ class BrandController extends Controller
     {
 //        $products = Product::active()->where('brand_id',$brand->id)->get();
 
+
         return  view('front.brand.show',compact('brand'));
     }
 }

@@ -9,7 +9,7 @@ use App\Http\Resources\Admin\Feature\FeatureResource;
 use App\Http\Resources\Admin\Feature\FeatureTableResource;
 use App\Http\Resources\Admin\FeatureValue\FeatureValueResource;
 use App\Models\Feature;
-use App\Models\FeatureProduct;
+use App\Models\FeatureValueProduct;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\Crud\Feature\FeatureService;
@@ -59,9 +59,7 @@ class FeatureController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(FeatureCreateRequest $request)
     {
 
@@ -111,18 +109,15 @@ class FeatureController extends Controller
         $this->service->sortItem($request);
         return back()->with('message',trans('messages.success.sort'));
     }
+
     /**
-     * Remove the specified resource from storage.
+     * @param Request $request
+     * @return void
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): void
     {
-
-        Feature::whereIn('id',$request->ids)->delete();
-
-//        foreach($request->ids as $id){
-//            FeatureProduct::where('feature_id',$id)->delete();
-//        }
-        return redirect()->route('feature.index')->with('message',trans('messages.success.delete'));
+        $this->service->deleteItems($request);
+        to_route('feature.index')->with('message',trans('messages.success.delete'));
     }
 
 }

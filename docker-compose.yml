@@ -28,7 +28,7 @@ services:
             - mysql
             - redis
             - meilisearch
-            - elasticsearch
+#            - elasticsearch
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -85,23 +85,23 @@ services:
                 - 'http://localhost:7700/health'
             retries: 3
             timeout: 5s
-    elasticsearch:
-        container_name: 'elastic'
-        image:
-            'docker.elastic.co/elasticsearch/elasticsearch:8.0.0'
-        environment:
-            - discovery.type=single-node
-            - xpack.security.enabled=false
-            - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
-        ports:
-            - '9200:9200'
-            - '9300:9300'
-        volumes:
-            - 'sail-elasticsearch:/usr/share/elasticsearch/data'
-        mem_limit: '2048m'
-        networks:
-            - sail
+#    elasticsearch:
+#        container_name: 'elastic'
+#        image:
+#            'docker.elastic.co/elasticsearch/elasticsearch:8.0.0'
+#        environment:
+#            - discovery.type=single-node
+#            - xpack.security.enabled=false
+#            - bootstrap.memory_lock=true
+#            - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+#        ports:
+#            - '9200:9200'
+#            - '9300:9300'
+#        volumes:
+#            - 'sail-elasticsearch:/usr/share/elasticsearch/data'
+#        mem_limit: '2048m'
+#        networks:
+#            - sail
 
 networks:
     sail:
@@ -113,5 +113,5 @@ volumes:
         driver: local
     sail-meilisearch:
         driver: local
-    sail-elasticsearch:
-        driver: local
+#    sail-elasticsearch:
+#        driver: local

@@ -114,9 +114,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
         Route::resource('product', ProductController::class)->except('show','destroy');
         /*brand*/
+
         Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
         Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
         Route::resource('brand', BrandController::class)->except('show','destroy');
+
         /*attribute groups*/
         Route::post('/attribute_group/sort', [AttributeGroupController::class, 'sort'])->name('attribute_group.sort');
         Route::post('/attribute_group/delete', [AttributeGroupController::class, 'destroy'])->name('attribute_group.delete');
@@ -137,12 +139,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/select',[SelectController::class, 'load']);
         Route::post('/language', function(Request $request){
-            Session()->put('locale',$request->lang);
-            App::setLocale($request->lang);
-            return Response()->json(['locale' => session('locale')]);
+            Session()->put('adminLocale',$request->lang);
+//            App::setLocale($request->lang);
+            return Response()->json(['locale' => session('adminLocale')]);
         })->name('language');
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
-    });
+    })->middleware('setLocale');
 
 
 //    Route::prefix('admin')->group(function () {
@@ -161,12 +163,19 @@ Route::middleware('auth')->group(function () {
 //    });
 });
 
-
-Route::group(['as' => 'front.'],function () {
-    Route::get('main', [MainController::class, 'index'])->name('main');
+Route::group(['as' => 'front.','middleware' => ['Localization']],function () {
+    Route::get('language/{locale}', function ($locale) {
+        app()->setLocale($locale);
+        session()->put('locale', $locale);
+        return redirect()->back();
+    })->name('language.locale');
+});
+Route::group(['as' => 'front.','middleware' => ['Localization']],function () {
+    Route::get('/', [MainController::class, 'index'])->name('main');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
     Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
     Route::get('brand/{brand:slug}', [\App\Http\Controllers\Front\BrandController::class, 'show'])->name('brand.show');
 });
+
 require __DIR__.'/auth.php';

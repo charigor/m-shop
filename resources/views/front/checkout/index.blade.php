@@ -16,7 +16,11 @@
 @endsection
 @section('content')
     <div class="flex">
-        <livewire:checkout/>
-        <livewire:checkout-aside/>
+        <div class="w-[calc(100%-520px)] border p-5">
+            <livewire:checkout/>
+        </div>
+        <div class="w-auto w-[515px] border p-5 ml-[20px]">
+            <livewire:checkout-aside/>
+        </div>
     </div>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Datatables\FeatureValues\FeatureValues;
 use App\Services\Filter\SearchRepository;
+use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Artisan;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -21,6 +23,13 @@ class Product extends Model implements HasMedia
     use HasFactory,InteractsWithMedia,Searchable;
     public $table = 'products';
 
+    public const SORTABLE = [
+      'id','price','created_at'
+    ];
+
+    public const FILTERABLE = [
+        'category','price','feature','brand'
+    ];
     protected $fillable = [
         'brand_id',
         'tax_id',
@@ -101,11 +110,11 @@ class Product extends Model implements HasMedia
      */
     public function features(): BelongsToMany
     {
-        return $this->belongsToMany(Feature::class)->withPivot('feature_value_id');
+        return $this->belongsToMany(FeatureValue::class)->withPivot('feature_id');
     }
     public function featureValues(): BelongsToMany
     {
-        return $this->belongsToMany(FeatureValue::class,'feature_product')->withPivot('feature_id');
+        return $this->belongsToMany(Feature::class,'feature_value_product')->withPivot('feature_value_id');
     }
 
 
@@ -120,9 +129,24 @@ class Product extends Model implements HasMedia
     public function toSearchableArray(): array
     {
         return [
-            'lang' => $this->translation()->get(),
-            'price' => $this->price,
+            'price' => $this->price * 1000000,
+            'category' => $this->categories()->pluck('id')->toArray(),
+            'brand' => $this->brand()->pluck('name')->first(),
+            'feature' =>  $this->featureValues()->get()->groupBy('guard_name')
+                ->map(function($item){
+                    return $item->map(function($i) use($item){
+                        return  $i->pivot->feature_value_id;
+                    })->flatten()->toArray();
+                }),
+            'created_at' => $this->created_at
         ];
     }
-
+    public function searchableAs()
+    {
+        return 'products';
+    }
+    protected function makeAllSearchableUsing($query): Builder
+    {
+        return $query->with(['categories','features']);
+    }
 }
