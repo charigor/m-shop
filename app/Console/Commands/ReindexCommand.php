@@ -24,33 +24,33 @@ class ReindexCommand extends Command
      */
     protected $description = 'Indexes all articles to Elasticsearch';
 
-    public \Elastic\Elasticsearch\Client $elasticsearch;
+//    public \Elastic\Elasticsearch\Client $elasticsearch;
 
-    public function __construct(\Elastic\Elasticsearch\Client $elasticsearch)
-    {
-        parent::__construct();
-
-        $this->elasticsearch = $elasticsearch;
-    }
+//    public function __construct(\Elastic\Elasticsearch\Client $elasticsearch)
+//    {
+//        parent::__construct();
+//
+//        $this->elasticsearch = $elasticsearch;
+//    }
 
     public function handle()
     {
-        $this->info('Indexing all brands. This might take a while...');
-
-        foreach (ProductLang::cursor() as $product)
-        {
-            $this->elasticsearch->index([
-                'index' => $product->getSearchIndex(),
-                'type' => $product->getSearchType(),
-                'id' => $product->getKey(),
-                'body' => $product->toSearchArray(),
-            ]);
-
-            // PHPUnit-style feedback
-            $this->output->write('.');
-        }
-
-        $this->info("\nDone!");
+//        $this->info('Indexing all brands. This might take a while...');
+//
+//        foreach (ProductLang::cursor() as $product)
+//        {
+//            $this->elasticsearch->index([
+//                'index' => $product->getSearchIndex(),
+//                'type' => $product->getSearchType(),
+//                'id' => $product->getKey(),
+//                'body' => $product->toSearchArray(),
+//            ]);
+//
+//            // PHPUnit-style feedback
+//            $this->output->write('.');
+//        }
+//
+//        $this->info("\nDone!");
 //$data = {
 //	"mappings": {
 //		"dynamic": true,

@@ -4,6 +4,7 @@
 namespace App\Services\Crud\FeatureValue;
 
 use App\Models\FeatureValue;
+use App\Models\Product;
 use App\Services\BaseCrudService;
 use App\Services\Datatables\FeatureValues\FeatureValues;
 use App\Services\TranslationService;
@@ -50,5 +51,17 @@ class FeatureValueService extends BaseCrudService
             $model->translation()->where('locale', $item['locale'])->update($item);
         };
         return $model->refresh();
+    }
+
+    /**
+     * @param $request
+     * @return mixed
+     */
+    public function deleteItems($request): mixed
+    {
+        $products =  Product::whereHas('features',function($q) use($request){ $q->whereIn('id',$request->ids);})->get();
+        $result = $this->model->whereIn('id',$request->ids)->delete();
+        $products->searchable();
+        return $result;
     }
 }

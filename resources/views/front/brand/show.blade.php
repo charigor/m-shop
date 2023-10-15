@@ -2,7 +2,7 @@
 
 @section('content')
 
-     <livewire:filter-brand-products :brands_id="$brand->id"/>
+    <livewire:filter-products :model="$brand"/>
 
     <div>
         {!!$brand->description!!}

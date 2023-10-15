@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ProductUpdateIndex;
 use App\Http\Controllers\Admin\Traits\MediaUploadingTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CategoryCreateRequest;
@@ -11,12 +12,14 @@ use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Category\CategoryResourceIndex;
 use App\Models\Category;
 use App\Models\CategoryLang;
+use App\Models\Product;
 use App\Services\Crud\Category\CategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Meilisearch\Client;
 use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
@@ -101,13 +104,18 @@ class CategoryController extends Controller
             'categories' => Category::with(['translation' => fn($q) =>$q->where('locale',app()->getLocale())])->where('id', '!=' , $category->id)->get()->toTree(),
         ]);
     }
+
     /**
      * @param Request $request
+     * @return void
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): void
     {
-        Category::whereIn('id',$request->ids)->delete();
-        return redirect()->route('categories.index')->with('message',trans('messages.success.delete'));
+
+        $this->service->deleteItems($request);
+
+        to_route('categories.index')->with('message',trans('messages.success.delete'));
+
     }
 
     /**

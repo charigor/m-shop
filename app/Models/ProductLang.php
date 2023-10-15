@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductLang extends Model
 {
-    use HasFactory, Sluggable, Searchable;
+    use HasFactory, Sluggable;
     public $table = 'product_lang';
     public $timestamps = false;
     protected $fillable = [

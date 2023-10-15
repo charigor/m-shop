@@ -17,6 +17,7 @@ class BrandLang extends Model
         'short_description',
         'description',
         'meta_title',
+        'brand_id',
         'meta_description',
         'meta_keywords'
     ];

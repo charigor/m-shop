@@ -1,5 +1,4 @@
 <div>
-    fffffffffffffffffffffff
     <div>
         <label class="text-gray-500">
             {{ $label }}

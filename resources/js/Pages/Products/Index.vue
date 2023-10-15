@@ -32,6 +32,7 @@ const props = defineProps({
     },
 });
 const urlPrefix = usePage().props.ziggy.location.split('?')[0];
+
 const columns = ref(
     [
     { value: true , label: 'id', type: 'number',sorting: true,trans : wTrans(`page.${pageName}.table_fields.id`)},

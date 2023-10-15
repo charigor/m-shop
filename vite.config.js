@@ -8,13 +8,13 @@ import i18n from 'laravel-vue-i18n/vite';
 export default defineConfig({
     server: {
         hmr: {
-            host: 'localhost'
+            host: 'localhost',
         }
     },
     plugins: [
         laravel({
             input: 'resources/js/app.js',
-            ssr: 'resources/js/ssr.js',
+            // ssr: 'resources/js/ssr.js',
             refresh: true,
         }),
         vue({

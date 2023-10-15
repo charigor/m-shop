@@ -7,7 +7,6 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\TestNotify;
-use App\Services\Filter\BrandSearchRepository;
 //use App\Services\Filter\SearchRepository;
 use App\Services\Filter\ElasticSearchRepository;
 use App\Services\Test\TestService;
@@ -139,8 +138,27 @@ class MainController extends Controller
 //            );
 //        }
 //    }
-    public function index(Request $request,BrandSearchRepository $searchRepository){
-        $res = (new \App\Services\Filter\ElasticSearchService)->indexProduct(49);
+    public function index(Request $request){
+        $product =   Product::find(15);
+//        $features = $product->features()->with(['featureValue'])->get()->groupBy('guard_name')->map(function($item){
+//                  return $item->map(function($i) use($item){
+//                        return  $i->featureValue->pluck('id');
+//                    })->flatten()->toArray();
+//            })->toArray();
+//            ->dd()->groupBy('guard_name')->map(function($item){
+//                return
+//                    $item->featureValue->feature_value_id
+//                ;
+//            });
+//        $features = $product->features()->with(['featureValue'])->get()
+//            ->groupBy('guard_name')->map(function($item){
+//                return $item->map(function($i) use($item){
+//                    return  $i->pivot->feature_value_id;
+//                })->flatten()->toArray();
+//            });
+//            dd($features);
+//
+//        $res = (new \App\Services\Filter\ElasticSearchService)->indexProduct(49);
 
 //        $request = Request::create('localhost', 'POST', [
 //            'category' => 'кОРМА'

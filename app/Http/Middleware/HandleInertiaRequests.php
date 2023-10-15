@@ -32,9 +32,10 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $languages = Lang::whereActive(1)->get();
+
         return array_merge(parent::share($request), [
             "languages" => $languages,
-            'locale' => session('locale'),
+            'locale' => session('adminLocale'),
             'auth' => [
                 'user' => $request->user(),
                 'roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
@@ -47,6 +48,7 @@ class HandleInertiaRequests extends Middleware
                 ]);
             },
             'csrf_token' => csrf_token(),
+
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),

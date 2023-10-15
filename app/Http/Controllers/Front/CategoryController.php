@@ -26,7 +26,7 @@ class CategoryController extends Controller
                               ->where('link_rewrite',$slug)
                               ->first();
 
-        if(is_null($category->parent_id))
+        if(!$category->children)
         {
             $childCategories =   Category::with(['media'])
                 ->selectRaw(

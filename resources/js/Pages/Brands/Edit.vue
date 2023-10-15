@@ -25,6 +25,7 @@ const props = defineProps({
         required: true,
     }
 });
+console.log(props.brand)
 let locale = ref(useMainStore().lang)
 
 const form = reactive({
@@ -48,6 +49,7 @@ for(let item in usePage().props.languages){
         }
     }
 }
+
 const urlPrefix = '/admin/brand';
 const submit = () => {
     router.put(`${urlPrefix}/${props.brand.id}`, form, {preserveState: true})

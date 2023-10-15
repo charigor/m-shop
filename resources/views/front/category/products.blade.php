@@ -2,9 +2,8 @@
 
 @section('content')
 
-    <livewire:filter-products :category_slug="$category->translate->link_rewrite"/>
-
+    <livewire:filter-products :model="$category"/>
     <div>
-        {!!$category->description!!}
+{{--        {!!$category->description!!}--}}
     </div>
 @endsection

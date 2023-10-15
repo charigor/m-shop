@@ -29,6 +29,7 @@ class Category extends Model implements HasMedia
         0 => 'Inactive',
         1 => 'Active',
     ];
+    const MODEL_NAME = 'category';
     public function registerMediaConversions(Media $media = null): void
     {
         $this
@@ -65,7 +66,7 @@ class Category extends Model implements HasMedia
      */
     public function scopeActive(Builder $query): void
     {
-        $query->where('active', array_search('Active',self::ACTIVE));
+        $query->where('categories.active', array_search('Active',self::ACTIVE));
     }
     /**
      * @return BelongsToMany
@@ -74,10 +75,12 @@ class Category extends Model implements HasMedia
     {
         return $this->belongsToMany(Product::class);
     }
-
-    public function getTranslateAttribute(): Model|null
+    public function getProductsIdsAttribute()
     {
-        return $this->translation()->where('locale',app()->getLocale())?->first();
+        return $this->products->pluck('product_id');
     }
-
+    public function translate()
+    {
+        return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale(app()->getLocale());
+    }
 }

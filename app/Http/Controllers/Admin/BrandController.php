@@ -27,7 +27,7 @@ class BrandController extends Controller
     /**
      * @param BrandService $brandService
      */
-    public function __construct(BrandService   $brandService)
+    public function __construct(BrandService  $brandService)
     {
         $this->service = $brandService;
     }
@@ -52,9 +52,10 @@ class BrandController extends Controller
      */
     public function create(): \Inertia\Response
     {
-        return Inertia::render('Brands/Create', [
+        $response = [
             'brand' => BrandResource::make(new Brand()),
-        ]);
+        ];
+        return Inertia::render('Brands/Create', $response);
     }
 
     /**
@@ -72,14 +73,15 @@ class BrandController extends Controller
 
 
     /**
-     * @param Brand $brand
+     * @param Brand $brand;
      * @return \Inertia\Response
      */
     public function edit(Brand $brand): \Inertia\Response
     {
-        return Inertia::render('Brands/Edit', [
-            'brand' => BrandResource::make($brand->load(['media']))->resolve(),
-        ]);
+        $response = [
+          'brand' =>  BrandResource::make( $brand->load('media'))->resolve()
+        ];
+        return Inertia::render('Brands/Edit', $response);
     }
 
     /**

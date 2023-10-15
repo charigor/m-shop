@@ -1,6 +1,6 @@
-<div class="w-[30%] border p-5 ml-[20px]">
-        <table class="w-[100%] border-collapse">
-            <tbody class="bg-white w-[100%] my-4">
+
+        <table class="w-[390px] border-collapse">
+            <tbody class="bg-white my-4">
             @foreach($cartProducts as $product)
                 <tr class="border">
                     <td class="pl-4 py-2 text-left">

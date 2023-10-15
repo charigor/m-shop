@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\ProductUpdateIndex;
 use App\Http\Controllers\Admin\Traits\MediaUploadingTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\ProductCreateRequest;
@@ -22,49 +23,52 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ProductController extends Controller
 {
     use MediaUploadingTrait;
+
     private ProductService $service;
 
     /**
      * @param ProductService $productService
      */
-    public function __construct(ProductService  $productService)
+    public function __construct(ProductService $productService)
     {
         $this->service = $productService;
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): \Inertia\Response
     {
-        abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        abort_unless(Auth::user()->hasAnyRole(['admin']), ResponseAlias::HTTP_FORBIDDEN, '403 Forbidden');
         $data = $this->service->getItems($request);
         return Inertia::render('Products/Index', [
             'products' => ProductTableResource::collection($data),
             'table_search' => $request->get('search'),
             'table_filter' => $request->get('filter'),
-            'active_options' => createOptions(Product::ACTIVE,'All'),
+            'active_options' => createOptions(Product::ACTIVE, 'All'),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Inertia\Response
     {
 
         return Inertia::render('Products/Create', [
             'product' => ProductResource::make(new Product()),
             'categories' => CategoryResource::collection(Category::with(['translation'])->defaultOrder()->withDepth()->get()),
-            'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale',app()->getLocale())->get()->map(fn($item) => ['value' => $item->feature_id,'label' => $item->name] ),
+            'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale', app()->getLocale())->get()->map(fn($item) => ['value' => $item->feature_id, 'label' => $item->name]),
             'feature_value_options' => FeatureValueLang::with('featureValue')
-                ->where('locale',app()->getLocale())
+                ->where('locale', app()->getLocale())
                 ->get()
-                ->map(fn($item) => ['value' => $item->feature_value_id,'label' => $item->value,'parent' => $item->featureValue->feature_id]),
+                ->map(fn($item) => ['value' => $item->feature_value_id, 'label' => $item->value, 'parent' => $item->featureValue->feature_id]),
             'tax_options' => Product::TAXES,
         ]);
     }
@@ -73,28 +77,30 @@ class ProductController extends Controller
      * @param ProductCreateRequest $request
      * @return RedirectResponse
      */
-    public function store(ProductCreateRequest $request)
+    public function store(ProductCreateRequest $request): RedirectResponse
     {
-      $model =  $this->service->createItem($request);
-      return redirect()->route('product.edit',$model->id)->with('message',trans('messages.success.create'));
+        $model = $this->service->createItem($request);
+        return redirect()->route('product.edit', $model->id)->with('message', trans('messages.success.create'));
     }
 
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit(Product $product): \Inertia\Response
     {
-        return Inertia::render('Products/Edit', [
-            'product' => ProductResource::make($product->load(['media','categories','translation']))->resolve(),
+
+        $response = [
+            'product' => ProductResource::make($product->load(['media', 'categories', 'translation']))->resolve(),
             'categories' => CategoryResource::collection(Category::with(['translation'])->defaultOrder()->withDepth()->get()),
-            'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale',app()->getLocale())->get()->map(fn($item) => ['value' => $item->feature_id,'label' => $item->name] ),
+            'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale', app()->getLocale())->get()->map(fn($item) => ['value' => $item->feature_id, 'label' => $item->name]),
             'feature_value_options' => FeatureValueLang::with('featureValue')
-                ->where('locale',app()->getLocale())
+                ->where('locale', app()->getLocale())
                 ->get()
-                ->map(fn($item) => ['value' => $item->feature_value_id,'label' => $item->value,'parent' => $item->featureValue->feature_id] ),
+                ->map(fn($item) => ['value' => $item->feature_value_id, 'label' => $item->value, 'parent' => $item->featureValue->feature_id]),
             'tax_options' => Product::TAXES,
-        ]);
+        ];
+        return Inertia::render('Products/Edit', $response);
     }
 
     /**
@@ -104,8 +110,8 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product): RedirectResponse
     {
-        $product = $this->service->updateItem($product,$request);
-        return redirect()->route('product.edit',$product->id)->with('message',trans('messages.success.update'));
+        $model = $this->service->updateItem($product, $request);
+        return redirect()->route('product.edit', $model->id)->with('message', trans('messages.success.update'));
     }
 
     /**
@@ -114,28 +120,24 @@ class ProductController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $brands =  Product::whereIn('id',$request->ids)->get();
-        foreach($brands as $item){
+        $products = Product::whereIn('id', $request->ids)->get();
+        foreach ($products as $item) {
             $item->delete();
         }
-        return redirect()->route('brand.index')->with('message',trans('messages.success.delete'));
+        return redirect()->route('brand.index')->with('message', trans('messages.success.delete'));
     }
+
     /**
      * @param Request $request
      */
     public function slug(Request $request): JsonResponse
     {
-        $slug =  $this->service->setSlug(ProductLang::class,'link_rewrite',$request->name);
+        $slug = $this->service->setSlug(ProductLang::class, 'link_rewrite', $request->name);
         return response()->json(['slug' => $slug]);
     }
-    public  function storeMedia(Request $request): JsonResponse
-    {
 
-        return $this->saveMedia($request);
-    }
-    public function deleteFeature(Request $request,Product $product): RedirectResponse
+    public function storeMedia(Request $request): JsonResponse
     {
-         $this->service->deleteProductFeature($product,$request);
-        return redirect()->back()->with('message',trans('messages.success.delete'));
+        return $this->saveMedia($request);
     }
 }

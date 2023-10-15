@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class FeatureProduct extends Model
+class FeatureValueProduct extends Model
 {
     use HasFactory;
-    public $table = 'feature_product';
+    public $table = 'feature_value_product';
     public $timestamps = false;
     protected $fillable = [
         'product_id',
@@ -21,15 +21,4 @@ class FeatureProduct extends Model
     {
         return $this->hasMany(Product::class,'product_id');
     }
-
-//    public static function getData($where = null)
-//    {
-//        $query =  DB::table('feature_product');
-//        if(!is_null($where )) {
-//            foreach($where as $k => $v){
-//                $query->where($k, $v);
-//            }
-//        }
-//        return $query->get();
-//    }
 }
