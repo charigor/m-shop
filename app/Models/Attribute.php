@@ -33,4 +33,8 @@ class Attribute extends Model
     {
         return $this->belongsTo(AttributeGroup::class,'attribute_group_id');
     }
+    public function translate()
+    {
+        return $this->hasOne(AttributeLang::class)->whereLocale(app()->getLocale());
+    }
 }

@@ -23,6 +23,7 @@ import debounce from "lodash.debounce";
 
 import {getActiveLanguage,wTrans} from "laravel-vue-i18n";
 import {useMainStore} from "@/stores/main";
+import Combinations from "@/Components/Partials/Combinations/Combinations.vue";
 
 const props = defineProps({
     product: {
@@ -171,6 +172,9 @@ onMounted(() => {
                         <li role="product">
                             <button type="button" @click="tabPart('main')" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'main'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
                                 {{$t(`page.${pageName}.tabs.main`)}}
+                            </button>
+                            <button type="button" @click="tabPart('type')" v-if="form.type ==='2'" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'type'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
+                              {{$t(`page.${pageName}.tabs.type`)}}
                             </button>
                             <button type="button" @click="tabPart('price')" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'price'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
                                 {{$t(`page.${pageName}.tabs.price`)}}
@@ -380,6 +384,7 @@ onMounted(() => {
                                 </div>
                             </div>
                         </template>
+
                         <template v-if="activeTab === 'price'">
                             <div class="col-span-4">
                                 <div class="grid grid-cols-5 gap-10">
@@ -476,6 +481,9 @@ onMounted(() => {
                                     </div>
                                 </div>
                             </div>
+                        </template>
+                        <template v-if="activeTab === 'type'">
+                          <Combinations :attributes="props.attributes"></Combinations>
                         </template>
                     </div>
                     <div class="flex justify-end">

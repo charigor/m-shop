@@ -33,4 +33,16 @@ class AttributeGroup extends Model
     {
         return $this->hasMany(AttributeGroupLang::class);
     }
+
+    /**
+     * @return HasMany
+     */
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(Attribute::class);
+    }
+    public function translate()
+    {
+        return $this->hasOne(AttributeGroupLang::class)->whereLocale(app()->getLocale());
+    }
 }

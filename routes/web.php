@@ -19,14 +19,9 @@ use App\Http\Controllers\Admin\UploadTemporaryImageController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
-use App\Models\Brand;
-use App\Services\Filter\SearchRepository;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,17 +36,18 @@ use Illuminate\Support\Facades\App;
 
 
 Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
-//Route::get('/',[MainController::class, 'search'])->name('search');
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-//Route::get('/',[MainController::class, 'index']);
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::prefix('admin')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('HomeView');
+        })->middleware(['auth', 'verified'])->name('dashboard');
         Route::get('/messages', [MessageController::class, 'index'])->name('message.index');
         Route::post('/messages', [MessageController::class, 'store'])->name('message.store');
         Route::post('/messages/notifications', [MessageController::class, 'getNotify'])->name('message.notify');
@@ -81,16 +77,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/permissions/delete', [PermissionController::class, 'destroy'])->name('permission.delete');
 
         /*Categories*/
-//        Route::post('/categories/upload', UploadTemporaryImageController::class);
-//        Route::get('/categories/create', [CategoryController::class, 'create'])->name('category.create');
-
-
-//        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
-//        Route::put('/categories/{category}/update', [CategoryController::class, 'update'])->name('category.update');
-//        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
-
-
-
         Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia'])->name('categories.media');
         Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('categories.delete');
         Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('categories.slug');
@@ -140,42 +126,29 @@ Route::middleware('auth')->group(function () {
         Route::get('/select',[SelectController::class, 'load']);
         Route::post('/language', function(Request $request){
             Session()->put('adminLocale',$request->lang);
-//            App::setLocale($request->lang);
+            app()->setLocale($request->lang);
             return Response()->json(['locale' => session('adminLocale')]);
         })->name('language');
         Route::get('/test', [TestController::class, 'index'])->name('test.index');
     })->middleware('setLocale');
 
-
-//    Route::prefix('admin')->group(function () {
-//        Route::get('/users/table', [UserController::class,'table']);
-//        Route::delete('/users/delete-many', [UserController::class,'destroyMany']);
-//        Route::apiResource('users', UserController::class);
-//
-//
-//        Route::get('/roles/table', [RoleController::class,'table']);
-//        Route::delete('/roles/delete-many', [RoleController::class,'destroyMany']);
-//        Route::apiResource('roles', RoleController::class);
-//
-//        Route::get('/permissions/table', [PermissionController::class,'table']);
-//        Route::delete('/permissions/delete-many', [PermissionController::class,'destroyMany']);
-//        Route::apiResource('permissions', PermissionController::class);
-//    });
 });
 
-Route::group(['as' => 'front.','middleware' => ['Localization']],function () {
-    Route::get('language/{locale}', function ($locale) {
-        app()->setLocale($locale);
-        session()->put('locale', $locale);
-        return redirect()->back();
-    })->name('language.locale');
+Route::group(['as' => 'front.','middleware' => ['setLocale']],function () {
+
 });
-Route::group(['as' => 'front.','middleware' => ['Localization']],function () {
+Route::group(['as' => 'front.','middleware' => ['setLocale']],function () {
+
     Route::get('/', [MainController::class, 'index'])->name('main');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
     Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
     Route::get('brand/{brand:slug}', [\App\Http\Controllers\Front\BrandController::class, 'show'])->name('brand.show');
+    Route::get('language/{locale}', function ($locale) {
+        app()->setLocale($locale);
+        session()->put('locale', $locale);
+        return redirect()->back();
+    })->name('language.locale');
 });
 
 require __DIR__.'/auth.php';

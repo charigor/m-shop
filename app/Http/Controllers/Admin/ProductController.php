@@ -10,6 +10,8 @@ use App\Http\Requests\Admin\Product\ProductUpdateRequest;
 use App\Http\Resources\Admin\Product\ProductTableResource;
 use App\Http\Resources\Admin\Product\ProductResource;
 use App\Http\Resources\Category\CategoryResource;
+use App\Models\Attribute;
+use App\Models\AttributeGroup;
 use App\Models\Category;
 use App\Models\Feature;
 use App\Models\FeatureLang;
@@ -70,6 +72,7 @@ class ProductController extends Controller
                 ->get()
                 ->map(fn($item) => ['value' => $item->feature_value_id, 'label' => $item->value, 'parent' => $item->featureValue->feature_id]),
             'tax_options' => Product::TAXES,
+            'attributes' => AttributeGroup::with(['attributes.translate','translate'])->get()
         ]);
     }
 
