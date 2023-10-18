@@ -24,6 +24,7 @@ import debounce from "lodash.debounce";
 
 import {getActiveLanguage,wTrans} from "laravel-vue-i18n";
 import {useMainStore} from "@/stores/main";
+import Combinations from "@/Components/Partials/Combinations/Combinations.vue";
 
 defineComponent({
     LayoutAuthenticated,
@@ -52,6 +53,10 @@ const props = defineProps({
     tax_options: {
         type: Object,
         required: true,
+    },
+    attributes: {
+      type: Object,
+      required: true,
     }
 });
 const pageName = "product";
@@ -146,6 +151,7 @@ const changeTax = (e) => {
     form.price = (Number(taxPrice.value) / Number((1 + (Number(stage) / 100)))).toFixed(6)
 
 }
+
 </script>
 <template>
     <LayoutAuthenticated>
@@ -162,6 +168,9 @@ const changeTax = (e) => {
                     <li role="product">
                         <button type="button" @click="tabPart('main')" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'main'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
                             {{$t(`page.${pageName}.tabs.main`)}}
+                        </button>
+                        <button type="button" @click="tabPart('type')" v-if="form.type ==='2'" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'type'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
+                            {{$t(`page.${pageName}.tabs.type`)}}
                         </button>
                         <button type="button" @click="tabPart('price')" :class="{ 'bg-gray-300 dark:bg-blue-600': activeTab === 'price'}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
                             {{$t(`page.${pageName}.tabs.price`)}}
@@ -467,6 +476,11 @@ const changeTax = (e) => {
                             </div>
                         </div>
                     </template>
+                    <template v-if="activeTab === 'type'">
+
+                      <Combinations :attributes="props.attributes" :addAttributes="(e) => console.log(e)"></Combinations>
+
+                  </template>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="right text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{$t('global.save')}}</button>

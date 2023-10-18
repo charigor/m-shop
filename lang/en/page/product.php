@@ -42,6 +42,7 @@ return [
     ],
     "tabs" => [
         "main" => "Main",
+        "type" => "Combinations",
         "delivery" => "Delivery",
         "price" => "Price",
         "seo" => "Seo",
