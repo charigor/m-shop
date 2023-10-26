@@ -27,18 +27,37 @@ class CheckoutAside extends Component
         $this->cartProducts = $this->cartService->getItems();
         $this->summary = $this->cartService->getTotal();
     }
-    public function addQuantity(int $productID){
-        if($product = Product::where('id',$productID)->active()->first()) {
-            if ($product->quantity > 1) {
-                $this->cartService->addQuantity($productID);
+    /**
+     * @param int $productID
+     * @param int|null $attributeID
+     * @return void
+     */
+    public function addQuantity(int $productID, int|null $attributeID = null): void
+    {
+        if ($product = Product::when($attributeID,fn($q) => $q->whereHas('attributes', fn($q) => $q->where('id',$attributeID)))->where('id',$productID)->active()->first()) {
+            if($attributeID) {
+                if ($product->attributes()->where('id', $attributeID)->first()->quantity > 1) {
+                    $this->cartService->addQuantity($product->id, $attributeID);
+                }
+            }else{
+                if($product->quantity > 1) $this->cartService->addQuantity($product->id);
             }
             $this->emit('cartAddedOrUpdated');
         }
     }
-    public function removeQuantity(int $productID){
-        if($product = Product::where('id',$productID)->active()->first()) {
-            if ($product->quantity > 1) {
-                $this->cartService->removeQuantity($productID);
+    /**
+     * @param int $productID
+     * @param int|null $attributeID
+     * @return void
+     */
+
+    public function removeQuantity(int $productID, int|null $attributeID = null): void
+    {
+        if ($product = Product::when($attributeID,fn($q) => $q->whereHas('attributes', fn($q) => $q->where('id',$attributeID)))->where('id',$productID)->active()->first()) {
+            if($attributeID) {
+                if ($product->attributes()->where('id', $attributeID)->first()->quantity > 1)  $this->cartService->removeQuantity($product->id, $attributeID);
+            }else{
+                if($product->quantity > 1) $this->cartService->removeQuantity($product->id);
             }
             $this->emit('cartAddedOrUpdated');
         }

@@ -16,6 +16,9 @@ class FeatureValue extends Model
         'feature_id',
         'custom'
     ];
+    protected $with = [
+        'translate'
+    ];
 
     /**
      * @return HasMany
@@ -23,6 +26,13 @@ class FeatureValue extends Model
     public function translation(): HasMany
     {
         return $this->hasMany(FeatureValueLang::class);
+    }
+    /**
+     * @return mixed
+     */
+    public function translate(): mixed
+    {
+        return $this->hasOne(FeatureValueLang::class)->whereLocale(app()->getLocale());
     }
     /**
      * @return BelongsTo

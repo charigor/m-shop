@@ -45,6 +45,7 @@
                         </div>
                     </div>
                     @foreach($facet as $key => $item)
+                        @if(count($item))
                         <div x-data="{ open: true }">
                             <button
                                 @click.prevent="open = !open"
@@ -89,6 +90,7 @@
                                 </ul>
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
@@ -98,13 +100,13 @@
                 @foreach($hits as $product)
                     <div class="z-1 h-100 sm: md:w-[25%] lg:w-[20%] xl:w-[16.66667%] relative">
                         <div class="m-[4px] relative">
-                            <a href="#"
+                            <a href="{{route('front.product.show',$product->translate->link_rewrite)}}"
                                class="block bg-transparent z-1 text-decoration-none text-center overflow-hidden border-0 relative h-[250px]">
                                 <div
                                     class="flex items-center justify-center absolute overflow-hidden left-0 right-0 top-0 bottom-0">
                                     <img width="250px" height="250px"
                                          class="mh-100 text-center mw-100 h-auto w-auto text-sm"
-                                         src="{{$product->getFirstMediaUrl('image')}}" alt="product image"/>
+                                         src="{{$product->mainImage->getFullUrl()}}" alt="product image"/>
                                 </div>
                             </a>
                         </div>

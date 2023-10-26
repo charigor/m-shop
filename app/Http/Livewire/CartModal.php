@@ -28,7 +28,6 @@ class CartModal extends  ModalComponent
     }
     public function render()
     {
-
         return view('livewire.cart-modal',['cartProducts' => $this->cartProducts,'summary' => $this->summary]);
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-wrap my-2 items-center">
-        <span>
-            <input type="checkbox" v-model="model" :value="value" :class="props.class" :id="`checkbox${label}${value}`" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+        <span :class="{'opacity-25' : disabled}">
+            <input :disabled="disabled"  type="checkbox" v-model="model" :value="value" :class="props.class" :id="`checkbox${label}${value}`" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 disabled:opacity-25"/>
             <label :for="`checkbox${label}${value}`" class="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300" v-html="label"></label>
        </span>
     </div>
@@ -13,6 +13,7 @@ const props = defineProps({
     modelValue: { type: [Array, Boolean] },
     value: { type: [Boolean, Object,Number] },
     label: { type: String },
+    disabled: {type: [Boolean]},
     class: {
         type: [String,null],
         default: null

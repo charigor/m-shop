@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ProductTypeEnum;
 use App\Events\ProductUpdateIndex;
 use App\Http\Controllers\Admin\Traits\MediaUploadingTrait;
 use App\Http\Controllers\Controller;
@@ -42,7 +43,8 @@ class ProductController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * @param Request $request
+     * @return \Inertia\Response
      */
     public function index(Request $request): \Inertia\Response
     {
@@ -58,7 +60,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @return \Inertia\Response
      */
     public function create(): \Inertia\Response
     {
@@ -78,23 +80,24 @@ class ProductController extends Controller
 
     /**
      * @param ProductCreateRequest $request
-     * @return RedirectResponse
+     * @return void
      */
-    public function store(ProductCreateRequest $request): RedirectResponse
+    public function store(ProductCreateRequest $request) : void
     {
         $model = $this->service->createItem($request);
-        return redirect()->route('product.edit', $model->id)->with('message', trans('messages.success.create'));
+
+        to_route('product.edit', $model->id)->with(['message' => trans('messages.success.create'),'fragment' => $request->has('hashback') ? $request->hashback :'']);
     }
 
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Product $product
+     * @return \Inertia\Response
      */
     public function edit(Product $product): \Inertia\Response
     {
-
         $response = [
-            'product' => ProductResource::make($product->load(['media', 'categories', 'translation']))->resolve(),
+            'product' => ProductResource::make($product->load(['media', 'categories', 'translation','attributes.attributes.translate','attributes.media']))->resolve(),
             'categories' => CategoryResource::collection(Category::with(['translation'])->defaultOrder()->withDepth()->get()),
             'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale', app()->getLocale())->get()->map(fn($item) => ['value' => $item->feature_id, 'label' => $item->name]),
             'feature_value_options' => FeatureValueLang::with('featureValue')
@@ -102,6 +105,7 @@ class ProductController extends Controller
                 ->get()
                 ->map(fn($item) => ['value' => $item->feature_value_id, 'label' => $item->value, 'parent' => $item->featureValue->feature_id]),
             'tax_options' => Product::TAXES,
+            'attributes' => AttributeGroup::with(['attributes.translate','translate'])->get()
         ];
         return Inertia::render('Products/Edit', $response);
     }
@@ -109,12 +113,12 @@ class ProductController extends Controller
     /**
      * @param ProductUpdateRequest $request
      * @param Product $product
-     * @return RedirectResponse
+     * @return void
      */
-    public function update(ProductUpdateRequest $request, Product $product): RedirectResponse
+    public function update(ProductUpdateRequest $request, Product $product): void
     {
         $model = $this->service->updateItem($product, $request);
-        return redirect()->route('product.edit', $model->id)->with('message', trans('messages.success.update'));
+        to_route('product.edit', $model->id)->with(['message' => trans('messages.success.update'),'fragment' => $request->has('hashback') ? $request->hashback :'']);
     }
 
     /**
@@ -142,5 +146,15 @@ class ProductController extends Controller
     public function storeMedia(Request $request): JsonResponse
     {
         return $this->saveMedia($request);
+    }
+
+    /**
+     * @param Product $product
+     * @return void
+     */
+    public function removeAttributes(Product $product): void
+    {
+        $this->service->removeAttributes($product);
+        to_route('product.edit', $product->id)->with(['message' => trans('messages.success.update')]);
     }
 }

@@ -18,7 +18,9 @@ class Attribute extends Model
         'color',
         'position'
     ];
-
+    protected $with = [
+        'translate'
+    ];
     /**
      * @return HasMany
      */
@@ -35,6 +37,6 @@ class Attribute extends Model
     }
     public function translate()
     {
-        return $this->hasOne(AttributeLang::class)->whereLocale(app()->getLocale());
+        return $this->hasOne(AttributeLang::class)->whereLocale(session('locale') ?? app()->getLocale());
     }
 }
