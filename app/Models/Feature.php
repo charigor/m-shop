@@ -18,6 +18,9 @@ class Feature extends Model
         'guard_name',
         'position'
     ];
+    protected $with = [
+        'translate'
+    ];
     /**
      * @return HasMany
      */
@@ -25,7 +28,13 @@ class Feature extends Model
     {
         return $this->hasMany(FeatureLang::class);
     }
-
+    /**
+     * @return mixed
+     */
+    public function translate(): mixed
+    {
+        return $this->hasOne(FeatureLang::class)->whereLocale(app()->getLocale());
+    }
     /**
      * @return HasMany
      */

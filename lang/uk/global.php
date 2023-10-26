@@ -6,6 +6,7 @@ return [
     'delete' => 'Видалити',
     "update" => "Оновити",
     "save"   =>  "Зберегти",
+    'generate' => 'Згенерувати',
     "search" =>  "Пошук",
     "no_items_found" => "Елементів не знайдено.",
     "action" => "Дія",
@@ -50,5 +51,10 @@ return [
         "messages" => "Сповіщення",
         "languages" => "Мови",
         "Logout" => "Вихід"
+    ],
+    "confirm" => [
+        "messages" => [
+            "delete_item" =>  "Ви впевнені що хочете видалити цей елемент?"
+        ]
     ]
 ];

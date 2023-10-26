@@ -12,6 +12,7 @@ return [
         "quantity" => "Кількість",
         "reference" => "Артикул",
         "active" => "Статус",
+        "attributes" => "Атрибути",
         "created_at" => "Дата створення",
         "updated_at" => "Дата оновлення",
     ],
@@ -62,7 +63,17 @@ return [
             "add" => "Додати характеристику"
         ],
         "price" => [
-            "title" => "Ціна"
+            "title" => "Ціна",
+            "fields" => [
+                "price" => "Ціна",
+                "price_with_tax" => "Ціна з податком",
+                "tax" => "Податок",
+                "unit_price_ratio" => "Ціна за одиницю",
+                "unity" => "Міра"
+            ],
+            "placeholders" => [
+                "unity" => "За кг за литр"
+            ]
         ],
         "reference" => [
             "title" => "Артикул"

@@ -6,6 +6,7 @@ return [
     "delete" => "Delete",
     "update" => "Update",
     "save"   =>  "Save",
+    'generate' => 'Generate',
     'search' =>  'Search',
     "no_items_found" => "No items found.",
     "action" => "Action",
@@ -50,5 +51,10 @@ return [
         "messages" => "Messages",
         "languages" => "Languages",
         "Logout" => "Logout"
+    ],
+    "confirm" => [
+        "messages" => [
+            "delete_item" =>  "Are you sure you want to delete this element?"
+        ]
     ]
 ];

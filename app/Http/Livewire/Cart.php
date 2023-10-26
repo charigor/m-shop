@@ -26,6 +26,7 @@ class Cart extends Component
         $this->cart = $this->cartService->getItems();
         $this->total = $this->cartService->getTotal();
         $this->totalQuantity = $this->cartService->getTotalQuantity();
+        $this->dispatchBrowserEvent('triggero');
         return view('livewire.cart',['cartPrice' => $this->total,'cartQuantity' => $this->totalQuantity,'cart' => $this->cart]);
     }
 }

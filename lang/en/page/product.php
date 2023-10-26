@@ -14,6 +14,7 @@ return [
         "quantity" => "Quantity",
         "reference" => "Reference",
         "active" => "Active",
+        "attributes" => "Attributes",
         "created_at" => "Created at",
         "updated_at" => "Updated at",
     ],
@@ -61,7 +62,17 @@ return [
             "add" => "Add Feature"
         ],
         "price" => [
-            "title" => "Price"
+            "title" => "Price",
+            "fields" => [
+                "price" => "Price",
+                "price_with_tax" => "Price with tax",
+                "tax" => "Tax",
+                "unit_price_ratio" => "Price per unit",
+                "unity" => "Measure"
+            ],
+            "placeholders" => [
+                "unity" => "Per kg per liter"
+            ]
         ],
         "reference" => [
             "title" => "Reference"

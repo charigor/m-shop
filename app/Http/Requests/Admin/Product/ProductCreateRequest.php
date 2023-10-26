@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Admin\Product;
 
+use App\Enums\ProductTypeEnum;
 use App\Models\Category;
 use App\Models\Lang;
 use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class ProductCreateRequest extends FormRequest
 {
@@ -59,9 +61,11 @@ class ProductCreateRequest extends FormRequest
             ['unit_price_ratio' => 'numeric|min:0|nullable'],
             ['tax_id' => 'integer|nullable'],
             ['brand_id' => 'integer|nullable'],
+            ['type' => [new Enum(ProductTypeEnum::class)]],
             ['features' => 'array'],
             ['features*.feature_id'    => 'integer'],
-            ['features*.feature_value_id' => 'integer']
+            ['features*.feature_value_id' => 'integer'],
+            ['attributes' => 'array']
         );
     }
     public function attributes(): array

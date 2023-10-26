@@ -28,9 +28,10 @@ class Cart implements CartInterface
 
     }
     public function add($item){
+
        $cart =  $this->model->where('id',$this->cookieCart)->first();
-       if($cart->cartItems()->where('product_id',$item['product_id'])->exists()){
-           $this->addQuantity($item['product_id']);
+       if($cart->cartItems()->where('product_id',$item['product_id'])->when(isset($item['attribute_id']),fn($q) => $q->where('attribute_id',$item['attribute_id']))->exists()){
+           $this->addQuantity($item['product_id'],$item['attribute_id'] ?? null);
        }else{
            $cart->cartItems()->create($item);
        }
@@ -42,22 +43,22 @@ class Cart implements CartInterface
     public function getItems(){
         return  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->get();
     }
-    public function removeQuantity($product_id)
+    public function removeQuantity($product_id,$attribute_id = null)
     {
-       $cartItem =  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->first();
+       $cartItem =  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->when($attribute_id,fn($q) => $q->where('attribute_id',$attribute_id))->first();
        $cartItem->quantity =  $cartItem->quantity - 1;
        $cartItem->save();
        return $this->get();
     }
-    public function addQuantity($product_id){
-        $cartItem =  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->first();
+    public function addQuantity($product_id,$attribute_id = null){
+        $cartItem =  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->when($attribute_id,fn($q) => $q->where('attribute_id',$attribute_id))->first();
         $cartItem->quantity =  $cartItem->quantity + 1;
         $cartItem->save();
         return $this->get();
 
     }
-    public function removeItem($product_id){
-       return  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->delete();
+    public function removeItem($product_id,$attribute_id = null){
+       return  $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->where('product_id',$product_id)->when($attribute_id,fn($q) => $q->where('attribute_id',$attribute_id))->delete();
     }
     public function getTotal(){
         return $this->modelItem->whereHas('cart',fn($q) => $q->where('id',$this->cookieCart))->get()->reduce(function (?int $carry,$item) {

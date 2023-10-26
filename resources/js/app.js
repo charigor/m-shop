@@ -9,13 +9,16 @@ import { InertiaProgress } from '@inertiajs/progress'
 import { useStyleStore } from "./stores/style.js";
 import { darkModeKey, styleKey } from "./config.js";
 import { createApp, h } from "vue";
-import { createInertiaApp,router } from "@inertiajs/vue3";
+import { router } from '@inertiajs/vue3'
+import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import '@vuepic/vue-datepicker/dist/main.css'
 import VClickOutside from "@/VClickOutside.js"
 import { Link } from '@inertiajs/vue3';
 import { i18nVue } from 'laravel-vue-i18n'
+
+
 
 
 import "vue-select/dist/vue-select.css";
@@ -57,8 +60,6 @@ createInertiaApp({
       .use(ZiggyVue, Ziggy)
       .use(Link)
         .use(i18nVue, {
-
-
             resolve: async lang => {
                 const langs = import.meta.glob('../../lang/*.json');
                 return await langs[`../../lang/${lang}.json`]();

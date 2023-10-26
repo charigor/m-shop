@@ -2,20 +2,16 @@
 
 namespace App\Models;
 
-use App\Services\Datatables\FeatureValues\FeatureValues;
-use App\Services\Filter\SearchRepository;
-use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
@@ -44,6 +40,7 @@ class Product extends Model implements HasMedia
         'depth',
         'weight',
         'active',
+        'type'
     ];
     const  ACTIVE = [
         0 => 'Inactive',
@@ -63,12 +60,11 @@ class Product extends Model implements HasMedia
     protected $casts = [
         'created_at' => 'datetime:d-m-Y h:m:s',
         'updated_at' => 'datetime:d-m-Y h:m:s',
-        'features' => 'array',
     ];
 
-//    protected $with = [
-//        'category.translation'
-//    ];
+    protected $with = [
+        'translate'
+    ];
 
     public function registerMediaConversions(Media $media = null): void
     {
@@ -90,6 +86,10 @@ class Product extends Model implements HasMedia
     public function translation(): HasMany
     {
         return $this->hasMany(ProductLang::class);
+    }
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(AttributeProduct::class);
     }
     /**
      * @return Model|null
@@ -126,6 +126,10 @@ class Product extends Model implements HasMedia
         $query->where('active', array_search('Active',self::ACTIVE));
     }
 
+    /**
+     * @return array
+     */
+
     public function toSearchableArray(): array
     {
         return [
@@ -141,12 +145,34 @@ class Product extends Model implements HasMedia
             'created_at' => $this->created_at
         ];
     }
-    public function searchableAs()
+
+    /**
+     * @return mixed
+     */
+    public function translate(): mixed
+    {
+        return $this->hasOne(ProductLang::class)->whereLocale(app()->getLocale());
+    }
+
+    /**
+     * @return string
+     */
+    public function searchableAs(): string
     {
         return 'products';
     }
     protected function makeAllSearchableUsing($query): Builder
     {
         return $query->with(['categories','features']);
+    }
+
+
+    public function getMainImageAttribute()
+    {
+        return  $this->getMedia('image', ['main_image' => 1])->first();
+    }
+    public function getSortedMediaAttribute()
+    {
+        return  $this->getMedia('image')->sortBy(fn($value) => $value->custom_properties['order']);
     }
 }
