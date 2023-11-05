@@ -8,9 +8,10 @@
         <div class="mb-2">
             <p class="text-sm"><span>Артикул:</span> {{$productAttribute ? $productAttribute->reference : $product->reference }} </p>
         </div>
-        <div class="text-3xl mb-2">{{priceFormat(isset($productAttribute) ? $productAttribute->price : $product->price,2)}} грн</div>
+        <div class="text-3xl mb-2">{{priceFormat(isset($productAttribute) ? $productAttribute->cost : $product->cost,2)}} грн</div>
+        @if(!auth()->user())
         <div class="flex items-center"><i class="mdi mdi-sale-outline text-red-800 text-2xl mr-2"></i><p class="text-xs text-red-800">Отримай знижку 5% за реєстрацію на сайті</p></div>
-
+        @endif
         <x-product-attributes :attr="$attributes" />
 
         <div class="my-2">

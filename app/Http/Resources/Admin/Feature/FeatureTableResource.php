@@ -14,8 +14,8 @@ class FeatureTableResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $default =  parent::toArray($request);
-        $default['amount'] =  $this->amount;
+        $default = parent::toArray($request);
+        $default['amount'] = $this->amount;
 
         return $default;
     }

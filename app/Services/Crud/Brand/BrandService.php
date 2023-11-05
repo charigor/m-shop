@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Crud\Brand;
 
 use App\Models\Brand;
@@ -18,16 +17,15 @@ class BrandService extends BaseCrudService
     }
 
     /**
-     * @param $request
-     * @param null $params
+     * @param  null  $params
      * @return mixed
      */
     public function getItems($request, $params = null)
     {
         return (new Brands)->table($request);
     }
+
     /**
-     * @param $request
      * @return Builder|Model|void
      */
     public function createItem($request)
@@ -39,15 +37,10 @@ class BrandService extends BaseCrudService
 
         $this->addMedia($model, $data, ['image']);
 
-        return  $model;
+        return $model;
     }
 
-    /**
-     * @param $model
-     * @param $request
-     * @return mixed
-     */
-    public function updateItem($model,$request): mixed
+    public function updateItem($model, $request): mixed
     {
         $data = $request->validated();
         $model->slug = null;
@@ -55,39 +48,35 @@ class BrandService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang']);
         foreach ($prepareData as $item) {
             $model->translation()->where('locale', $item['locale'])->update($item);
-        };
+        }
 
         $this->addMedia($model, $data, ['image']);
 
         $this->removeMedia($model, $data, ['image']);
+
         return $model->refresh();
 
-
     }
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
-    public function removeMedia($model, $data, array $collections = []){
-        foreach($collections as $name){
-            foreach($model->getMedia($name) as $media){
-                if(!in_array($media->file_name,$data[$name])) {$media->delete();}
+
+    public function removeMedia($model, $data, array $collections = [])
+    {
+        foreach ($collections as $name) {
+            foreach ($model->getMedia($name) as $media) {
+                if (! in_array($media->file_name, $data[$name])) {
+                    $media->delete();
+                }
             }
         }
 
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
     public function addMedia($model, $data, array $collections = [])
     {
         foreach ($collections as $name) {
             foreach ($data[$name] as $file) {
-                if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->toMediaCollection($name);
+                if (file_exists(storage_path('app/public/tmp/uploads/'.$file))) {
+                    $model->addMedia(storage_path('app/public/tmp/uploads/'.$file))->toMediaCollection($name);
+                }
             }
         }
     }

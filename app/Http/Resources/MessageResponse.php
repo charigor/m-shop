@@ -15,8 +15,8 @@ class MessageResponse extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'body'       => $this->body,
+            'id' => $this->id,
+            'body' => $this->body,
             'created_at' => $this->created_at->diffForHumans(),
         ];
     }

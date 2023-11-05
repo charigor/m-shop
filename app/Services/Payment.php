@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Services;
 
-interface Payment {
-
+interface Payment
+{
     public function pay();
 }

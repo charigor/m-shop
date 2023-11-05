@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Crud\Category;
 
 use App\Models\Category;
@@ -12,7 +11,6 @@ use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 class CategoryService extends BaseCrudService
 {
@@ -22,17 +20,14 @@ class CategoryService extends BaseCrudService
     }
 
     /**
-     * @param $request
-     * @param null $params
-     * @return mixed
+     * @param  null  $params
      */
     public function getItems($request, $params = null): mixed
     {
-        return (new Categories)->table($request,$params);
+        return (new Categories)->table($request, $params);
     }
 
     /**
-     * @param $request
      * @return Builder|Model|void
      */
     public function createItem($request)
@@ -42,7 +37,7 @@ class CategoryService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['title', 'link_rewrite']);
 
         $category->translation()->createMany($prepareData);
-        if (!$data['parent_id'] == 0) {
+        if (! $data['parent_id'] == 0) {
             $node = $this->model::find($data['parent_id']);
             $node->appendNode($category);
         }
@@ -52,12 +47,7 @@ class CategoryService extends BaseCrudService
         return $category;
     }
 
-    /**
-     * @param $model
-     * @param $request
-     * @return mixed
-     */
-    public function updateItem($model,$request): mixed
+    public function updateItem($model, $request): mixed
     {
         $data = $request->validated();
 
@@ -65,8 +55,8 @@ class CategoryService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['title', 'link_rewrite']);
         foreach ($prepareData as $item) {
             $model->translation()->where('locale', $item['locale'])->update($item);
-        };
-        if (!$data['parent_id'] == 0) {
+        }
+        if (! $data['parent_id'] == 0) {
 
             $node = $this->model::find($data['parent_id']);
             $node->appendNode($model);
@@ -77,74 +67,64 @@ class CategoryService extends BaseCrudService
         $this->addMedia($model, $data, ['cover_image', 'menu_thumbnail']);
 
         $this->removeMedia($model, $data, ['cover_image', 'menu_thumbnail']);
-        return $model->refresh();
 
+        return $model->refresh();
 
     }
 
-    /**
-     * @param $request
-     * @return Response
-     */
     public function sortItem($request): Response
     {
         $data = $request->all();
 
-        foreach($data['el'] as $key => $item){
+        foreach ($data['el'] as $key => $item) {
             unset($data['el'][$key]['active']);
         }
-        if($data['id'] === 'categories')
-        {
+        if ($data['id'] === 'categories') {
             $this->model::rebuildTree($data['el']);
-        }else{
-            $node =  $this->model::find($data['id']);
-            $this->model::rebuildSubtree($node,$data['el']);
+        } else {
+            $node = $this->model::find($data['id']);
+            $this->model::rebuildSubtree($node, $data['el']);
         }
+
         return response()->noContent();
     }
 
-    /**
-     * @param $model
-     * @param $slug_field
-     * @param $slug_from
-     */
     public function setSlug($model, $slug_field, $slug_from): string
     {
-        return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : "";
+        return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : '';
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
-    public function removeMedia($model, $data, array $collections = []){
-        foreach($collections as $name){
-            foreach($model->getMedia($name) as $media){
-                if(!in_array($media->file_name,$data[$name])) {$media->delete();}
+    public function removeMedia($model, $data, array $collections = [])
+    {
+        foreach ($collections as $name) {
+            foreach ($model->getMedia($name) as $media) {
+                if (! in_array($media->file_name, $data[$name])) {
+                    $media->delete();
+                }
             }
         }
 
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
     public function addMedia($model, $data, array $collections = [])
     {
         foreach ($collections as $name) {
             foreach ($data[$name] as $file) {
-                if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->toMediaCollection($name);
+                if (file_exists(storage_path('app/public/tmp/uploads/'.$file))) {
+                    $model->addMedia(storage_path('app/public/tmp/uploads/'.$file))->toMediaCollection($name);
+                }
             }
         }
     }
+
     public function deleteItems($request)
     {
-        $products =  Product::whereHas('categories',function($q) use($request){ $q->whereIn('id',$request->ids);})->get();
-        $result = $this->model->whereIn('id',$request->ids)->delete();
+        $products = Product::whereHas('categories', function ($q) use ($request) {
+            $q->whereIn('id', $request->ids);
+        })->get();
+        $result = $this->model->whereIn('id', $request->ids)->delete();
         $products->searchable();
+
         return $result;
     }
 }

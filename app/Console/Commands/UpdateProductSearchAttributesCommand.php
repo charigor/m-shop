@@ -27,10 +27,19 @@ class UpdateProductSearchAttributesCommand extends Command
      */
     public function handle()
     {
-        $this->info('here');
         $client = new Client('meilisearch:7700');
         $client->index('products')->updateSortableAttributes(
-Product::SORTABLE
+            Product::SORTABLE
+        );
+        $client->index('products')->updateRankingRules([
+            'quantity:desc',
+            'words',
+            'typo',
+            'proximity',
+            'attribute',
+            'sort',
+            'exactness',
+        ]
         );
         $client->index('products')->updateFilterableAttributes(Product::FILTERABLE);
 

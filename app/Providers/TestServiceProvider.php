@@ -5,8 +5,6 @@ namespace App\Providers;
 use App\Models\Lang;
 use App\Services\PrivateService;
 use App\Services\StripeService;
-use App\Services\Test\TestService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,9 +28,10 @@ class TestServiceProvider extends ServiceProvider
             if ($request->payment === 'stripe') {
                 return new StripeService();
             }
-                return new PrivateService();
+
+            return new PrivateService();
         });
-        if (!$this->app->runningInConsole()) {
+        if (! $this->app->runningInConsole()) {
             $this->app->singleton('shopLanguages', function ($app) {
                 return Lang::whereActive(1)->get()->pluck('code');
             });

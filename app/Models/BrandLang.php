@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BrandLang extends Model
 {
     use HasFactory;
+
     public $table = 'brand_lang';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -19,12 +21,9 @@ class BrandLang extends Model
         'meta_title',
         'brand_id',
         'meta_description',
-        'meta_keywords'
+        'meta_keywords',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);

@@ -19,7 +19,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
         $languages = Lang::whereActive(1)->get();
 
         return array_merge(parent::share($request), [
-            "languages" => $languages,
+            'languages' => $languages,
             'locale' => session('adminLocale'),
             'auth' => [
                 'user' => $request->user(),
@@ -52,7 +52,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),
-                'fragment' => fn () => $request->session()->get('fragment')
+                'fragment' => fn () => $request->session()->get('fragment'),
             ],
         ]);
     }

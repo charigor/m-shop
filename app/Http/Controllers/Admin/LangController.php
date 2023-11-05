@@ -18,14 +18,12 @@ class LangController extends Controller
 {
     protected LangService $service;
 
-    /**
-     * @param LangService $langService
-     */
     public function __construct(LangService $langService)
     {
         $this->service = $langService;
 
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -34,13 +32,14 @@ class LangController extends Controller
         abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = $this->service->getItems($request);
+
         return Inertia::render('Langs/Index', [
             'langs' => LangResourceIndex::collection($data),
-            'date_format_options' => createOptions(Lang::DATE_FORMAT,'All'),
-            'date_format_full_options' => createOptions(Lang::DATE_FORMAT_FULL,'All'),
-            'active_options' => createOptions(Lang::ACTIVE,'All'),
+            'date_format_options' => createOptions(Lang::DATE_FORMAT, 'All'),
+            'date_format_full_options' => createOptions(Lang::DATE_FORMAT_FULL, 'All'),
+            'active_options' => createOptions(Lang::ACTIVE, 'All'),
             'table_search' => $request->get('search'),
-            'table_filter' => $request->get('filter')
+            'table_filter' => $request->get('filter'),
         ]);
     }
 
@@ -63,9 +62,9 @@ class LangController extends Controller
     public function store(LangCreateRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->service->createItem($request);
-        return redirect()->route('lang.index')->with('message',trans('messages.success.create'));
-    }
 
+        return redirect()->route('lang.index')->with('message', trans('messages.success.create'));
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -85,8 +84,9 @@ class LangController extends Controller
      */
     public function update(LangUpdateRequest $request, Lang $lang)
     {
-        $this->service->updateItem($lang,$request);
-        return redirect()->route('lang.index')->with('message',trans('messages.success.update'));
+        $this->service->updateItem($lang, $request);
+
+        return redirect()->route('lang.index')->with('message', trans('messages.success.update'));
     }
 
     /**
@@ -95,6 +95,7 @@ class LangController extends Controller
     public function destroy(Request $request)
     {
         $this->service->deleteItems($request);
-        return redirect()->route('lang.index')->with('message',trans('messages.success.delete'));
+
+        return redirect()->route('lang.index')->with('message', trans('messages.success.delete'));
     }
 }

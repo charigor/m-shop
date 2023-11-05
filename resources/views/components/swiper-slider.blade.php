@@ -9,6 +9,11 @@
                 @endforeach
             </div>
         </div>
+        @if((int) $product->rebate)
+            <span class="bg-pink-500 inline-flex self-baseline text-white ml-2 text-xs font-medium mr-2 px-3.5 py-1.5 rounded-full dark:bg-pink-900 dark:text-pink-300">
+               {{ - round($product->rebate /($product->price / 100))}} <span>%</span>
+            </span>
+          @endif
         <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
              class="swiper mySwiper2  !h-[400px] w-[100%]">
             <div class="swiper-wrapper !flex  my-5 !h-[400px] ">

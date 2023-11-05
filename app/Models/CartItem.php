@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CartItem extends Model
 {
     use HasFactory;
+
     public $table = 'cart_items';
 
     protected $fillable = [
@@ -29,9 +30,6 @@ class CartItem extends Model
         'created_at' => 'datetime:d-m-Y',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);

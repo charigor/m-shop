@@ -13,49 +13,47 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class AttributeProduct extends Model implements HasMedia
 {
     use HasFactory,InteractsWithMedia;
+
     public $table = 'attribute_products';
+
     public $fillable = [
         'quantity',
         'price',
+        'cost',
+        'rebate',
         'width',
         'height',
         'depth',
         'weight',
-        'default'
+        'default',
+        'reference',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
-    /**
-     * @return BelongsToMany
-     */
+
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class);
     }
 
-    /**
-     * @param Media|null $media
-     * @return void
-     */
     public function registerMediaConversions(Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
             ->nonQueued();
     }
+
     public function getMainImageAttribute()
     {
-        return  $this->getMedia('image', ['main_image' => "1"])->first();
+        return $this->getMedia('image', ['main_image' => '1'])->first();
     }
+
     public function getSortedMediaAttribute()
     {
-        return  $this->getMedia('image',['active' => "1"])
-                     ->sortBy(fn($value) => $value->custom_properties['order']);
+        return $this->getMedia('image', ['active' => '1'])
+            ->sortBy(fn ($value) => $value->custom_properties['order']);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Services\Filter\Searchable;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +10,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductLang extends Model
 {
     use HasFactory, Sluggable;
+
     public $table = 'product_lang';
+
     public $timestamps = false;
+
     protected $fillable = [
         'locale',
         'name',
@@ -32,13 +34,11 @@ class ProductLang extends Model
     {
         return [
             'link_rewrite' => [
-                'source' => 'name'
-            ]
+                'source' => 'name',
+            ],
         ];
     }
-    /**
-     * @return BelongsTo
-     */
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

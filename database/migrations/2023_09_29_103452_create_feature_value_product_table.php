@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('feature_value_id')->constrained()->onDelete('cascade');
             $table->bigInteger('feature_id');
-            $table->primary(['product_id','feature_id','feature_value_id']);
+            $table->primary(['product_id', 'feature_id', 'feature_value_id']);
         });
     }
 

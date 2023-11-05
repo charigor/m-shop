@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Lang;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FeatureCreateRequest extends FormRequest
 {
-    private array $langArr = array();
-    private array $attr = array();
+    private array $langArr = [];
+
+    private array $attr = [];
 
     public function authorize()
     {
@@ -22,18 +22,21 @@ class FeatureCreateRequest extends FormRequest
      */
     public function rules()
     {
-        foreach(app()->shopLanguages as $lang){
-            $this->langArr['lang.' . $lang . '.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
+        foreach (app()->shopLanguages as $lang) {
+            $this->langArr['lang.'.$lang.'.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
-        return  array_merge(
-            $this->langArr,['guard_name' => 'required||unique:permissions,guard_name']
+
+        return array_merge(
+            $this->langArr, ['guard_name' => 'required||unique:permissions,guard_name']
         );
     }
+
     public function attributes(): array
     {
         foreach (app()->shopLanguages as $lang) {
-            $this->attr['lang.' . $lang . '.name'] = 'name';
+            $this->attr['lang.'.$lang.'.name'] = 'name';
         }
+
         return $this->attr;
     }
 }

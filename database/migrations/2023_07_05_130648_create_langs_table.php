@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->tinyInteger('active');
-            $table->string('code',2);
+            $table->string('code', 2);
             $table->string('date_format')->default('Y-m-d');
             $table->string('date_format_full')->default('Y-m-d H:i:s');
             $table->timestamps();

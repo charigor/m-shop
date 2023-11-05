@@ -9,17 +9,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AttributeGroupLang extends Model
 {
     use HasFactory;
+
     public $table = 'attribute_group_lang';
+
     public $timestamps = false;
+
     protected $fillable = [
         'locale',
         'name',
         'public_name',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function attributeGroup(): BelongsTo
     {
         return $this->belongsTo(AttributeGroup::class);

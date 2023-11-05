@@ -13,12 +13,15 @@ class AttributeGroupUpdateRequest extends FormRequest
      *
      * @return bool
      */
+    private array $langArr = [];
 
-    private array $langArr = array();
-    private array $attr = array();
-    public function __construct(){
+    private array $attr = [];
+
+    public function __construct()
+    {
         $this->langs = Lang::whereActive(1)->get()->pluck('code');
     }
+
     public function authorize()
     {
         return true;
@@ -31,22 +34,25 @@ class AttributeGroupUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        foreach($this->langs as $lang){
-            $this->langArr['lang.' . $lang . '.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
-            $this->langArr['lang.' . $lang . '.public_name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
+        foreach ($this->langs as $lang) {
+            $this->langArr['lang.'.$lang.'.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
+            $this->langArr['lang.'.$lang.'.public_name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
-        return  array_merge(
+
+        return array_merge(
             $this->langArr,
-            ['group_type' => 'required|integer|in:'.implode(',',array_flip(AttributeGroup::GROUP_TYPE))]
+            ['group_type' => 'required|integer|in:'.implode(',', array_flip(AttributeGroup::GROUP_TYPE))]
         );
     }
+
     public function attributes(): array
     {
         foreach ($this->langs as $lang) {
-            $this->attr['lang.' . $lang . '.name'] = 'name';
-            $this->attr['lang.' . $lang . '.public_name'] = 'public_name';
+            $this->attr['lang.'.$lang.'.name'] = 'name';
+            $this->attr['lang.'.$lang.'.public_name'] = 'public_name';
         }
         $this->attr['group_type'] = 'group_type';
+
         return $this->attr;
     }
 }

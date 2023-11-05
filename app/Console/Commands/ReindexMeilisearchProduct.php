@@ -25,23 +25,23 @@ class ReindexMeilisearchProduct extends Command
     /**
      * Execute the console command.
      */
-//    protected int $productId;
-//    public function __construct($id)
-//    {
-//        parent::__construct();
-//
-//        $this->productId = $id;
-//    }
+    //    protected int $productId;
+    //    public function __construct($id)
+    //    {
+    //        parent::__construct();
+    //
+    //        $this->productId = $id;
+    //    }
     public function handle()
     {
-//        $this->info($this->productId);
+        //        $this->info($this->productId);
         $this->info('lalala');
         $client = new Client('meilisearch:7700');
         $client->index('products')->cancelTasks();
         $client->index('products')->updateDocuments(['id' => $this->argument('id')]);
-//        $client->index('products')->updateSortableAttributes(
-//            Product::SORTABLE
-//        );
-//        $client->index('products')->updateFilterableAttributes(Product::FILTERABLE);
+        //        $client->index('products')->updateSortableAttributes(
+        //            Product::SORTABLE
+        //        );
+        //        $client->index('products')->updateFilterableAttributes(Product::FILTERABLE);
     }
 }

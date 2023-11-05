@@ -11,16 +11,14 @@ use App\Http\Controllers\Admin\FeatureValueController;
 use App\Http\Controllers\Admin\LangController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PermissionController;
-use App\Http\Controllers\Admin\ProductAttributeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SelectController;
-use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\UploadEditorImageController;
 use App\Http\Controllers\Admin\UploadTemporaryImageController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,13 +34,9 @@ use Inertia\Inertia;
 |
 */
 
-
 //Route::get('/user', [\App\Http\Controllers\UserController::class ,'index']);
 
-
-
-
-Route::middleware(['auth','setLocale'])->group(function () {
+Route::middleware(['auth', 'setLocale'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -79,11 +73,11 @@ Route::middleware(['auth','setLocale'])->group(function () {
         Route::post('/permissions/delete', [PermissionController::class, 'destroy'])->name('permission.delete');
 
         /*Categories*/
-        Route::post('/categories/storeMedia', [CategoryController::class,'storeMedia'])->name('categories.media');
+        Route::post('/categories/storeMedia', [CategoryController::class, 'storeMedia'])->name('categories.media');
         Route::post('/categories/delete', [CategoryController::class, 'destroy'])->name('categories.delete');
         Route::post('/categories/slug', [CategoryController::class, 'slug'])->name('categories.slug');
         Route::post('/categories/sort', [CategoryController::class, 'sort'])->name('categories.sort');
-        Route::resource('categories', CategoryController::class)->except('index','show','destroy');
+        Route::resource('categories', CategoryController::class)->except('index', 'show', 'destroy');
         Route::get('/categories/{parent_id?}', [CategoryController::class, 'index'])->name('categories.index');
 
         Route::post('/upload', UploadTemporaryImageController::class);
@@ -93,20 +87,20 @@ Route::middleware(['auth','setLocale'])->group(function () {
 
         /*Lang*/
         Route::post('/lang/delete', [LangController::class, 'destroy'])->name('lang.delete');
-        Route::resource('lang', LangController::class)->except('show','destroy');
+        Route::resource('lang', LangController::class)->except('show', 'destroy');
         /*Product*/
         Route::post('/product/{product}/feature/delete', [ProductController::class, 'deleteFeature'])->name('product.feature.delete');
         Route::post('/product/slug', [ProductController::class, 'slug'])->name('product.slug');
         Route::post('/product/delete', [ProductController::class, 'destroy'])->name('product.delete');
-        Route::post('/product/storeMedia', [ProductController::class,'storeMedia'])->name('product.media');
-        Route::delete('/product/{product}/removeAttributes', [ProductController::class,'removeAttributes'])->name('product.attributes.remove');
-        Route::resource('product', ProductController::class)->except('show','destroy');
+        Route::post('/product/storeMedia', [ProductController::class, 'storeMedia'])->name('product.media');
+        Route::delete('/product/{product}/removeAttributes', [ProductController::class, 'removeAttributes'])->name('product.attributes.remove');
+        Route::resource('product', ProductController::class)->except('show', 'destroy');
         /*Product attribute */
-        Route::resource('attribute_product', AttributeProductController::class)->only('store','update','destroy');
+        Route::resource('attribute_product', AttributeProductController::class)->only('store', 'update', 'destroy');
         /*Brand*/
-        Route::post('/brand/storeMedia', [BrandController::class,'storeMedia'])->name('brand.media');
+        Route::post('/brand/storeMedia', [BrandController::class, 'storeMedia'])->name('brand.media');
         Route::post('/brand/delete', [BrandController::class, 'destroy'])->name('brand.delete');
-        Route::resource('brand', BrandController::class)->except('show','destroy');
+        Route::resource('brand', BrandController::class)->except('show', 'destroy');
 
         /*Attribute groups*/
         Route::post('/attribute_group/sort', [AttributeGroupController::class, 'sort'])->name('attribute_group.sort');
@@ -116,26 +110,26 @@ Route::middleware(['auth','setLocale'])->group(function () {
         /*Attribute*/
         Route::post('/attribute_group/{id}/attribute/sort', [AttributeController::class, 'sort'])->name('attribute_group.attribute.sort');
         Route::post('/attribute_group/{id}/attribute/delete', [AttributeController::class, 'destroy'])->name('attribute_group.attribute.delete');
-        Route::resource('attribute_group.attribute', AttributeController::class)->only('create','edit','store','update');
+        Route::resource('attribute_group.attribute', AttributeController::class)->only('create', 'edit', 'store', 'update');
         /*Feature*/
         Route::post('/feature/sort', [FeatureController::class, 'sort'])->name('feature.sort');
         Route::post('/feature/delete', [FeatureController::class, 'destroy'])->name('feature.delete');
         Route::resource('feature', FeatureController::class)->except('destroy');
         /*Feature value*/
         Route::post('/feature/{id}/feature_value/delete', [FeatureValueController::class, 'destroy'])->name('feature.feature_value.delete');
-        Route::resource('feature.feature_value', FeatureValueController::class)->only('create','edit','store','update');
+        Route::resource('feature.feature_value', FeatureValueController::class)->only('create', 'edit', 'store', 'update');
 
-
-        Route::get('/select',[SelectController::class, 'load']);
-        Route::post('/language', function(Request $request){
-            Session()->put('locale',$request->lang);
+        Route::get('/select', [SelectController::class, 'load']);
+        Route::post('/language', function (Request $request) {
+            Session()->put('locale', $request->lang);
             app()->setLocale($request->lang);
+
             return Response()->json(['locale' => session('locale')]);
         })->name('language');
     });
 
 });
-Route::group(['as' => 'front.','middleware' => ['setLocale']],function () {
+Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
     Route::get('/', [MainController::class, 'index'])->name('main');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
@@ -145,10 +139,10 @@ Route::group(['as' => 'front.','middleware' => ['setLocale']],function () {
     Route::get('language/{locale}', function ($locale) {
         app()->setLocale($locale);
         session()->put('locale', $locale);
+
         return redirect()->back();
     })->name('language.locale');
     Route::get('product/{product:link_rewrite}/', [\App\Http\Controllers\Front\ProductController::class, 'show'])->name('product.show');
 });
-
 
 require __DIR__.'/auth.php';

@@ -2,11 +2,9 @@
 
 namespace App\Providers;
 
-use App\Events\ProductUpdateIndex;
-use App\Listeners\UpdateProductIndexDocument;
-use App\Models\Category;
+use App\Models\AttributeProduct;
 use App\Models\Product;
-use App\Observers\CategoryObserver;
+use App\Observers\AttributeProductObserver;
 use App\Observers\ProductObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -31,7 +29,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Product::observe(ProductObserver::class);
+        AttributeProduct::observe(AttributeProductObserver::class);
     }
 
     /**
@@ -39,6 +38,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function shouldDiscoverEvents(): bool
     {
-        return false;
+        return true;
     }
 }

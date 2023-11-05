@@ -7,7 +7,6 @@ use Livewire\Component;
 
 class SectionAside extends Component
 {
-
     public $products;
 
     public function mount($products)
@@ -15,12 +14,14 @@ class SectionAside extends Component
         $this->products = $products;
     }
 
-
     public function render()
     {
-        $this->products = Product::when($this->selected,function($q) {
-            $q->whereHas('categories', function($query)  {$query->whereIn('category_id',$this->selected);});
+        $this->products = Product::when($this->selected, function ($q) {
+            $q->whereHas('categories', function ($query) {
+                $query->whereIn('category_id', $this->selected);
+            });
         })->get();
-        return view('livewire.section-aside',['products' => $this->products]);
+
+        return view('livewire.section-aside', ['products' => $this->products]);
     }
 }

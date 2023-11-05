@@ -73,6 +73,7 @@ const form = reactive({
   active: 0,
   quantity: 0,
   price: 0,
+  rebate: 0,
   categories: [],
   image: [],
   main_image: '',
@@ -492,6 +493,20 @@ onMounted(() => {
                            class="mb-2 block indent-2 py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"/>
                     <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.unity">
                       {{ $page.props.errors.unity }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-5 gap-10">
+                <div class="col-span-1">
+                  <div class="relative z-0 w-full mb-6 group">
+                    <Label class="text-lg mb-2" for="tab_rebate"
+                           :content="$t(`page.${pageName}.blocks.price.fields.rebate`)"/>
+                    <input v-model="form.rebate" type="text" id="tab_rebate"
+                           class="mb-2 block indent-2 py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"/>
+
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"
+                       v-if="$page.props.errors.rebate">
+                      {{ $page.props.errors.rebate }}</p>
                   </div>
                 </div>
               </div>

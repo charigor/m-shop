@@ -88,3 +88,8 @@
 /*    0% { opacity: 0; }*/
 /*    100% { opacity: 1; }*/
 /*}*/
+
+
+.shadow-product {
+    box-shadow: -5px 13px 15px rgba(59,55,43,0.25);
+}

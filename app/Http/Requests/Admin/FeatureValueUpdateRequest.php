@@ -12,12 +12,15 @@ class FeatureValueUpdateRequest extends FormRequest
      *
      * @return bool
      */
+    private array $langArr = [];
 
-    private array $langArr = array();
-    private array $attr = array();
-    public function __construct(){
+    private array $attr = [];
+
+    public function __construct()
+    {
         $this->langs = Lang::whereActive(1)->get()->pluck('code');
     }
+
     public function authorize()
     {
         return true;
@@ -31,22 +34,25 @@ class FeatureValueUpdateRequest extends FormRequest
     public function rules()
     {
 
-        foreach($this->langs as $lang){
-            $this->langArr['lang.' . $lang . '.value'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
+        foreach ($this->langs as $lang) {
+            $this->langArr['lang.'.$lang.'.value'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
-       return  array_merge(
+
+        return array_merge(
             $this->langArr,
             [
                 'feature_id' => 'required|integer',
             ]
         );
     }
+
     public function attributes(): array
     {
         foreach ($this->langs as $lang) {
-            $this->attr['lang.' . $lang . '.value'] = 'value';
+            $this->attr['lang.'.$lang.'.value'] = 'value';
         }
         $this->attr['feature_id'] = 'feature';
+
         return $this->attr;
     }
 }

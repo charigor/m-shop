@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\StoreMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResponse;
 use App\Models\Message;
@@ -19,19 +18,20 @@ class MessageController extends Controller
      */
     public function index()
     {
-//
-//        $enrollmentData = [
-//            'body' => 'some body',
-//            'text' => 'some text',
-//            'name' => 'igor',
-//            'url' => url('/'),
-//            'thanks' => 'thanks',
-//        ];
-//        $user = User::first();
-//        Notification::send(auth()->user(), new TestNotify($enrollmentData));
+        //
+        //        $enrollmentData = [
+        //            'body' => 'some body',
+        //            'text' => 'some text',
+        //            'name' => 'igor',
+        //            'url' => url('/'),
+        //            'thanks' => 'thanks',
+        //        ];
+        //        $user = User::first();
+        //        Notification::send(auth()->user(), new TestNotify($enrollmentData));
         $messages = Message::query()->orderByDesc('created_at')->get();
-        return inertia('Message',[
-            'messages' => MessageResponse::collection($messages)->resolve()
+
+        return inertia('Message', [
+            'messages' => MessageResponse::collection($messages)->resolve(),
         ]);
     }
 
@@ -45,23 +45,25 @@ class MessageController extends Controller
 
         return MessageResponse::make($message)->resolve();
     }
+
     public function getNotify(Request $request)
     {
-      return response()->json(['messages' => DatabaseNotification::where('notifiable_id',auth()->user()->id)
-          ->whereNull('read_at')
-          ->orderBy('read_at', 'asc')
-          ->orderBy('created_at', 'desc')->get()])  ;
-    }
-    public function markRead(Request $request)
-    {
-        $notification = auth()->user()->notifications()->find($request->id);
-        if($notification) {
-            $notification->markAsRead();
-        }
-        return response()->json(['messages' => DatabaseNotification::where('notifiable_id',auth()->user()->id)
+        return response()->json(['messages' => DatabaseNotification::where('notifiable_id', auth()->user()->id)
             ->whereNull('read_at')
             ->orderBy('read_at', 'asc')
             ->orderBy('created_at', 'desc')->get()]);
     }
 
+    public function markRead(Request $request)
+    {
+        $notification = auth()->user()->notifications()->find($request->id);
+        if ($notification) {
+            $notification->markAsRead();
+        }
+
+        return response()->json(['messages' => DatabaseNotification::where('notifiable_id', auth()->user()->id)
+            ->whereNull('read_at')
+            ->orderBy('read_at', 'asc')
+            ->orderBy('created_at', 'desc')->get()]);
+    }
 }

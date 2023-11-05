@@ -19,12 +19,8 @@ class FeatureLang extends Model
         'name',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function feature(): BelongsTo
     {
         return $this->belongsTo(Feature::class);
     }
-
 }

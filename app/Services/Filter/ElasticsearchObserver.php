@@ -1,15 +1,19 @@
 <?php
 
 namespace App\Services\Filter;
+
 use Elastic\Elasticsearch\Client;
+
 class ElasticsearchObserver
 {
     /** @var Client */
     private $elasticsearch;
+
     public function __construct(Client $elasticsearch)
     {
         $this->elasticsearch = $elasticsearch;
     }
+
     public function saved($model)
     {
         $this->elasticsearch->index([
@@ -19,6 +23,7 @@ class ElasticsearchObserver
             'body' => $model->toSearchArray(),
         ]);
     }
+
     public function deleted($model)
     {
         $this->elasticsearch->delete([

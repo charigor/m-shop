@@ -24,11 +24,13 @@ class AttributeProductUpdateRequest extends FormRequest
         return [
             'quantity' => 'integer|min:0',
             'price' => 'numeric|min:0',
+            'rebate' => 'numeric|min:0',
             'width' => 'numeric|min:0|max:1000',
             'height' => 'numeric|min:0|max:1000',
             'depth' => 'numeric|min:0|max:1000',
             'weight' => 'numeric|min:0|max:1000',
-            'media' => 'array'
+            'reference' => 'string',
+            'media' => 'array',
         ];
     }
 }

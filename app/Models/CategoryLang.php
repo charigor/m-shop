@@ -12,6 +12,7 @@ class CategoryLang extends Model
     use HasFactory, Sluggable;
 
     public $table = 'category_lang';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,21 +22,18 @@ class CategoryLang extends Model
         'description',
         'meta_title',
         'meta_description',
-        'meta_keywords'
+        'meta_keywords',
     ];
 
     public function sluggable(): array
     {
         return [
             'link_rewrite' => [
-                'source' => 'title'
-            ]
+                'source' => 'title',
+            ],
         ];
     }
 
-    /**
-     * @return BelongsTo
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

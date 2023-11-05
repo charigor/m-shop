@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,57 +21,52 @@ class Brand extends Model implements HasMedia
     protected $fillable = [
         'name',
         'slug',
-        'active'
+        'active',
     ];
+
     const  ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
+
     const MODEL_NAME = 'brand';
 
     public function sluggable(): array
     {
         return [
             'slug' => [
-                'source' => 'name'
-            ]
+                'source' => 'name',
+            ],
         ];
     }
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
             ->nonQueued();
     }
-    /**
-     * @return HasMany
-     */
+
     public function translation(): HasMany
     {
         return $this->hasMany(BrandLang::class);
     }
-    /**
-     * @return HasMany
-     */
+
     public function products(): HasMany
     {
-        return  $this->hasMany(Product::class);
-    }
-    /**
-     * @return Model|null
-     */
-    public function getTranslateAttribute(): Model|null
-    {
-        return $this->translation()->where('locale',app()->getLocale())?->first();
+        return $this->hasMany(Product::class);
     }
 
-    /**
-     * @param Builder $query
-     */
+    public function getTranslateAttribute(): ?Model
+    {
+        return $this->translation()->where('locale', app()->getLocale())?->first();
+    }
+
     public function scopeActive(Builder $query): void
     {
-        $query->where('active', array_search('Active',self::ACTIVE));
+        $query->where('active', array_search('Active', self::ACTIVE));
     }
+
     /**
      * The attributes that should be cast.
      *
@@ -82,15 +76,15 @@ class Brand extends Model implements HasMedia
         'created_at' => 'datetime:d-m-Y h:m:s',
         'updated_at' => 'datetime:d-m-Y h:m:s',
     ];
+
     public function search(string $term): Collection
     {
-        {
-            return self::query()
-                ->where(fn ($query) => (
-                $query->where('name', 'LIKE', "%{$term}%")
-                ))
-                ->get();
-        }
-    }
 
+        return self::query()
+            ->where(fn ($query) => (
+                $query->where('name', 'LIKE', "%{$term}%")
+            ))
+            ->get();
+
+    }
 }

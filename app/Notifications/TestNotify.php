@@ -2,15 +2,14 @@
 
 namespace App\Notifications;
 
-
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-
 class TestNotify extends Notification implements ShouldBroadcast
 {
     private array $enrollmentData;
+
     /**
      * Create a new notification instance.
      */
@@ -24,18 +23,17 @@ class TestNotify extends Notification implements ShouldBroadcast
         return ['broadcast'];
     }
 
-
-//    public function broadcastOn(): array
-//    {
-//        return [
-//            new Channel('store_message'),
-//        ];
-//    }
+    //    public function broadcastOn(): array
+    //    {
+    //        return [
+    //            new Channel('store_message'),
+    //        ];
+    //    }
 
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'message' => $this->enrollmentData['body']. "Message for ".$this->enrollmentData['name']
+            'message' => $this->enrollmentData['body'].'Message for '.$this->enrollmentData['name'],
         ]);
     }
 }

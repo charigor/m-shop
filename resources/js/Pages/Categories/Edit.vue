@@ -12,10 +12,13 @@ import Switcher from "@/Components/Partials/Switcher.vue";
 import LayoutAuthenticated from "../../Layouts/LayoutAuthenticated.vue";
 import debounce from "lodash.debounce";
 import { getActiveLanguage,wTrans } from 'laravel-vue-i18n';
+import Input from "@/Components/Partials/UI/Input.vue";
+import InputError from "@/Components/Partials/UI/InputError.vue";
 import {
     mdiAnimationOutline
 
 } from "@mdi/js";
+
 const props = defineProps({
     category: {
         type: Object,
@@ -103,30 +106,19 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                 <Switcher :value="form.active" :topLabel="$t('page.category.fields.active')" name="cat_active" @onChange="(e) => form.active = e" :valueA="0" :valueB="1" :labelA="$t('global.no')"  :labelB="$t('global.yes')"/>
                 <div v-for="language in $page.props.languages" :key="language.id">
                     <div class="relative z-0 w-full mb-6 group required" v-show="locale === language.code">
-                        <input v-model="form['lang'][language.code]['title']" @input="changeSlug(language.code)" type="text" :name="`${language.code}title`" :id="`${language.code}title`" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                        <label :for="`${language.code}title`" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.category.fields.title')}}</label>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors[`lang.${language.code}.title`]">{{$page.props.errors[`lang.${language.code}.title`]}}</p>
+                        <Input :label="$t('page.category.fields.title')" @update:bind-input="changeSlug(language.code)" v-model="form['lang'][language.code]['title']" :name="`${language.code}title`" :for="`${language.code}title`" :target="$page.props.errors[`lang.${language.code}.title`]"/>
                     </div>
-
                     <div class="relative z-0 w-full mb-6 group required" v-show="locale === language.code">
-                        <input v-model="form['lang'][language.code]['link_rewrite']" type="text" :name="`${language.code}link_rewrite`" :id="`${language.code}link_rewrite`" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                        <label :for="`${language.code}link_rewrite`" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.category.fields.link_rewrite')}}</label>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors[`lang.${language.code}.link_rewrite`]">{{$page.props.errors[`lang.${language.code}.link_rewrite`]}}</p>
+                        <Input :label="$t('page.category.fields.link_rewrite')" v-model="form['lang'][language.code]['link_rewrite']" :name="`${language.code}link_rewrite`" :for="`${language.code}link_rewrite`" :target="$page.props.errors[`lang.${language.code}.link_rewrite`]"/>
                     </div>
                     <div class="relative z-0 w-full mb-6 group" v-show="locale === language.code">
-                        <input v-model="form['lang'][language.code]['meta_title']"  type="text" :name="`${language.code}meta_title`" :id="`${language.code}meta_title`" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                        <label :for="`${language.code}meta_title`" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.category.fields.meta_title')}}</label>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors[`lang.${language.code}.meta_title`]">{{$page.props.errors[`lang.${language.code}.meta_title`]}}</p>
+                        <Input :label="$t('page.category.fields.meta_title')" v-model="form['lang'][language.code]['meta_title']" :name="`${language.code}meta_title`" :for="`${language.code}meta_title`" :target="$page.props.errors[`lang.${language.code}.meta_title`]"/>
                     </div>
                     <div class="relative z-0 w-full mb-6 group" v-show="locale === language.code">
-                        <input v-model="form['lang'][language.code]['meta_description']"  type="text" :name="`${language.code}meta_description`" :id="`${language.code}meta_description`" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                        <label :for="`${language.code}meta_description`" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.category.fields.meta_description')}}</label>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors[`lang.${language.code}.meta_description`]">{{$page.props.errors[`lang.${language.code}.meta_description`]}}</p>
+                        <Input :label="$t('page.category.fields.meta_description')" v-model="form['lang'][language.code]['meta_description']" :name="`${language.code}meta_description`" :for="`${language.code}meta_description`" :target="$page.props.errors[`lang.${language.code}.meta_description`]"/>
                     </div>
                     <div class="relative z-0 w-full mb-6 group" v-show="locale === language.code">
-                        <input v-model="form['lang'][language.code]['meta_keywords']"  type="text" :name="`${language.code}meta_keywords`" :id="`${language.code}meta_keywords`" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                        <label :for="`${language.code}meta_keywords`" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.category.fields.meta_keywords')}}</label>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors[`lang.${language.code}.meta_keywords`]">{{$page.props.errors[`lang.${language.code}.meta_keywords`]}}</p>
+                        <Input :label="$t('page.category.fields.meta_keywords')" v-model="form['lang'][language.code]['meta_keywords']" :name="`${language.code}meta_keywords`" :for="`${language.code}meta_keywords`" :target="$page.props.errors[`lang.${language.code}.meta_keywords`]"/>
                     </div>
                 </div>
                 <div class="mb-5">
@@ -149,7 +141,6 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                 <div class="relative w-full mb-7 z-10 group">
                 <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.description')}}</label>
                     <template  v-for="language in $page.props.languages" :key="language.id">
-
                         <div class="relative z-0 w-full mb-6 pt-7 group" v-show="locale === language.code">
                             <CKEditor v-model="form['lang'][language.code]['description']" :lang="language.code"  :csrf="$page.props.csrf_token"/>
                         </div>
@@ -160,7 +151,7 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.cover_image')}}</label>
                     <div class="relative row mb-6 group pt-7">
                         <VueDropzone :w="Number(250)" :h="Number(250)" :maxFiles="1" viewType="fakeInput" @removeImage="(file) => form.cover_image = form.cover_image.filter((item) => item !== file)" @loadImages="(file) => form.cover_image.push(file)" path="/admin/categories/storeMedia" :files="props.category.cover_image"></VueDropzone>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.cover_image">{{$page.props.errors.cover_image}}</p>
+                        <InputError :target="$page.props.errors.cover_image"/>
                     </div>
                 </div>
 
@@ -168,7 +159,7 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                     <label class="text-sm text-gray-500 dark:text-gray-400 duration-300   scale-75 top-0 z-10 origin-[0]  left-0  0 absolute">{{$t('page.category.fields.menu_thumbnail')}}</label>
                     <div class="relative row mb-6 group pt-7">
                         <VueDropzone :w="Number(150)" :h="Number(150)" :multiple="Boolean(1)" :maxFiles="1" viewType="square" @removeImage="(file) => form.menu_thumbnail = form.menu_thumbnail.filter((item) => item !== file)" @loadImages="(file) => form.menu_thumbnail.push(file)" path="/admin/categories/storeMedia" :files="props.category.menu_thumbnail" :csrf="$page.props.csrf_token"></VueDropzone>
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.menu_thumbnail">{{$page.props.errors.menu_thumbnail}}</p>
+                        <InputError :target="$page.props.errors.menu_thumbnail"/>
                     </div>
                 </div>
                 <div class="flex justify-end">
