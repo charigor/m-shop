@@ -3,20 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,InteractsWithMedia;
+    use HasApiTokens, HasFactory, HasRoles, InteractsWithMedia,Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -50,7 +49,6 @@ class User extends Authenticatable implements HasMedia
         'created_at' => 'datetime:d-m-Y h:m:s',
     ];
 
-
     public function messages()
     {
         return $this->hasMany(Message::class);
@@ -68,6 +66,6 @@ class User extends Authenticatable implements HasMedia
 
     public function scopeMy(Builder $query): void
     {
-        $query->where('name', '=', "I");
+        $query->where('name', '=', 'I');
     }
 }

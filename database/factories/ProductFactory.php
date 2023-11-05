@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -30,8 +29,7 @@ class ProductFactory extends Factory
             'height' => 0,
             'depth' => 0,
             'weight' => 0,
-            'active' => rand(0,1),
+            'active' => rand(0, 1),
         ];
     }
-
 }

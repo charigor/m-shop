@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services\Datatables\Features\Filters;
-
 
 use App\Services\Datatables\Filter;
 

@@ -9,6 +9,7 @@ import Checkbox from '@/Components/Partials/UI/Checkbox.vue'
 import CardBoxModal from "@/Components/Partials/CardBoxModal.vue";
 import {router, useForm, usePage} from "@inertiajs/vue3";
 import Radio from "@/Components/Partials/UI/Radio.vue";
+import Label from "@/Components/Partials/UI/Label.vue";
 const props = defineProps({
   attributes: {
     type: Object,
@@ -98,11 +99,14 @@ onMounted(() => {
   form.value = props.productAttributes.map((item) => ({
     "id": item.id,
     "price": item.price,
+    "rebate": item.rebate,
     "quantity": item.quantity,
     "width": item.width,
     "height": item.height,
+    "weight" : item.weight,
     "depth": item.depth,
     "attributes": item.attributes,
+    "reference" : item.reference,
     "media": item.media.map((i) => ({
       'id': i.id,
       'active': String(i.custom_properties.active),
@@ -163,11 +167,7 @@ watch(defaultAttr, (newVal) => {
       <table class="table table-auto w-full  dark:bg-gray-700 shadow rounded">
         <thead>
         <tr>
-          <th>Default</th>
-          <th>{{ $t('page.product.table_fields.image') }}</th>
-          <th>{{ $t('page.product.table_fields.attributes') }}</th>
-          <th>{{ $t('page.product.table_fields.price') }}</th>
-          <th>{{ $t('page.product.table_fields.quantity') }}</th>
+          <th colspan="7">Default</th>
           <th class="pb-4 pt-6 px-6 lg:w-6 whitespace-nowrap justify-start"><p>{{ $t('global.action') }}</p></th>
         </tr>
         </thead>
@@ -189,8 +189,7 @@ watch(defaultAttr, (newVal) => {
                   attr.translate.name
                 }}{{ attribute.attributes.length - 1 !== i ? '-' : '' }}</span>
             </td>
-            <td>{{ attribute.price }}</td>
-            <td>{{ attribute.quantity }}</td>
+            <td colspan="4"></td>
             <td>
               <template class="flex items-center">
                 <BaseButtons type="justify-start lg:justify-start" no-wrap>
@@ -211,16 +210,50 @@ watch(defaultAttr, (newVal) => {
               </template>
             </td>
           </tr>
-          <tr class="py-4">
-            <td></td>
-            <td></td>
-            <td><input type="text" v-model="attribute.price"
+          <tr>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_price" :content="$t(`page.product.blocks.combinations.fields.price`)"/>
+              <input id="combo_price"  type="text" v-model="attribute.price"
                        class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
             </td>
-            <td><input type="number" min="0" v-model="attribute.quantity"
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_quantity" :content="$t(`page.product.blocks.combinations.fields.quantity`)"/>
+              <input id="combo_quantity" type="number" min="0" v-model="attribute.quantity"
                        class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
             </td>
-            <td></td>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_rebate" :content="$t(`page.product.blocks.combinations.fields.rebate`)"/>
+              <input id="combo_rebate" type="text" v-model="attribute.rebate"
+                     class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_reference" :content="$t(`page.product.blocks.combinations.fields.reference`)"/>
+              <input id="combo_reference"  type="text" v-model="attribute.reference"
+                                                class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_height" :content="$t(`page.product.blocks.combinations.fields.height`)"/>
+              <input id="combo_height" type="text" v-model="attribute.height"
+                                                class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_width" :content="$t(`page.product.blocks.combinations.fields.width`)"/>
+              <input id="combo_width" type="text" v-model="attribute.width"
+                                                class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_depth" :content="$t(`page.product.blocks.combinations.fields.depth`)"/>
+              <input id="combo_depth" type="text" v-model="attribute.depth"
+                                                class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
+            <td colspan="2" class="py-4">
+              <Label class="text-lg mb-2" for="combo_weight" :content="$t(`page.product.blocks.combinations.fields.weight`)"/>
+
+              <input type="text" id="combo_weight" v-model="attribute.weight"
+                                                class="block w-full rounded-md border bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-50">
+            </td>
           </tr>
           <tr>
             <td colspan="6" class="py-4">
@@ -242,7 +275,7 @@ watch(defaultAttr, (newVal) => {
             </td>
           </tr>
           <tr>
-            <td colspan="6" class="py-4">
+            <td colspan="8" class="py-4 mb-5">
               <div class="flex justify-end">
                 <button type="button" @click.prevent="update(attribute.id,attribute)"
                         class="right text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

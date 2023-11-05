@@ -9,17 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FeatureValueLang extends Model
 {
     use HasFactory;
+
     public $table = 'feature_value_lang';
 
     public $timestamps = false;
 
     protected $fillable = [
         'locale',
-        'value'
+        'value',
     ];
-    /**
-     * @return BelongsTo
-     */
+
     public function featureValue(): BelongsTo
     {
         return $this->belongsTo(FeatureValue::class);

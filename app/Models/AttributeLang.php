@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AttributeLang extends Model
 {
     use HasFactory;
+
     public $table = 'attribute_lang';
 
     public $timestamps = false;
@@ -16,9 +17,7 @@ class AttributeLang extends Model
         'locale',
         'name',
     ];
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function attribute(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Attribute::class);

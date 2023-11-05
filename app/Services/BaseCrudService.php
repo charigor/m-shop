@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +10,7 @@ abstract class BaseCrudService
      * @var array
      */
     public $fields;
+
     /**
      * @var Model
      */
@@ -23,7 +22,7 @@ abstract class BaseCrudService
         $this->fields = $model->getFillable();
     }
 
-    abstract public function getItems($request,$params = null);
+    abstract public function getItems($request, $params = null);
 
     public function getItem($id)
     {
@@ -35,7 +34,7 @@ abstract class BaseCrudService
     public function createItem($request)
     {
         $fields = $request->only($this->fields);
-        if (!is_array($fields)) {
+        if (! is_array($fields)) {
             $fields = $fields->all();
         }
         $item = $this->model->query()
@@ -53,15 +52,16 @@ abstract class BaseCrudService
         }
 
         $fields = $request->only($this->fields);
-        if (!is_array($fields)) {
+        if (! is_array($fields)) {
             $fields = $fields->all();
         }
 
         $model->update($fields);
 
-       return $model;
+        return $model;
 
     }
+
     public function deleteItems($request)
     {
         return $this->model->whereIn('id', $request->ids)->delete();

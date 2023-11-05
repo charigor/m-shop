@@ -19,6 +19,6 @@ class FeatureValueTableResource extends JsonResource
             'translation' => $this->translation->keyBy('locale'),
         ];
 
-        return array_merge($defaultData,$additionalData);
+        return array_merge($defaultData, $additionalData);
     }
 }

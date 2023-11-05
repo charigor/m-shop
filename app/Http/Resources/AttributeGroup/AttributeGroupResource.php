@@ -7,9 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AttributeGroupResource extends JsonResource
 {
-
     /**
-     * @param Request $request
      * @return array
      */
     public function toArray(Request $request)
@@ -19,6 +17,6 @@ class AttributeGroupResource extends JsonResource
             'translation' => $this->translation->keyBy('locale'),
         ];
 
-        return array_merge($defaultData,$additionalData);
+        return array_merge($defaultData, $additionalData);
     }
 }

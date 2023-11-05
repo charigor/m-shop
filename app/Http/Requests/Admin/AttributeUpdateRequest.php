@@ -13,12 +13,15 @@ class AttributeUpdateRequest extends FormRequest
      *
      * @return bool
      */
+    private array $langArr = [];
 
-    private array $langArr = array();
-    private array $attr = array();
-    public function __construct(){
+    private array $attr = [];
+
+    public function __construct()
+    {
         $this->langs = Lang::whereActive(1)->get()->pluck('code');
     }
+
     public function authorize()
     {
         return true;
@@ -31,27 +34,30 @@ class AttributeUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        foreach($this->langs as $lang){
-            $this->langArr['lang.' . $lang . '.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
+        foreach ($this->langs as $lang) {
+            $this->langArr['lang.'.$lang.'.name'] = app()->getLocale() === $lang ? 'required|' : 'nullable|'.'string';
         }
-       return  array_merge(
+
+        return array_merge(
             $this->langArr,
             [
                 'attribute_group_id' => 'required|integer',
-                'color'  =>  [
-                            AttributeGroup::GROUP_TYPE[AttributeGroup::find(request('attribute_group_id'))['group_type']] == 'color' ? 'required': 'nullable',
-                            'regex:/^#([a-f0-9]{6}|[a-f0-9]{3})$/i'
-                        ]
+                'color' => [
+                    AttributeGroup::GROUP_TYPE[AttributeGroup::find(request('attribute_group_id'))['group_type']] == 'color' ? 'required' : 'nullable',
+                    'regex:/^#([a-f0-9]{6}|[a-f0-9]{3})$/i',
+                ],
             ]
         );
     }
+
     public function attributes(): array
     {
         foreach ($this->langs as $lang) {
-            $this->attr['lang.' . $lang . '.name'] = 'name';
+            $this->attr['lang.'.$lang.'.name'] = 'name';
         }
         $this->attr['attribute_group_id'] = 'attribute';
         $this->attr['color'] = 'color';
+
         return $this->attr;
     }
 }

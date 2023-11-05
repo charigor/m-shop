@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services\Crud\FeatureValue;
 
 use App\Models\FeatureValue;
@@ -18,14 +17,12 @@ class FeatureValueService extends BaseCrudService
         parent::__construct(new FeatureValue());
     }
 
-
     public function getItems($request, $model = null)
     {
-        return (new FeatureValues)->table($request,$model->id);
+        return (new FeatureValues)->table($request, $model->id);
     }
 
     /**
-     * @param $request
      * @return Builder|Model
      */
     public function createItem($request)
@@ -35,33 +32,30 @@ class FeatureValueService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['value']);
 
         $model->translation()->createMany($prepareData);
+
         return $model;
     }
-    /**
-     * @param $model
-     * @param $request
-     * @return mixed
-     */
-    public function updateItem($model,$request): mixed
+
+    public function updateItem($model, $request): mixed
     {
         $data = $request->validated();
         $model->update($data);
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['value']);
         foreach ($prepareData as $item) {
             $model->translation()->where('locale', $item['locale'])->update($item);
-        };
+        }
+
         return $model->refresh();
     }
 
-    /**
-     * @param $request
-     * @return mixed
-     */
     public function deleteItems($request): mixed
     {
-        $products =  Product::whereHas('features',function($q) use($request){ $q->whereIn('id',$request->ids);})->get();
-        $result = $this->model->whereIn('id',$request->ids)->delete();
+        $products = Product::whereHas('features', function ($q) use ($request) {
+            $q->whereIn('id', $request->ids);
+        })->get();
+        $result = $this->model->whereIn('id', $request->ids)->delete();
         $products->searchable();
+
         return $result;
     }
 }

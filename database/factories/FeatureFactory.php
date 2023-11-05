@@ -18,7 +18,7 @@ class FeatureFactory extends Factory
     {
         return [
             'guard_name' => fake()->name(),
-            'position' => rand(0,5)
+            'position' => rand(0, 5),
         ];
     }
 }

@@ -20,12 +20,13 @@ class ProductTableResource extends JsonResource
         $defaultData['active'] = Product::ACTIVE[$this['active']];
         $additionalData = [
             'translation' => $this->translation->keyBy('locale'),
-            'media' => $this->media()->get()->filter(function ($item){
+            'media' => $this->media()->get()->filter(function ($item) {
                 return $item->custom_properties['main_image'] === 1 ||
-                       $item->custom_properties['order'] === 0;}
-            )->toArray()
+                       $item->custom_properties['order'] === 0;
+            }
+            )->toArray(),
         ];
 
-        return array_merge($defaultData,$additionalData);
+        return array_merge($defaultData, $additionalData);
     }
 }

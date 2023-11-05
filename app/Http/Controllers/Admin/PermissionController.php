@@ -12,26 +12,23 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 
-
 class PermissionController extends Controller
 {
-
     /**
-     * @param Request $request
      * @return \Inertia\Response
      */
     public function index(Request $request)
     {
         abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return Inertia::render('Permissions/Index', [
             'permissions' => PermissionResource::collection((new Permissions)->table($request)),
             'table_search' => $request->get('search'),
-            'table_filter' => $request->get('filter')
+            'table_filter' => $request->get('filter'),
         ]);
     }
 
     /**
-     * @param PermissionCreateRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(PermissionCreateRequest $request)
@@ -39,8 +36,9 @@ class PermissionController extends Controller
 
         $permission = Permission::create($request->validated());
 
-        return redirect()->route('permission.edit',$permission->id)->with('message',trans('messages.success.create'));
+        return redirect()->route('permission.edit', $permission->id)->with('message', trans('messages.success.create'));
     }
+
     /**
      * @return \Inertia\Response
      */
@@ -63,23 +61,22 @@ class PermissionController extends Controller
     }
 
     /**
-     * @param PermissionUpdateRequest $request
-     * @param Permission $permission
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(PermissionUpdateRequest $request, Permission $permission)
     {
         $permission->update($request->validated());
-        return redirect()->route('permission.index')->with('message',trans('messages.success.update'));
+
+        return redirect()->route('permission.index')->with('message', trans('messages.success.update'));
     }
 
     /**
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request)
     {
-        Permission::whereIn('id',$request->ids)->delete();
-        return redirect()->route('permission.index')->with('message',trans('messages.success.delete'));
+        Permission::whereIn('id', $request->ids)->delete();
+
+        return redirect()->route('permission.index')->with('message', trans('messages.success.delete'));
     }
 }

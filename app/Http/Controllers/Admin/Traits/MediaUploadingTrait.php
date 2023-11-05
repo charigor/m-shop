@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin\Traits;
-
 
 use Illuminate\Http\Request;
 
@@ -14,7 +12,7 @@ trait MediaUploadingTrait
         $path = storage_path('app/public/tmp/uploads/');
 
         try {
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 mkdir($path, 0777, true);
             }
         } catch (\Exception $e) {
@@ -22,13 +20,13 @@ trait MediaUploadingTrait
 
         $file = $request->file('file');
 
-        $name = now()->timestamp.'_'.uniqid().'_'.str_replace(' ','_',trim($file->getClientOriginalName()));
+        $name = now()->timestamp.'_'.uniqid().'_'.str_replace(' ', '_', trim($file->getClientOriginalName()));
 
         $file->move($path, $name);
+
         return response()->json([
             'name' => $name,
             'original_name' => $file->getClientOriginalName(),
         ]);
     }
 }
-

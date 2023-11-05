@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('cart_id');
-            $table->decimal('price',20, 2)->default(0,00);
+            $table->decimal('price', 20, 2)->default(0, 00);
             $table->string('name');
             $table->integer('quantity');
             $table->string('image');

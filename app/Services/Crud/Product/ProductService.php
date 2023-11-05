@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services\Crud\Product;
-
 
 use App\Enums\ProductTypeEnum;
 use App\Models\AttributeProduct;
@@ -22,9 +20,7 @@ class ProductService extends BaseCrudService
     }
 
     /**
-     * @param $request
-     * @param null $params
-     * @return mixed
+     * @param  null  $params
      */
     public function getItems($request, $params = null): mixed
     {
@@ -32,7 +28,6 @@ class ProductService extends BaseCrudService
     }
 
     /**
-     * @param $request
      * @return Builder|Model|void
      */
     public function createItem($request)
@@ -42,21 +37,21 @@ class ProductService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['name', 'link_rewrite']);
         $model->translation()->createMany($prepareData);
         $this->addMedia($model, $data, ['image']);
-        if ($data['categories']) $model->categories()->attach($data['categories']);
-        if ($data['features']) $this->createUpdateProductFeature($model, $data);
+        if ($data['categories']) {
+            $model->categories()->attach($data['categories']);
+        }
+        if ($data['features']) {
+            $this->createUpdateProductFeature($model, $data);
+        }
         if ($data['attributes']) {
-            $attributeProduct = $this->createAttribute($model,true);
+            $attributeProduct = $this->createAttribute($model, true);
             $attributeProduct->attributes()->attach($data['attributes']);
         }
         $model->refresh();
+
         return $model;
     }
 
-    /**
-     * @param $model
-     * @param $request
-     * @return mixed
-     */
     public function updateItem($model, $request): mixed
     {
         $data = $request->validated();
@@ -65,7 +60,7 @@ class ProductService extends BaseCrudService
         $prepareData = (new TranslationService)->prepareFields($data['lang'], ['name', 'link_rewrite']);
         foreach ($prepareData as $item) {
             $model->translation()->updateOrCreate(['locale' => $item['locale']], $item);
-        };
+        }
         $model->categories()->sync($data['categories']);
 
         $this->createUpdateProductFeature($model, $data);
@@ -76,45 +71,33 @@ class ProductService extends BaseCrudService
             $attributeProduct->attributes()->syncWithoutDetaching($data['attributes']);
         }
 
-        if(isset($data['default_attr'])){
-            $model->attributes()->where('id','=',$data['default_attr'])->update(['default' => 1]);
-            $model->attributes()->where('id','<>',$data['default_attr'])->update(['default' => null]);
+        if (isset($data['default_attr'])) {
+            $model->attributes()->where('id', '=', $data['default_attr'])->update(['default' => 1]);
+            $model->attributes()->where('id', '<>', $data['default_attr'])->update(['default' => null]);
         }
         $model->refresh();
 
         return $model;
 
-
     }
 
-    /**
-     * @param $model
-     * @param $slug_field
-     * @param $slug_from
-     */
     public function setSlug($model, $slug_field, $slug_from): string
     {
-        return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : "";
+        return $slug_from ? SlugService::createSlug($model, $slug_field, $slug_from) : '';
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
     public function removeMedia($model, $data, array $collections = []): void
     {
         foreach ($collections as $name) {
             foreach ($model->getMedia($name) as $media) {
-                if (!in_array($media->file_name, $data[$name])) {
+                if (! in_array($media->file_name, $data[$name])) {
                     if ($media->custom_properties['main_image']) {
-                        if ($m = $model->getMedia($name)->filter(fn($value) => $value->custom_properties['order'] === $media->custom_properties['order'] + 1)->first()) {
+                        if ($m = $model->getMedia($name)->filter(fn ($value) => $value->custom_properties['order'] === $media->custom_properties['order'] + 1)->first()) {
                             $m->setCustomProperty('main_image', 1);
                             $m->setCustomProperty('order', 0);
                             $m->save();
                             if ($model->attributes->count()) {
-                                foreach($model->attributes as $attr)
-                                {
+                                foreach ($model->attributes as $attr) {
                                     $m_attr = $attr->getMedia($name)->where('name', $m->name)->first();
                                     $m_attr->setCustomProperty('main_image', 1);
                                     $m_attr->setCustomProperty('order', 0);
@@ -127,24 +110,19 @@ class ProductService extends BaseCrudService
                     }
                     $name_media = $media->name;
                     $media->delete();
-                    $model->attributes()->each(fn($item) => $item->getMedia('image')->each(fn($media) => ($media->name === $name_media) ? $media->delete() : ''));
+                    $model->attributes()->each(fn ($item) => $item->getMedia('image')->each(fn ($media) => ($media->name === $name_media) ? $media->delete() : ''));
                 }
             }
         }
 
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     */
     public function addMedia($model, $data, array $collections = []): void
     {
         foreach ($collections as $name) {
             foreach ($data[$name] as $key => $file) {
-                if (file_exists(storage_path('app/public/tmp/uploads/' . $file))) {
-                    $media = $model->addMedia(storage_path('app/public/tmp/uploads/' . $file))->withCustomProperties(['order' => ($data['main_image'] === $file) ? 0 : $key + 1, 'main_image' => ($data['main_image'] === $file) ? 1 : 0])->toMediaCollection($name);
+                if (file_exists(storage_path('app/public/tmp/uploads/'.$file))) {
+                    $media = $model->addMedia(storage_path('app/public/tmp/uploads/'.$file))->withCustomProperties(['order' => ($data['main_image'] === $file) ? 0 : $key + 1, 'main_image' => ($data['main_image'] === $file) ? 1 : 0])->toMediaCollection($name);
                     if ($model->attributes->count()) {
                         $this->copyMediaToAttributes($model, $media, $name, $data['main_image']);
                     }
@@ -165,17 +143,10 @@ class ProductService extends BaseCrudService
         }
     }
 
-    /**
-     * @param $model
-     * @param $media
-     * @param $collection_name
-     * @param $main
-     * @return void
-     */
     public function copyMediaToAttributes($model, $media, $collection_name, $main = null): void
     {
         foreach ($model->attributes as $attributeProduct) {
-            if (!$attributeProduct->getMedia($collection_name)->where('name', $media->name)->first()) {
+            if (! $attributeProduct->getMedia($collection_name)->where('name', $media->name)->first()) {
                 $m = $media->copy($attributeProduct, $collection_name);
                 $m->setCustomProperty('relative_id', $media->id);
                 $m->setCustomProperty('active', 1);
@@ -190,11 +161,7 @@ class ProductService extends BaseCrudService
             }
         }
     }
-    /**
-     * @param $model
-     * @param $data
-     * @return void
-     */
+
     public function createUpdateProductFeature($model, $data): void
     {
         $arr = [];
@@ -205,24 +172,28 @@ class ProductService extends BaseCrudService
     }
 
     /**
-     * @param $model
      * @return AttributeProduct $attributeProduct
      */
-    public function createAttribute($model,$default = null): AttributeProduct
+    public function createAttribute($model, $default = null): AttributeProduct
     {
-        if(!$model->attributes()->count()) $default = 1;
+        if (! $model->attributes()->count()) {
+            $default = 1;
+        }
         $attributeProduct = $model->attributes()->create(['default' => $default]);
         foreach ($model->getMedia('image') as $media) {
             $m = $media->copy($attributeProduct, 'image');
             $m->setCustomProperty('active', 1);
             $m->save();
         }
+
         return $attributeProduct;
     }
+
     public function removeAttributes($model)
     {
         $model->type = ProductTypeEnum::Regular;
         $model->save();
-        return  $model->attributes()->each(fn($value) => $value->delete());
+
+        return $model->attributes()->each(fn ($value) => $value->delete());
     }
 }

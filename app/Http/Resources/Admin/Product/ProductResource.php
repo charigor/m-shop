@@ -7,8 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-
-
     /**
      * Transform the resource into an array.
      *
@@ -24,13 +22,13 @@ class ProductResource extends JsonResource
             'image' => $this->getMedia('image')->sortBy(function ($media, $key) {
                 return $media->getCustomProperty('order');
             })->toArray(),
-            'features' => $this->features()->get()->map(function($item){
+            'features' => $this->features()->get()->map(function ($item) {
                 return $item->pivot;
-            })->toArray()
+            })->toArray(),
 
         ];
 
-        return array_merge($defaultData,$additionalData);
+        return array_merge($defaultData, $additionalData);
 
     }
 }

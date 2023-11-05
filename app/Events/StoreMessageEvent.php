@@ -6,8 +6,6 @@ use App\Http\Resources\MessageResponse;
 use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -37,6 +35,7 @@ class StoreMessageEvent implements ShouldBroadcast
             new Channel('store_message'),
         ];
     }
+
     public function broadcastAs()
     {
         return 'store_message';

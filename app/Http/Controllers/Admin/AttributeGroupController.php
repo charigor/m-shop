@@ -20,13 +20,11 @@ class AttributeGroupController extends Controller
 {
     private AttributeGroupService $service;
 
-    /**
-     * @param AttributeGroupService $attributeGroupService
-     */
-    public function __construct(AttributeGroupService   $attributeGroupService)
+    public function __construct(AttributeGroupService $attributeGroupService)
     {
         $this->service = $attributeGroupService;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -35,17 +33,16 @@ class AttributeGroupController extends Controller
         abort_unless(Auth::user()->hasAnyRole(['admin']), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = $this->service->getItems($request);
+
         return Inertia::render('AttributeGroups/Index', [
             'attribute_groups' => AttributeGroupResourceIndex::collection($data),
             'table_search' => $request->get('search'),
             'table_filter' => $request->get('filter'),
-            'group_type_options' => createOptions(AttributeGroup::GROUP_TYPE,'All'),
-            'is_color_group_options' => createOptions(AttributeGroup::IS_COLOR_GROUP,'All'),
+            'group_type_options' => createOptions(AttributeGroup::GROUP_TYPE, 'All'),
+            'is_color_group_options' => createOptions(AttributeGroup::IS_COLOR_GROUP, 'All'),
         ]);
     }
-    /**
-     * @return \Inertia\Response
-     */
+
     public function create(): \Inertia\Response
     {
         return Inertia::render('AttributeGroups/Create', [
@@ -53,23 +50,16 @@ class AttributeGroupController extends Controller
             'group_type_options' => createOptions(AttributeGroup::GROUP_TYPE),
         ]);
     }
-    /**
-     * @param AttributeGroupCreateRequest $request
-     * @return RedirectResponse
-     */
+
     public function store(AttributeGroupCreateRequest $request): RedirectResponse
     {
 
-        $attribute_group =  $this->service->createItem($request);
+        $attribute_group = $this->service->createItem($request);
 
-        return redirect()->route('attribute_group.edit', $attribute_group->id)->with('message',trans('messages.success.create'));
+        return redirect()->route('attribute_group.edit', $attribute_group->id)->with('message', trans('messages.success.create'));
 
     }
 
-    /**
-     * @param AttributeGroup $attributeGroup
-     * @return \Inertia\Response
-     */
     public function edit(AttributeGroup $attributeGroup): \Inertia\Response
     {
         return Inertia::render('AttributeGroups/Edit', [
@@ -78,46 +68,37 @@ class AttributeGroupController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param AttributeGroup $attributeGroup
-     * @return \Inertia\Response
-     */
-    public function show(Request $request,AttributeGroup $attributeGroup): \Inertia\Response
+    public function show(Request $request, AttributeGroup $attributeGroup): \Inertia\Response
     {
 
-        $data = $this->service->getAttributeItems($request,$attributeGroup);
+        $data = $this->service->getAttributeItems($request, $attributeGroup);
+
         return Inertia::render('Attributes/Index', [
             'attributes' => AttributeResourceIndex::collection($data),
             'table_search' => $request->get('search'),
             'table_filter' => $request->get('filter'),
         ]);
     }
-    /**
-     * @param AttributeGroupUpdateRequest $request
-     * @param AttributeGroup $attributeGroup
-     * @return RedirectResponse
-     */
+
     public function update(AttributeGroupUpdateRequest $request, AttributeGroup $attributeGroup): RedirectResponse
     {
 
-        $this->service->updateItem($attributeGroup,$request);
-        return redirect()->route('attribute_group.index')->with('message',trans('messages.success.update'));
+        $this->service->updateItem($attributeGroup, $request);
+
+        return redirect()->route('attribute_group.index')->with('message', trans('messages.success.update'));
     }
-    /**
-     * @param Request $request
-     */
+
     public function sort(Request $request): RedirectResponse
     {
         $this->service->sortItem($request);
-        return back()->with('message',trans('messages.success.sort'));
+
+        return back()->with('message', trans('messages.success.sort'));
     }
-    /**
-     * @param Request $request
-     */
+
     public function destroy(Request $request): RedirectResponse
     {
-        AttributeGroup::whereIn('id',$request->ids)->delete();
-        return redirect()->route('attribute_group.index')->with('message',trans('messages.success.delete'));
+        AttributeGroup::whereIn('id', $request->ids)->delete();
+
+        return redirect()->route('attribute_group.index')->with('message', trans('messages.success.delete'));
     }
 }

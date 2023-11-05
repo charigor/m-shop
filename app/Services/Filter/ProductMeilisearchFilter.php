@@ -6,60 +6,56 @@ use App\Models\CategoryLang;
 use App\Models\Feature;
 use App\Models\FeatureValueLang;
 use App\Models\Product;
-use Barryvdh\Debugbar\Facades\Debugbar;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Meilisearch\Endpoints\Indexes;
 
 class ProductMeilisearchFilter implements ProductFilterContract
 {
-
-    /**
-     * @var array
-     */
-
     public array $params;
-    public string $price;
-    public string $sortBy;
-    public string $contextID;
-    public string $context;
-    public const MULTIPLE = 1000000;
 
+    public string $cost;
+
+    public string $sortBy;
+
+    public string $contextID;
+
+    public string $context;
+
+    public int $perPage;
+
+    public const MULTIPLE = 100;
 
     public function __construct()
     {
     }
 
     /**
-     * @param $params
      * @return $this
      */
     public function build($params)
     {
-        $this->params = Arr::except($params, ['price','contextID','context','sort']);
-        $this->price = implode(',', Arr::only($params, 'price'));
+        $this->params = Arr::except($params, ['cost', 'contextID', 'context', 'sort', 'perPage']);
+        $this->cost = implode(',', Arr::only($params, 'cost'));
         $this->context = implode(',', Arr::only($params, 'context'));
         $this->contextID = implode(',', Arr::only($params, 'contextID'));
         $this->sortBy = implode(',', Arr::only($params, 'sort'));
+        $this->perPage = implode(',', Arr::only($params, 'perPage'));
 
         return $this;
     }
-    /**
-     * @return LengthAwarePaginator
-     */
-    public function search(): LengthAwarePaginator
+
+    public function search(): mixed
     {
 
         return $this->buildDocument();
     }
 
-    /**
-     * @return array
-     */
     public function prepareFacet(): array
     {
+
         $facets = array_merge($this->buildDocument()['facetDistribution'], $this->buildFacets());
-        return collect($this->modifyFacet($this->resetFacet($facets, $this->buildAllFacets())))->map(fn($q) => collect($q)->sortBy('value')->toArray())->toArray();
+
+        return collect($this->modifyFacet($this->resetFacet($facets, $this->buildAllFacets())))->map(fn ($q) => collect($q)->sortBy('value')->toArray())->toArray();
     }
 
     public function index(): array
@@ -68,9 +64,6 @@ class ProductMeilisearchFilter implements ProductFilterContract
         return [];
     }
 
-    /**
-     * @return array
-     */
     public function buildFacets(): array
     {
         return collect($this->params)->map(function ($value, $k) {
@@ -82,91 +75,84 @@ class ProductMeilisearchFilter implements ProductFilterContract
         })->toArray();
     }
 
-    /**
-     * @return array
-     */
     public function buildAllFacets(): array
     {
         return Product::search('', function (Indexes $meiliSearch, $query, $options) {
-            $options['facets'] = $this->context === 'brand' ? ['feature','category'] : ['feature','brand'];
+            $options['facets'] = $this->context === 'brand' ? ['feature', 'category'] : ['feature', 'brand'];
+
             return $meiliSearch->search($query, $options);
         })->raw()['facetDistribution'];
     }
 
-    /**
-     * @return LengthAwarePaginator
-     */
-    public function buildDocument(): LengthAwarePaginator
+    public function buildDocument(): mixed
     {
         return Product::search('', function (Indexes $meiliSearch, $query, $options) {
             return $meiliSearch->search($query, $this->makeQueryString($options));
-        })->paginateRaw();
+        })->raw();
     }
 
-    /**
-     * @param $options
-     * @param $name
-     * @return array
-     */
     private function makeQueryString($options, $name = null): array
     {
-        $facets = $this->context === 'brand' ? ['feature','category'] : ['feature','brand'];
-        $options['sort'] = [ $this->sortBy];
-        $options['facets'] = $name ? [($name != 'brand' && $name != 'category') ? 'feature.' . $name : $name] :  $facets;
+        $facets = $this->context === 'brand' ? ['feature', 'category'] : ['feature', 'brand'];
+        $options['sort'] = [$this->sortBy, 'quantity:desc'];
+        $options['facets'] = $name ? [($name != 'brand' && $name != 'category') ? 'feature.'.$name : $name] : $facets;
 
-        $filters = collect($this->params)->filter(fn($filter, $key) => (!empty($filter) && (!$key || $key !== $name)))->recursive()->map(function ($value, $key) {
+        $filters = collect($this->params)->filter(fn ($filter, $key) => (! empty($filter) && (! $key || $key !== $name)))->recursive()->map(function ($value, $key) {
 
-            if ($key !== 'brand' && $key != 'category') $key = 'feature.' . $key;
-            return $value->map(fn($value) =>  $key . '="' . $value . '"'
+            if ($key !== 'brand' && $key != 'category') {
+                $key = 'feature.'.$key;
+            }
+
+            return $value->map(fn ($value) => $key.'="'.$value.'"'
             )->join(' OR ');
         })->flatten()->join(' ) AND (');
 
-        $filters = $filters ? '(' . $filters . ')' : "";
-        if ($this->price) $filters .= (!$filters ? ' ' : " AND ") . " price <= " . ($this->price * self::MULTIPLE);
-        if ($this->context === 'category' && $this->contextID) $filters .= (!$filters ? ' ' : " AND ") . " category = " . $this->contextID;
+        $filters = $filters ? '('.$filters.')' : '';
+        if ($this->cost) {
+            $filters .= (! $filters ? ' ' : ' AND ').' cost <= '.($this->cost * self::MULTIPLE);
+        }
+        if ($this->context === 'category' && $this->contextID) {
+            $filters .= (! $filters ? ' ' : ' AND ').' category = '.$this->contextID;
+        }
 
-        if ($this->context === 'brand' && $this->contextID) $filters .= (!$filters ? ' ' : " AND "). " brand = '$this->contextID'";
+        if ($this->context === 'brand' && $this->contextID) {
+            $filters .= (! $filters ? ' ' : ' AND ')." brand = '$this->contextID'";
+        }
         $options['filter'] = $filters;
+
         return $options;
     }
 
-//    /**
-//     * @param $basic
-//     * @param $facets
-//     * @return mixed
-//     */
-//    private function mergeFacets($basic, $facets)?
-//    {
-//        foreach ($facets as $key => $value) {
-//            $basic[$key] = $value;
-//        }
-//        return $basic;
-//    }
+    //    /**
+    //     * @param $basic
+    //     * @param $facets
+    //     * @return mixed
+    //     */
+    //    private function mergeFacets($basic, $facets)?
+    //    {
+    //        foreach ($facets as $key => $value) {
+    //            $basic[$key] = $value;
+    //        }
+    //        return $basic;
+    //    }
 
-    /**
-     * @param $facet
-     * @param $substr
-     * @return array
-     */
     public function modifyFilterKeys($facet, $substr): array
     {
+
         unset($facet[$substr]);
 
         foreach ($facet as $key => $item) {
             if (str_contains($key, 'feature.')) {
-                $newKey = preg_replace('$' . $substr . '.$', '', $key);
+                $newKey = preg_replace('$'.$substr.'.$', '', $key);
+
                 $facet[$newKey] = $item;
                 unset($facet[$key]);
             }
         }
+
         return $facet;
     }
 
-    /**
-     * @param $facet
-     * @param $allFacets
-     * @return array
-     */
     public function resetFacet($facet, $allFacets): array
     {
         foreach ($allFacets as $key => $value) {
@@ -175,17 +161,16 @@ class ProductMeilisearchFilter implements ProductFilterContract
 
                 if ($key == 'brand' || $key == 'category') {
 
-                    if (!isset($facet[$key][$k])) {
+                    if (! isset($facet[$key][$k])) {
                         $count = $allFacets[$key][$k] = 0;
                         $facet[$key][$k] = $count;
 
                     }
 
-                }
-                else {
+                } else {
 
-                    if (!isset($facet[$key][$k])) {
-                        $count = $allFacets['feature.' . $key][$k] = 0;
+                    if (! isset($facet[$key][$k])) {
+                        $count = $allFacets['feature.'.$key][$k] = 0;
                         $facet[$key][$k] = $count;
                     }
                 }
@@ -193,13 +178,10 @@ class ProductMeilisearchFilter implements ProductFilterContract
             }
 
         }
+
         return $facet;
     }
 
-    /**
-     * @param $facet
-     * @return array
-     */
     public function modifyFacet($facet): array
     {
 
@@ -224,12 +206,13 @@ class ProductMeilisearchFilter implements ProductFilterContract
                                 'value' => $item->value,
                                 'name' => $item->name,
                                 'count' => $count,
-                                'guard_name' => $item->guard_name
+                                'guard_name' => $item->guard_name,
                             ];
                         }
                     }
                 });
             });
+
         Feature::query()
             ->selectRaw('guard_name,name')
             ->leftJoin('feature_lang', 'feature_lang.feature_id', '=', 'features.id')
@@ -238,10 +221,11 @@ class ProductMeilisearchFilter implements ProductFilterContract
             ->each(function ($item) use (&$facet) {
                 if (isset($facet[$item->guard_name])) {
                     $res = $facet[$item->guard_name];
-                    $facet[$item->name] = $res;
                     unset($facet[$item->guard_name]);
+                    $facet[$item->name] = $res;
                 }
             });
+
         if (isset($facet['category'])) {
             CategoryLang::query()->with('category')
                 ->where('locale', app()->getLocale())->get(['category_id', 'title', 'link_rewrite'])->each(function ($item, $key) use (&$facet) {
@@ -254,7 +238,7 @@ class ProductMeilisearchFilter implements ProductFilterContract
                                 'value' => $item->link_rewrite,
                                 'name' => trans('page/category.title_plural'),
                                 'count' => $count,
-                                'guard_name' => 'category'
+                                'guard_name' => 'category',
                             ];
                         }
                     }

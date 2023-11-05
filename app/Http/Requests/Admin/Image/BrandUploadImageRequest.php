@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BrandUploadImageRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,8 +23,9 @@ class BrandUploadImageRequest extends FormRequest
     public function rules(): array
     {
         $rules = 'image|mimes:jpeg,png,jpg,gif';
+
         return [
-            'file' => $rules
+            'file' => $rules,
         ];
     }
 }

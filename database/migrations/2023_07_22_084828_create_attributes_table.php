@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attribute_group_id')->constrained()->cascadeOnDelete();
-            $table->string('color',20)->nullable();
+            $table->string('color', 20)->nullable();
             $table->integer('position');
         });
     }

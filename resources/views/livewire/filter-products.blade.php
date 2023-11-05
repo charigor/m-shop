@@ -8,11 +8,11 @@
                 <span class="text-sm">Сортування:</span>
                 <div
                     class="whitespace-nowrap overflow-hidden flex border-2 border-color-gray-200 rounded-lg ml-4 text-sm">
-                        <span class="relative px-2 py-1 {{$sortBy === 'price:asc' ? 'bg-purple-200' : ''}}"><label
-                                class="cursor-pointer"><input wire:model="sortBy" class="hidden" value="price:asc"
+                        <span class="relative px-2 py-1 {{$sortBy === 'cost:asc' ? 'bg-purple-200' : ''}}"><label
+                                class="cursor-pointer"><input wire:model="sortBy" class="hidden" value="cost:asc"
                                                               type="radio">Спочатку дешевше</label></span>
-                    <span class="relative px-2 py-1 {{$sortBy === 'price:desc' ? 'bg-purple-200' : ''}}"><label
-                            class="cursor-pointer "><input wire:model="sortBy" class="hidden" value="price:desc"
+                    <span class="relative px-2 py-1 {{$sortBy === 'cost:desc' ? 'bg-purple-200' : ''}}"><label
+                            class="cursor-pointer "><input wire:model="sortBy" class="hidden" value="cost:desc"
                                                            type="radio">Спочатку дорожче</label></span>
                     {{--                    <span class="relative px-2 py-1 {{$sortBy === 'name' ? 'bg-purple-200' : ''}}"><label--}}
                     {{--                            class="cursor-pointer"><input wire:model="sortBy" class="hidden" value="name" type="radio">За назвою</label></span>--}}
@@ -35,12 +35,12 @@
                         <div class="bg-light-100 text-main-dark ml-[30px]">
                             <div
                                 class="font-semibold rounded-lg text-md  py-2.5 text-left inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                {{trans('page/product.fields.price')}}
+                                <span class="font-medium">{{mb_strtoupper(trans('page/product.fields.price'))}}</span>
                             </div>
-                            <div class="text-sm">Price max : <b>{{$price['max']}}</b></div>
+                            <div class="text-sm">Price max :  <span class="font-medium">{{mb_strtoupper($cost['max'])}}</span></div>
                             <div class="relative flex w-100  items-center">
-                                <input type="range" min="{{$price['min']}}" max="{{$maxPrice}}"
-                                       wire:model.debounce.250ms="price.max">
+                                <input type="range" min="{{$cost['min']}}" max="{{$maxPrice}}"
+                                       wire:model.debounce.250ms="cost.max">
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                           stroke-width="2" d="m1 9 4-4-4-4"/>
                                 </svg>
-                                <b>{{$key}}</b>
+                                <span class="font-medium">{{mb_strtoupper($key)}}</span>
                             </button>
                             <!-- Dropdown menu -->
                             <div class="z-10  bg-white ml-3"
@@ -82,7 +82,7 @@
                                                 <label
                                                     for="checkbox-item-{{$element['guard_name'] === 'brand' ? $element['value'] : $element['id']}}"
                                                     {{!$element['count'] ? 'disabled': '' }}
-                                                    class="disabled:opacity-25 flex cursor-pointer font-semibold items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$element['value']}}
+                                                    class="disabled:opacity-25 flex cursor-pointer font-medium items-center p-[7px] hover:text-cyan-80 border-0 text-md leading-3 text-black">{{$element['value']}}
                                                     <span class="ml-2 mb-[2px] text-xs text-cyan-600">({{$element['count']}})</span></label>
                                             </div>
                                         </li>
@@ -98,57 +98,13 @@
         <div style="width: calc(100% - 250px)" class="mt-4">
             <div class="flex flex-wrap container">
                 @foreach($hits as $product)
-                    <div class="z-1 h-100 sm: md:w-[25%] lg:w-[20%] xl:w-[16.66667%] relative">
-                        <div class="m-[4px] relative">
-                            <a href="{{route('front.product.show',$product->translate->link_rewrite)}}"
-                               class="block bg-transparent z-1 text-decoration-none text-center overflow-hidden border-0 relative h-[250px]">
-                                <div
-                                    class="flex items-center justify-center absolute overflow-hidden left-0 right-0 top-0 bottom-0">
-                                    <img width="250px" height="250px"
-                                         class="mh-100 text-center mw-100 h-auto w-auto text-sm"
-                                         src="{{$product->mainImage->getFullUrl()}}" alt="product image"/>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="text-center m-[4px] relative">
-                            <div class="text-center m-[4px] relative">
-                                <div class="inline-block">
-                                    <div class="text-xs">Артикул: 30023</div>
-                                    {{$product['id']}}
-                                </div>
-                                <div class="inline-block ml-[5px]">
-                                    <div>stars</div>
-                                </div>
-                                <div class="inline-block text-xs">
-                                    comments
-                                </div>
-                            </div>
-                            <div
-                                class="overflow-hidden h-[74px] mh-3 pb-1 my-[6px] text-md text-ellipsis center leading-5">
-                                <a href="#">
-                                    {{$product['title']}}
-                                </a>
-                            </div>
-                            <div class="flex items-center justify-center mt-[10px]">
-                                <span class="text-md font-bold text-gray-900 align-self-center leading-5 mr-[10px]">
-                                    {{priceFormat($product['price'])}}
-                                </span>
-                                <span
-                                    class="text-md font-normal text-gray-900 align-self-center line-through leading-5 mr-[10px]">
-                                    {{priceFormat($product['price'])}}
-                                </span>
-                            </div>
-                            <div class="mt-2">
-                                <button wire:click="addToCart({{$product['id']}})" type="button"
-                                        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-1.5 mr-1 mb-1 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-                                    Add to cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        <livewire:product-mini-card :product="$product" :key="$product->id"/>
                 @endforeach
+            </div>
+            <div>
                 {{$hits->links()}}
             </div>
         </div>
     </div>
 </div>
+

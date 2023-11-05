@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use App\Models\Lang;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Foundation\Http\FormRequest;
+
 class LangCreateRequest extends FormRequest
 {
     /**
@@ -26,11 +26,11 @@ class LangCreateRequest extends FormRequest
     {
 
         return [
-            'name' =>  'required|max:30',
-            'code' =>  'required|max:2',
-            'date_format' =>  'required|string|in:'.implode(',',Lang::DATE_FORMAT),
-            'date_format_full' =>  'required|string|in:'.implode(',',Lang::DATE_FORMAT_FULL),
-            'active' =>  'required|integer|in:'.implode(',',array_flip(Lang::ACTIVE)),
+            'name' => 'required|max:30',
+            'code' => 'required|max:2',
+            'date_format' => 'required|string|in:'.implode(',', Lang::DATE_FORMAT),
+            'date_format_full' => 'required|string|in:'.implode(',', Lang::DATE_FORMAT_FULL),
+            'active' => 'required|integer|in:'.implode(',', array_flip(Lang::ACTIVE)),
         ];
     }
 }

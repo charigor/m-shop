@@ -7,8 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
 {
-
-
     /**
      * Transform the resource into an array.
      *
@@ -22,10 +20,10 @@ class CategoryResource extends JsonResource
             'translation' => $this->translation->keyBy('locale'),
             'cover_image' => $this->getMedia('cover_image'),
             'menu_thumbnail' => $this->getMedia('menu_thumbnail'),
-            'children' => $this->children ?? ""
+            'children' => $this->children ?? '',
         ];
 
-        return array_merge($defaultData,$additionalData);
+        return array_merge($defaultData, $additionalData);
 
     }
 }

@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cart extends Model
 {
     use HasFactory;
+
     public $table = 'cart';
+
     protected $fillable = [
         'customer_id',
         'delivery_id',
@@ -24,9 +26,7 @@ class Cart extends Model
     protected $casts = [
         'created_at' => 'datetime:d-m-Y',
     ];
-    /**
-     * @return HasMany
-     */
+
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);

@@ -12,6 +12,7 @@ class Button extends Component
      * Create a new component instance.
      */
     public $label;
+
     public function __construct()
     {
         $this->label = 'Some Btn';
@@ -22,6 +23,6 @@ class Button extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.button',['label' => $this->label]);
+        return view('components.button', ['label' => $this->label]);
     }
 }

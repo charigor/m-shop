@@ -2,8 +2,6 @@
 
 namespace App\Services\Filter;
 
-use Elastic\Elasticsearch\Client;
-
 //trait Searchable
 //{
 //    public static function bootSearchable()

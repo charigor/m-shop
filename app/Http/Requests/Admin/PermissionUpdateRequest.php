@@ -24,8 +24,8 @@ class PermissionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>  'required|max:30|unique:permissions,name,'.$this->id,
-            'guard_name' =>  'required|regex:/^[a-zA-Z]+$/u|max:30|unique:permissions,guard_name,'.$this->id,
+            'name' => 'required|max:30|unique:permissions,name,'.$this->id,
+            'guard_name' => 'required|regex:/^[a-zA-Z]+$/u|max:30|unique:permissions,guard_name,'.$this->id,
         ];
     }
 }

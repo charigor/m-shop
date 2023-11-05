@@ -10,51 +10,42 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Feature extends Model
 {
     use HasFactory;
+
     public $table = 'features';
 
     public $timestamps = false;
 
     protected $fillable = [
         'guard_name',
-        'position'
+        'position',
     ];
+
     protected $with = [
-        'translate'
+        'translate',
     ];
-    /**
-     * @return HasMany
-     */
+
     public function translation(): HasMany
     {
         return $this->hasMany(FeatureLang::class);
     }
-    /**
-     * @return mixed
-     */
+
     public function translate(): mixed
     {
         return $this->hasOne(FeatureLang::class)->whereLocale(app()->getLocale());
     }
-    /**
-     * @return HasMany
-     */
+
     public function featureValue(): HasMany
     {
         return $this->hasMany(FeatureValue::class);
     }
-    /**
-     * @return BelongsToMany
-     */
+
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot('feature_value_id');
     }
-    /**
-     * @return Model|null
-     */
-    public function getTranslateAttribute(): Model|null
-    {
-        return $this->translation()->where('locale',app()->getLocale())?->first();
-    }
 
+    public function getTranslateAttribute(): ?Model
+    {
+        return $this->translation()->where('locale', app()->getLocale())?->first();
+    }
 }
