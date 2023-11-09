@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\UploadTemporaryImageController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -131,6 +132,7 @@ Route::middleware(['auth', 'setLocale'])->group(function () {
 });
 Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
     Route::get('/', [MainController::class, 'index'])->name('main');
+    Route::get('/test', [TestController::class, 'index'])->name('test');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
     Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
     Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
