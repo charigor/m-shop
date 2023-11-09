@@ -11,7 +11,7 @@ class FactoryMethod extends AbstractFactoryMethod
     }
     public static function picture(): string
     {
-        #Read
+        #Read ne string
         return 'regular picture';
     }
 }
