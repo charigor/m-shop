@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Models\Brand;
 use App\Models\Lang;
 use Illuminate\Foundation\Http\FormRequest;
+use Maski\Maski\MaskiFacade;
 
 class BrandCreateRequest extends FormRequest
 {
@@ -44,11 +45,13 @@ class BrandCreateRequest extends FormRequest
 
         return array_merge(
             $this->langArr,
+            ['phone' => 'required|phone:ua'],
             ['name' => 'required|string'],
             ['active' => 'required|integer|in:'.implode(',', array_flip(Brand::ACTIVE))],
             ['short_description' => 'nullable'],
             ['description' => 'nullable'],
             ['image' => 'array'],
+
         );
     }
 
@@ -62,6 +65,7 @@ class BrandCreateRequest extends FormRequest
             $this->attr['lang.'.$lang.'.meta_keywords'] = 'meta keywords';
         }
         $this->attr['name'] = 'name';
+        $this->attr['phone'] = 'phone';
 
         return $this->attr;
     }

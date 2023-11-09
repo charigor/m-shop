@@ -20,8 +20,6 @@
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
-    <script>
-    </script>
         @inertia
     </body>
 </html>

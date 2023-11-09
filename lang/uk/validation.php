@@ -206,6 +206,7 @@ return [
     'you_have_been_invited_to_join_team' => 'Вас запросили приєднатися до команди :teamName!',
     'you_have_x_invitations_remaining' => 'Наразі у вас залишилося :count запрошень.',
     'you_have_x_teams_remaining' => 'Зараз у вас залишилося :teamCount команд.',
+    'phone' => 'The :attribute field must be a valid number.',
 
     'custom' => [
         'base_lang_attr' => [

@@ -21,6 +21,9 @@ import { i18nVue } from 'laravel-vue-i18n'
 
 
 
+
+
+
 import "vue-select/dist/vue-select.css";
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -30,6 +33,7 @@ import "vue-select/dist/vue-select.css";
 
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import VueTheMask from 'vue-the-mask'
 
 window.Pusher = Pusher;
 window.Echo = new Echo({
