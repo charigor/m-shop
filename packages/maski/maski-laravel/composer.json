@@ -1,0 +1,31 @@
+{
+    "name": "maski/maski-laravel",
+    "type": "library",
+    "require": {
+        "stevebauman/location": "^7.0",
+        "propaganistas/laravel-phone" : "^5.0.3"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Maski\\Maski\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Maski\\Maski\\MaskiServiceProvider"
+            ]
+        },
+        "aliases": {
+            "Maski": "Maski\\Maski\\MaskiFacade"
+        }
+    },
+    "authors": [
+        {
+            "name": "Igor Charushnikov",
+            "email": "cherychara@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
