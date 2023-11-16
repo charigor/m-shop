@@ -77,6 +77,7 @@ const tab = function (code){
             >
             </SectionTitleLineWithButton>
 
+
             <ul class="flex flex-wrap  justify-end text-sm font-medium text-center mb-1"  role="tablist">
                 <li role="lang" v-for="item in [...$page.props.languages]">
                     <button type="button" @click="tab(item.code)" :class="{ 'bg-gray-300 dark:bg-gray-600': locale === item.code}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >
@@ -94,19 +95,19 @@ const tab = function (code){
 <!--                <div class="relative z-0 w-full mb-6 group">-->
 <!--                <input  v-model="form['phone']"  type="text" v-cleave="{phone: true, phoneRegionCode: 'UA'}" id="brand_phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" v-mask="['(##) ####-####', '+3(##) #####-####']" />-->
 <!--                </div>-->
-                <div class="relative z-0 w-full mb-6 group">
-                    <cleave v-model="form['phone']"
-                            :options="{
-                    phone: true,
-                    phoneRegionCode: 'ua',
-                    prefix: '+380'
-                }"
+<!--                <div class="relative z-0 w-full mb-6 group">-->
+<!--                    <cleave v-model="form['phone']"-->
+<!--                            :options="{-->
+<!--                    phone: true,-->
+<!--                    phoneRegionCode: 'ua',-->
+<!--                    prefix: '+380'-->
+<!--                }"-->
 
-                            id="brand_phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            name="phone"/>
-                    <label for="brand_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone</label>
-                </div>
-                <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.phone">{{$page.props.errors.phone}}</p>
+<!--                            id="brand_phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"-->
+<!--                            name="phone"/>-->
+<!--                    <label for="brand_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone</label>-->
+<!--                </div>-->
+<!--                <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="$page.props.errors.phone">{{$page.props.errors.phone}}</p>-->
                 <div class="relative z-0 w-full mb-6 group required">
                     <input v-model="form['name']"  type="text" id="brand_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
                     <label for="brand_name" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">{{$t('page.brand.fields.name')}}</label>
@@ -159,4 +160,7 @@ const tab = function (code){
             </form>
         </SectionMain>
     </LayoutAuthenticated>
+    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam ducimus harum necessitatibus obcaecati sed!
+        Autem culpa deleniti distinctio exercitationem minus non porro repudiandae. Accusamus, dolorum necessitatibus
+        quibusdam tempore vitae voluptatum.</div>
 </template>

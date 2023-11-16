@@ -45,7 +45,6 @@ class BrandCreateRequest extends FormRequest
 
         return array_merge(
             $this->langArr,
-            ['phone' => 'required|phone:ua'],
             ['name' => 'required|string'],
             ['active' => 'required|integer|in:'.implode(',', array_flip(Brand::ACTIVE))],
             ['short_description' => 'nullable'],
@@ -65,7 +64,6 @@ class BrandCreateRequest extends FormRequest
             $this->attr['lang.'.$lang.'.meta_keywords'] = 'meta keywords';
         }
         $this->attr['name'] = 'name';
-        $this->attr['phone'] = 'phone';
 
         return $this->attr;
     }
