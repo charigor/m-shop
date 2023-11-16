@@ -24,7 +24,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
 
-        //        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
+               abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         return Inertia::render('Users/Index', [
             'roles' => RoleResource::collection(Role::all()->prepend(['id' => 0, 'name' => 'All']))->resolve(),
             'users' => UserResource::collection((new Users)->table($request)),

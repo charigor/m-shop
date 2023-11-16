@@ -14,6 +14,8 @@ import {
     mdiSvg
 
 } from "@mdi/js";
+
+const pageName = 'brand';
 const props = defineProps({
     brands: {
         type: Object,
@@ -64,13 +66,13 @@ defineComponent({
                 main
             >
             </SectionTitleLineWithButton>
-            <DataTable  :data="props.brands" :filter="props.table_filter" :search="props.table_search" :columns="columns" base-url="/admin/brand" :url-prefix="urlPrefix" table-name="Brands" delete-title="name">
+            <DataTable  :data="props.brands" :filter="props.table_filter" :search="props.table_search" :columns="columns" :base-url="`/admin/${pageName}`" :url-prefix="urlPrefix" table-name="Brands" delete-title="name">
                 <template #create>
                     <BaseLink
                         color="gray"
                         small
                         :label="$t('global.create')"
-                        :href="'/admin/brand/create'"
+                        :href="`/admin/${pageName}/create`"
                     >
                     </BaseLink>
                 </template>
