@@ -36,5 +36,9 @@ return [
         'enabled' => env('ELASTICSEARCH_ENABLED', false),
         'hosts' => explode(',', env('ELASTICSEARCH_HOSTS')),
     ],
+    'nova_poshta' => [
+        'api_key' => env('NEWPOST_API', '798d79e66dea8846685ba94ef8eb6bd3'),
+    ],
+
 
 ];

@@ -14,7 +14,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Brand extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia,Sluggable;
+    use HasFactory;
+    use InteractsWithMedia;
+    use Sluggable;
 
     public $table = 'brands';
 
@@ -24,12 +26,12 @@ class Brand extends Model implements HasMedia
         'active',
     ];
 
-    const  ACTIVE = [
+    public const  ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
 
-    const MODEL_NAME = 'brand';
+    public const MODEL_NAME = 'brand';
 
     public function sluggable(): array
     {
@@ -77,6 +79,10 @@ class Brand extends Model implements HasMedia
         'updated_at' => 'datetime:d-m-Y h:m:s',
     ];
 
+    /**
+     * @param  string  $term
+     * @return Collection
+     */
     public function search(string $term): Collection
     {
 

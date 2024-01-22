@@ -19,7 +19,6 @@ class BrandService extends BaseCrudService
 
     /**
      * @param  null  $params
-     * @return mixed
      */
     public function getItems($request, $params = null): mixed
     {
@@ -27,56 +26,43 @@ class BrandService extends BaseCrudService
     }
 
     /**
-     * @param $request
      * @return Builder|Model|mixed
      */
     public function createItem($request): mixed
     {
         $data = $request->validated();
-        return DB::transaction(function() use ($data)
-            {
-                $model = $this->model::create($data);
-                $prepareData = (new TranslationService)->prepareFields($data['lang']);
-                $model->translation()->createMany($prepareData);
-                $this->addMedia($model, $data, ['image']);
 
-                return $model;
-            }
+        return DB::transaction(function () use ($data) {
+            $model = $this->model::create($data);
+            $prepareData = (new TranslationService)->prepareFields($data['lang']);
+            $model->translation()->createMany($prepareData);
+            $this->addMedia($model, $data, ['image']);
+
+            return $model;
+        }
         );
     }
 
-    /**
-     * @param $model
-     * @param $request
-     * @return mixed
-     */
     public function updateItem($model, $request): mixed
     {
         $data = $request->validated();
         $model->slug = null;
-       return  DB::transaction(function() use ($data,$model)
-            {
-                $model->update($data);
-                $prepareData = (new TranslationService)->prepareFields($data['lang']);
-                foreach ($prepareData as $item) {
-                    $model->translation()->where('locale', $item['locale'])->update($item);
-                }
-                $this->addMedia($model, $data, ['image']);
-                $this->removeMedia($model, $data, ['image']);
-                return $model->refresh();
+
+        return DB::transaction(function () use ($data, $model) {
+            $model->update($data);
+            $prepareData = (new TranslationService)->prepareFields($data['lang']);
+            foreach ($prepareData as $item) {
+                $model->translation()->where('locale', $item['locale'])->update($item);
             }
+            $this->addMedia($model, $data, ['image']);
+            $this->removeMedia($model, $data, ['image']);
+
+            return $model->refresh();
+        }
         );
-
-
 
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     * @return void
-     */
     public function removeMedia($model, $data, array $collections = []): void
     {
         foreach ($collections as $name) {
@@ -89,12 +75,6 @@ class BrandService extends BaseCrudService
 
     }
 
-    /**
-     * @param $model
-     * @param $data
-     * @param array $collections
-     * @return void
-     */
     public function addMedia($model, $data, array $collections = []): void
     {
         foreach ($collections as $name) {
@@ -106,13 +86,10 @@ class BrandService extends BaseCrudService
         }
     }
 
-    /**
-     * @param $request
-     * @return mixed
-     */
-   public function deleteItems($request): mixed
-   {
+    public function deleteItems($request): mixed
+    {
         $data = $request->only('ids');
+
         return $this->model->whereIn('id', $data['ids'])->delete();
     }
 }

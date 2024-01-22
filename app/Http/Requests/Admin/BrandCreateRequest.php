@@ -5,7 +5,6 @@ namespace App\Http\Requests\Admin;
 use App\Models\Brand;
 use App\Models\Lang;
 use Illuminate\Foundation\Http\FormRequest;
-use Maski\Maski\MaskiFacade;
 
 class BrandCreateRequest extends FormRequest
 {

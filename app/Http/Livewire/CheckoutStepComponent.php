@@ -2,8 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Spatie\LivewireWizard\Components\StepComponent;
 
 class CheckoutStepComponent extends StepComponent
@@ -44,6 +42,4 @@ class CheckoutStepComponent extends StepComponent
     {
         return view('livewire.checkout-step', ['name' => $this->name, 'email']);
     }
-
-
 }

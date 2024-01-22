@@ -138,6 +138,8 @@ Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
     Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
     Route::get('brand/{brand:slug}', [\App\Http\Controllers\Front\BrandController::class, 'show'])->name('brand.show');
 
+    Route::get('cities', [\App\Http\Controllers\Front\CitiesController::class, 'index']);
+
     Route::get('language/{locale}', function ($locale) {
         app()->setLocale($locale);
         session()->put('locale', $locale);
@@ -145,6 +147,7 @@ Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
         return redirect()->back();
     })->name('language.locale');
     Route::get('product/{product:link_rewrite}/', [\App\Http\Controllers\Front\ProductController::class, 'show'])->name('product.show');
+    Route::get('/get-unique-user-names', [\App\Http\Controllers\Front\UserController::class, 'getUniqueUserNames']);
 });
 
 require __DIR__.'/auth.php';
