@@ -47,9 +47,6 @@ class BrandController extends Controller
         ]);
     }
 
-    /**
-     * @return \Inertia\Response
-     */
     public function create(): \Inertia\Response
     {
         $response = [
@@ -90,6 +87,7 @@ class BrandController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $this->service->deleteItems($request);
+
         return redirect()->route('brand.index')->with('message', trans('messages.success.delete'));
     }
 

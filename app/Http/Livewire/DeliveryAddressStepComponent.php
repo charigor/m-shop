@@ -8,19 +8,21 @@ use Spatie\LivewireWizard\Components\StepComponent;
 
 class DeliveryAddressStepComponent extends StepComponent
 {
-
     public array $cities = [];
 
     public string $name = '';
+
     public string $street = '';
+
     public string $zip = '';
+
     public string $city = 'Київ';
 
     public array $rules = [
-        'name'=> 'required',
-        'street'=> 'required',
-        'zip'=> 'required',
-        'city'=> 'required',
+        'name' => 'required',
+        'street' => 'required',
+        'zip' => 'required',
+        'city' => 'required',
     ];
 
     public function submit()
@@ -29,14 +31,12 @@ class DeliveryAddressStepComponent extends StepComponent
 
         $this->nextStep();
     }
+
     public function mount(): void
     {
         $this->cities = $this->getCities();
     }
 
-    /**
-     * @return array
-     */
     public function getCities(): array
     {
         $response = Cache::remember('cities', 86400, function () {
@@ -61,15 +61,17 @@ class DeliveryAddressStepComponent extends StepComponent
         } else {
             $collect = $collect->unique('Description')->pluck('Description');
         }
+
         return $collect->toArray();
 
-//        return response()->json([
-//            'status' => 'ok',
-//            'code' => 200,
-//            'count' => $collect->count(),
-//            'data' => ['items' => $collect],
-//        ]);
+        //        return response()->json([
+        //            'status' => 'ok',
+        //            'code' => 200,
+        //            'count' => $collect->count(),
+        //            'data' => ['items' => $collect],
+        //        ]);
     }
+
     public function render()
     {
         return view('livewire.checkout-delivery-step');

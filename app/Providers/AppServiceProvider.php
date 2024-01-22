@@ -14,6 +14,7 @@ use App\Services\Filter\ProductMeilisearchFilter;
 use Elastic\Elasticsearch\Client;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -64,10 +65,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-//        Livewire::component('checkout-wizard', Checkout::class);
-//        Livewire::component('checkout-step', CheckoutStepComponent::class);
-//        Livewire::component('checkout-delivery-step', DeliveryAddressStepComponent::class);
-//        Livewire::component('checkout-payment-step', PaymentOrderStepComponent::class);
+
+
+
+        //        Livewire::component('checkout-wizard', Checkout::class);
+        //        Livewire::component('checkout-step', CheckoutStepComponent::class);
+        //        Livewire::component('checkout-delivery-step', DeliveryAddressStepComponent::class);
+        //        Livewire::component('checkout-payment-step', PaymentOrderStepComponent::class);
 
         $this->app->bind(ProductFilterContract::class, function () {
             return new ProductMeilisearchFilter();

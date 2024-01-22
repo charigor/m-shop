@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
-use Maski\Maski\MaskiFacade;
-use Maski\Maski\MaskiService;
 
 class RegisteredUserController extends Controller
 {

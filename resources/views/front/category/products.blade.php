@@ -4,6 +4,6 @@
 
     <livewire:filter-products :model="$category"/>
     <div>
-{{--        {!!$category->description!!}--}}
+        {!!$category->description!!}
     </div>
 @endsection

@@ -50,13 +50,15 @@
 @endsection
 @yield('header')
 <main>
-
-    <div class="container">
-        @yield('content')
+    <div id="app">
+{{--        <div class="container">--}}
+            @yield('content')
+{{--        </div>--}}
     </div>
 </main>
 </div>
 @livewireScripts
+@vite(['resources/js/app_front.js'])
 @stack('scripts')
 </script>
 </body>
