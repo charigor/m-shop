@@ -34,7 +34,7 @@
 </head>
 <body class="font-sans antialiased">
 
-<div>
+<div class="w-full">
     @section('header')
         <div class="bg-main-light text-main-dark dark:bg-main-dark dark:text-main-light">
             @include('front.partials.top-panel')
@@ -44,23 +44,21 @@
         </div>
 
         @include('front.partials.header_middle')
-</div>
 @include('front.partials.header_bottom')
 </div>
 @endsection
 @yield('header')
-<main>
+<main class="w-full">
     <div id="app">
-{{--        <div class="container">--}}
-            @yield('content')
-{{--        </div>--}}
+        @yield('content')
+        @stack('scripts')
     </div>
 </main>
 </div>
 @livewireScripts
+
 @vite(['resources/js/app_front.js'])
-@stack('scripts')
-</script>
+
 </body>
 </html>
 
