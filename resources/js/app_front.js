@@ -1,12 +1,18 @@
 
 import { createApp } from 'vue/dist/vue.esm-bundler';
+
 import axios from 'axios';
-import firstStep from "@/Front/Components/FirstStep.vue";
+
+import checkoutComponent from "@/Front/Components/CheckoutComponent.vue";
+
+import "vue-select/dist/vue-select.css";
+
+import VClickOutside from "@/VClickOutside.js";
 window.axios = axios;
 
-
-
 const app = createApp({})
+app.component('checkout-component', checkoutComponent)
 
-app.component('first-step', firstStep)
-app.mount('#app')
+app.directive('click-outside',VClickOutside)
+app.mount('#app');
+

@@ -20,9 +20,11 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TestController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,11 +136,14 @@ Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
     Route::get('/', [MainController::class, 'index'])->name('main');
     Route::get('/test', [TestController::class, 'index'])->name('test');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('checkout/stepOne', [\App\Http\Controllers\Front\CheckoutController::class, 'stepOne'])->name('checkout.step.one');
     Route::get('category/{slug}', [\App\Http\Controllers\Front\CategoryController::class, 'show'])->name('category.show');
     Route::get('brand', [\App\Http\Controllers\Front\BrandController::class, 'index'])->name('brand.index');
     Route::get('brand/{brand:slug}', [\App\Http\Controllers\Front\BrandController::class, 'show'])->name('brand.show');
 
-    Route::get('cities', [\App\Http\Controllers\Front\CitiesController::class, 'index']);
+    Route::match(['POST','GET'],'novaposhta/cities', [\App\Http\Controllers\Front\NovaPoshtaController::class, 'getCities']);
+    Route::match(['POST','GET'],'novaposhta/warehouses', [\App\Http\Controllers\Front\NovaPoshtaController::class, 'getWarehouses']);
+    Route::match(['POST','GET'],'novaposhta/warehouseTypes', [\App\Http\Controllers\Front\NovaPoshtaController::class, 'getWarehouseTypes']);
 
     Route::get('language/{locale}', function ($locale) {
         app()->setLocale($locale);
@@ -148,6 +153,47 @@ Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
     })->name('language.locale');
     Route::get('product/{product:link_rewrite}/', [\App\Http\Controllers\Front\ProductController::class, 'show'])->name('product.show');
     Route::get('/get-unique-user-names', [\App\Http\Controllers\Front\UserController::class, 'getUniqueUserNames']);
-});
 
+    Route::get('/login/google',[\App\Http\Controllers\Front\Auth\GoogleLogin::class,'login']);
+    Route::get('/login/google/callback',[\App\Http\Controllers\Front\Auth\GoogleLogin::class,'callback']);
+    Route::get('/login/facebook',[\App\Http\Controllers\Front\Auth\FacebookLogin::class,'login']);
+    Route::get('/login/facebook/callback',[\App\Http\Controllers\Front\Auth\FacebookLogin::class,'callback']);
+
+
+
+
+
+//    Route::view('front.checkout.success')->name('stripe-checkout-success');
+//    Route::view('front.checkout.cancel')->name('stripe-checkout-cancel');
+});
+Route::get('/stripe-checkout', function (Request $request) {
+    $stripePriceId = 'price_1OkjOrIPGZoDS9PBgQFN8aVu';
+
+    $quantity = 1;
+
+     $res = $request->user()->checkout([$stripePriceId => $quantity], [
+            'success_url' => url('/'),
+            'cancel_url' => url('/'),
+    ]);
+
+    $invoice = $request->user()->invoiceFor('Test product', 1, [
+        'description' => 'Custom Description', // Optional metadata
+        'metadata' => [
+            'custom_key' => 'custom_value', // Additional metadata
+        ],
+        'price_data' => [
+            'currency' => 'usd', // Replace with your desired currency
+            'unit_amount' => 1, // Replace with the unit amount in cents
+
+        ],
+    ]);
+})->name('stripe-checkout');
+Route::get('/subscription-checkout', function (Request $request) {
+    return $request->user()
+        ->newSubscription('default', 'price_1OkjchIPGZoDS9PBNqe5uNGU')->withMetadata(['memo' => 'AAAAAAAAAAAAAAAAAAAAAAAA'])
+        ->checkout([
+            'cancel_url' => url('checkout-cancelled'),
+            'success_url' => url('checkout-complete'),
+        ]);
+});
 require __DIR__.'/auth.php';

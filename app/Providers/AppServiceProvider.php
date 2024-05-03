@@ -2,22 +2,17 @@
 
 namespace App\Providers;
 
-use App\Http\Livewire\Checkout;
-use App\Http\Livewire\CheckoutStepComponent;
-use App\Http\Livewire\DeliveryAddressStepComponent;
-use App\Http\Livewire\PaymentOrderStepComponent;
+
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\User;
 use App\Services\Contracts\CartInterface;
 use App\Services\Filter\ProductFilterContract;
 use App\Services\Filter\ProductMeilisearchFilter;
-use Elastic\Elasticsearch\Client;
-use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
+use Laravel\Cashier\Cashier;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -65,7 +60,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        Cashier::useCustomerModel(User::class);
+        Cashier::calculateTaxes();
+        Cashier::useSubscriptionModel(Subscription::class);
+        Cashier::useSubscriptionItemModel(SubscriptionItem::class);
 
 
         //        Livewire::component('checkout-wizard', Checkout::class);
