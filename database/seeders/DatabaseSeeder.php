@@ -88,11 +88,11 @@ class DatabaseSeeder extends Seeder
                 \App\Models\Brand::factory(10)->create();
                  \App\Models\User::factory(100)->create();
                 \App\Models\Product::factory(10000)->create();
-        $role = Role::create(['name' => 'manager']);
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Igor',
-            'email' => 'acheryc@gmail.com',
-        ]);
-        $user->roles()->attach([$role->id]);
+//        $role = Role::create(['name' => 'manager']);
+//        $user = \App\Models\User::factory()->create([
+//            'name' => 'Igor',
+//            'email' => 'acheryc@gmail.com',
+//        ]);
+//        $user->roles()->attach([$role->id]);
     }
 }
