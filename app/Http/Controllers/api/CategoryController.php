@@ -23,7 +23,9 @@ class CategoryController extends Controller
                                           category_lang.link_rewrite')
             ->leftJoin('category_lang', 'category_lang.category_id', '=', 'categories.id')
             ->where('locale', app()->getLocale())
-            ->where('link_rewrite', $slug)
+            ->when($slug, function ($query, $slug) {
+                return  $query->where('link_rewrite', $slug);
+            })
             ->first();
         if (! $category) {
             return response()->json(['message' => 'Category not found'], 404);
