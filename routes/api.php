@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Api\PermissionController;
-use App\Http\Controllers\Admin\Api\RoleController;
-use App\Http\Controllers\Admin\Api\UserController;
+use App\Http\Controllers\api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/category/{slug}', ['CategoryController::class','index']);
 //Route::prefix('admin')->group(function () {
 //    Route::get('/users/table', [UserController::class,'table']);
 //        Route::delete('/users/delete-many', [UserController::class,'destroyMany']);
