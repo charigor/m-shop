@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/category', [CategoryController::class,'index']);
+Route::get('/search', [App\Http\Controllers\api\SearchController::class, 'search']);
+
 //Route::prefix('admin')->group(function () {
 //    Route::get('/users/table', [UserController::class,'table']);
 //        Route::delete('/users/delete-many', [UserController::class,'destroyMany']);
