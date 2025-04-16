@@ -132,7 +132,7 @@ Route::middleware(['auth', 'setLocale'])->group(function () {
     });
 
 });
-Route::group(['as' => 'front.', 'middleware' => ['setLocale']], function () {
+Route::group(['as' => 'front.', 'middleware' => ['setLocale','auth']], function () {
     Route::get('/', [MainController::class, 'index'])->name('main');
     Route::get('/test', [TestController::class, 'index'])->name('test');
     Route::get('checkout', [\App\Http\Controllers\Front\CheckoutController::class, 'index'])->name('checkout.index');
