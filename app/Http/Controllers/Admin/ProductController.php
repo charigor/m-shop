@@ -101,7 +101,7 @@ class ProductController extends Controller
             $item->delete();
         }
 
-        return redirect()->route('brand.index')->with('message', trans('messages.success.delete'));
+        return redirect()->route('.index')->with('message', trans('messages.success.delete'));
     }
 
     public function slug(Request $request): JsonResponse

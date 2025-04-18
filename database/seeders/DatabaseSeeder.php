@@ -5,6 +5,8 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\FeatureValueProduct;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -14,61 +16,62 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-                \App\Models\Lang::insert(
-                [
-                    [
-                    'name' => 'ukrainian',
-                    'active' => 1,
-                    'code' => 'uk',
-                    'date_format' => 'Y-m-d',
-                    'date_format_full' => 'Y-m-d H:i:s',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                    ],
-                    [
-                    'name' => 'english',
-                    'active' => 1,
-                    'code' => 'en',
-                    'date_format' => 'Y-m-d',
-                    'date_format_full' => 'Y-m-d H:i:s',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                    ]
-                ]
-                );
-                \App\Models\Feature::factory(30)->create()->each(function($feature){
-                     $faker = \Faker\Factory::create('uk_UA');
-                     $feature->translation()->create(
-                         [
-                         'locale' => 'uk',
-                         'name' => $faker->country,
-                        ]
-                     );
-                     $faker = \Faker\Factory::create('en_US');
-                     $feature->translation()->create(                 [
-                         'locale' => 'en',
-                         'name' => $faker->country,
-                     ]);
+//                \App\Models\Lang::insert(
+//                [
+//                    [
+//                    'name' => 'ukrainian',
+//                    'active' => 1,
+//                    'code' => 'uk',
+//                    'date_format' => 'Y-m-d',
+//                    'date_format_full' => 'Y-m-d H:i:s',
+//                    'created_at' => now(),
+//                    'updated_at' => now()
+//                    ],
+//                    [
+//                    'name' => 'english',
+//                    'active' => 1,
+//                    'code' => 'en',
+//                    'date_format' => 'Y-m-d',
+//                    'date_format_full' => 'Y-m-d H:i:s',
+//                    'created_at' => now(),
+//                    'updated_at' => now()
+//                    ]
+//                ]
+//                );
+//                \App\Models\Feature::factory(30)->create()->each(function($feature){
+//                     $faker = \Faker\Factory::create('uk_UA');
+//                     $feature->translation()->create(
+//                         [
+//                         'locale' => 'uk',
+//                         'name' => $faker->country,
+//                        ]
+//                     );
+//                     $faker = \Faker\Factory::create('en_US');
+//                     $feature->translation()->create(                 [
+//                         'locale' => 'en',
+//                         'name' => $faker->country,
+//                     ]);
+//
+//                     $featureValue =  $feature->featureValue()->create(
+//                         [
+//                             'custom' => rand(0,1)
+//                         ]
+//                     );
+//                     $faker = \Faker\Factory::create('uk_UA');
+//                     $featureValue->translation()->create(
+//                         [
+//                             'locale' => 'uk',
+//                             'value' => $faker->city
+//                         ]
+//                     );
+//                     $faker = \Faker\Factory::create('en_US');
+//                     $featureValue->translation()->create([
+//                         'locale' => 'en',
+//                         'value' => $faker->city,
+//                     ]);
+//                 });
 
-                     $featureValue =  $feature->featureValue()->create(
-                         [
-                             'custom' => rand(0,1)
-                         ]
-                     );
-                     $faker = \Faker\Factory::create('uk_UA');
-                     $featureValue->translation()->create(
-                         [
-                             'locale' => 'uk',
-                             'value' => $faker->city
-                         ]
-                     );
-                     $faker = \Faker\Factory::create('en_US');
-                     $featureValue->translation()->create([
-                         'locale' => 'en',
-                         'value' => $faker->city,
-                     ]);
-                 });
-                \App\Models\Product::factory(10)->create()->each(function ($product) {
+                \App\Models\Product::factory(400)->create()->each(function ($product) {
                     $productLang = \App\Models\ProductLang::factory(1)->make();
                     $product->translation()->saveMany($productLang);
                     $product->translation()->saveMany($productLang);
@@ -82,12 +85,13 @@ class DatabaseSeeder extends Seeder
                             ]
                         );
                     }
-
-
+                    $categoryIds = \App\Models\Category::pluck('id')->toArray(); // список всех категорий
+                    $randomCategories = collect($categoryIds)->random(rand(1, min(3, count($categoryIds)))); // выбираем от 1 до 3
+                    $product->categories()->attach($randomCategories);
                 });
-                \App\Models\Brand::factory(10)->create();
-                 \App\Models\User::factory(100)->create();
-                \App\Models\Product::factory(10000)->create();
+//                \App\Models\Brand::factory(10)->create();
+//                 \App\Models\User::factory(100)->create();
+//                \App\Models\Product::factory(10000)->create();
 //        $role = Role::create(['name' => 'manager']);
 //        $user = \App\Models\User::factory()->create([
 //            'name' => 'Igor',
