@@ -119,37 +119,37 @@ class Product extends Model implements HasMedia
         $query->where('active', array_search('Active', self::ACTIVE));
     }
 
-    public function toSearchableArray(): array
+//    public function toSearchableArray(): array
+//    {
+//        return [
+//            'cost' => $this->cost * 100,
+//            'quantity' => $this->quantity,
+//            'category' => $this->categories()->pluck('id')->toArray(),
+//            'brand' => $this->brand()->pluck('name')->first(),
+//            'feature' => $this->featureValues()->get()->groupBy('guard_name')
+//                ->map(function ($item) {
+//                    return $item->map(function ($i) {
+//                        return $i->pivot->feature_value_id;
+//                    })->flatten()->toArray();
+//                }),
+//            'created_at' => $this->created_at,
+//        ];
+//    }
+
+    public function translate($lang = null): mixed
     {
-        return [
-            'cost' => $this->cost * 100,
-            'quantity' => $this->quantity,
-            'category' => $this->categories()->pluck('id')->toArray(),
-            'brand' => $this->brand()->pluck('name')->first(),
-            'feature' => $this->featureValues()->get()->groupBy('guard_name')
-                ->map(function ($item) {
-                    return $item->map(function ($i) {
-                        return $i->pivot->feature_value_id;
-                    })->flatten()->toArray();
-                }),
-            'created_at' => $this->created_at,
-        ];
+        return $this->hasOne(ProductLang::class)->whereLocale($lang || app()->getLocale());
     }
 
-    public function translate(): mixed
-    {
-        return $this->hasOne(ProductLang::class)->whereLocale(app()->getLocale());
-    }
+//    public function searchableAs(): string
+//    {
+//        return 'products';
+//    }
 
-    public function searchableAs(): string
-    {
-        return 'products';
-    }
-
-    protected function makeAllSearchableUsing($query): Builder
-    {
-        return $query->with(['categories', 'features']);
-    }
+//    protected function makeAllSearchableUsing($query): Builder
+//    {
+//        return $query->with(['categories', 'features']);
+//    }
 
     public function getMainImageAttribute()
     {
@@ -159,5 +159,14 @@ class Product extends Model implements HasMedia
     public function getSortedMediaAttribute()
     {
         return $this->getMedia('image')->sortBy(fn ($value) => $value->custom_properties['order']);
+    }
+    protected static function booted()
+    {
+        static::saved(function () {
+            dispatch(new \App\Jobs\IndexProductInElasticsearch());
+        });
+        static::deleted(function () {
+            dispatch(new \App\Jobs\IndexProductInElasticsearch());
+        });
     }
 }
