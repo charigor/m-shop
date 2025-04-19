@@ -18,7 +18,7 @@
         "ext-json": "*",
         "astrotomic/laravel-translatable": "^11.12",
         "cviebrock/eloquent-sluggable": "^10.0",
-        "elasticsearch/elasticsearch": "^8.9",
+        "elasticsearch/elasticsearch": "*",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.8",
         "kalnoy/nestedset": "^6.0",

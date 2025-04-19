@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Category;
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;
 
@@ -11,7 +11,10 @@ class CreateElasticsearchIndex extends Command
 {
     protected $signature = 'elasticsearch:create-category-index';
     protected $description = 'Create the category_lang index in Elasticsearch';
-    public function __construct(protected Client $client) {}
+    public function __construct(protected Client $client)
+    {
+        parent::__construct();
+    }
     public function handle()
     {
         try {
