@@ -15,6 +15,7 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
+use Elastic\Elasticsearch\Client;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -28,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton( \Elastic\Elasticsearch\Client::class, function () {
+        $this->app->singleton( Client::class, function () {
             return ClientBuilder::create()
                 ->setHosts([env('ELASTICSEARCH_HOST', 'http://elasticsearch:9200')])
                 ->build();
