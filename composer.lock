@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0185ffac018a72c6014f1f64f3edeed8",
+    "content-hash": "1536d6802549b9690d6365fb44f571e0",
     "packages": [
         {
             "name": "astrotomic/laravel-translatable",
@@ -867,7 +867,7 @@
             "version": "v8.10.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:elastic/elasticsearch-php.git",
+                "url": "https://github.com/elastic/elasticsearch-php.git",
                 "reference": "4237d7e125582cfa7560d97dd8c3baee622875f1"
             },
             "dist": {
@@ -913,6 +913,10 @@
                 "elasticsearch",
                 "search"
             ],
+            "support": {
+                "issues": "https://github.com/elastic/elasticsearch-php/issues",
+                "source": "https://github.com/elastic/elasticsearch-php/tree/v8.10.0"
+            },
             "time": "2023-09-28T10:38:34+00:00"
         },
         {
@@ -3229,7 +3233,7 @@
         },
         {
             "name": "maski/maski-laravel",
-            "version": "dev-cachier",
+            "version": "dev-feature/new-elastic",
             "dist": {
                 "type": "path",
                 "url": "packages/maski/maski-laravel",
