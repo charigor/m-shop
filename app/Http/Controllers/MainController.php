@@ -4,20 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 //use App\Services\Filter\SearchRepository;
-use App\Services\Patterns\AbstractFactory\Factories\PaypalGatewayFactory;
-use App\Services\Patterns\Builder\MysqlBuilder;
-use App\Services\Patterns\FabricMethod\Fabrics\SmsFactory;
-use App\Services\Patterns\FabricMethod\Fabrics\TelegramFactory;
-use App\Services\Patterns\FabricMethod\SmsChannel;
-use App\Services\Patterns\FabricMethod\Test\Factories\EmailFactory;
+use App\Services\Patterns\Adapter\Contracts\Adapter;
+use App\Services\Patterns\Adapter\First;
+use App\Services\Patterns\Decorator\Test\Dec\DecorationCoffeeWithChocolate;
+use App\Services\Patterns\Decorator\Test\Dec\DecorationCoffeeWithMilk;
+use App\Services\Patterns\Decorator\Test\Realization\Coffee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class MainController extends Controller
 {
     public function index(Request $request)
     {
-        $notification = (EmailFactory::class)->make();
-//        dd($notification->send('Wow'));
+        $adapter = new Adapter(new First());
 
         $products = Product::with(['media', 'translation' => function ($query) {
             $query->where('locale', app()->getLocale());
