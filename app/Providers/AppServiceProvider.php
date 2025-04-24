@@ -7,8 +7,11 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\Contracts\CartInterface;
+use App\Services\Contracts\SearchEngineInterface;
 use App\Services\Filter\ProductFilterContract;
 use App\Services\Filter\ProductMeilisearchFilter;
+use App\Services\Search\ElasticSearch;
+use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
@@ -25,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton( \Elastic\Elasticsearch\Client::class, function () {
+            return ClientBuilder::create()
+                ->setHosts([env('ELASTICSEARCH_HOST', 'http://elasticsearch:9200')])
+                ->build();
+        });
+        $this->app->bind(SearchEngineInterface::class, ElasticSearch::class);
         //        if ($this->app->environment('local')) {
         //            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
         //            $this->app->register(TelescopeServiceProvider::class);
