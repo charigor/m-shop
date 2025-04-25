@@ -136,11 +136,10 @@ class Product extends Model implements HasMedia
 //        ];
 //    }
 
-    public function translate($lang = null): mixed
+    public function translate($lang = null)
     {
-        return $this->hasOne(ProductLang::class)->whereLocale($lang || app()->getLocale());
+        return $this->hasOne(ProductLang::class)->whereLocale($lang ?? app()->getLocale());
     }
-
 //    public function searchableAs(): string
 //    {
 //        return 'products';

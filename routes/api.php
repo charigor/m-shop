@@ -24,6 +24,8 @@ Route::get('/user', [AuthController::class, 'user']);
 //    return response()->json($request->user());
 //});
 Route::get('/category', [CategoryController::class,'index']);
+Route::get('/category/{linkRewrite}', [CategoryController::class, 'show']);
+
 Route::get('/search', [App\Http\Controllers\api\SearchController::class, 'search']);
 Route::post('/set-locale', function (\Illuminate\Http\Request $request) {
     $lang = $request->input('lang');
