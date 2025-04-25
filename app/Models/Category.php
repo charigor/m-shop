@@ -78,8 +78,8 @@ class Category extends Model implements HasMedia
         return $this->products->pluck('product_id');
     }
 
-    public function translate()
+    public function translate($lang = null)
     {
-        return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale(app()->getLocale());
+        return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale($lang ?? app()->getLocale());
     }
 }

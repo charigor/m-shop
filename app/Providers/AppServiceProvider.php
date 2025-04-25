@@ -69,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        app()->setLocale(session('locale', config('app.locale')));
         Cashier::useCustomerModel(User::class);
         Cashier::calculateTaxes();
         Cashier::useSubscriptionModel(Subscription::class);
