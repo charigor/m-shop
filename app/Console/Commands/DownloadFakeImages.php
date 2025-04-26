@@ -31,7 +31,7 @@ class DownloadFakeImages extends Command
                 mkdir($dir, 0777, true);
             }
 
-        for ($i = 1; $i <= 1000; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             $imageUrl = "https://picsum.photos/seed/$i/600/400";
             $imageContents = file_get_contents($imageUrl);
             file_put_contents("$dir/image_$i.jpg", $imageContents);

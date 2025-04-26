@@ -65,7 +65,7 @@ createInertiaApp({
         .use(i18nVue, {
             resolve: async lang => {
                 const langs = import.meta.glob('../../lang/*.json');
-                return await langs[`../../lang/${lang}.json`]();
+                return await langs[`../../lang/php_${lang}.json`]();
             }
         })
         .mixin({ methods: { route } })

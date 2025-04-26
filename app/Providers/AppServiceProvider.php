@@ -76,11 +76,6 @@ class AppServiceProvider extends ServiceProvider
         Cashier::useSubscriptionItemModel(SubscriptionItem::class);
 
 
-        //        Livewire::component('checkout-wizard', Checkout::class);
-        //        Livewire::component('checkout-step', CheckoutStepComponent::class);
-        //        Livewire::component('checkout-delivery-step', DeliveryAddressStepComponent::class);
-        //        Livewire::component('checkout-payment-step', PaymentOrderStepComponent::class);
-
         $this->app->bind(ProductFilterContract::class, function () {
             return new ProductMeilisearchFilter();
         });

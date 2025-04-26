@@ -17,7 +17,6 @@ class SetLanguage
     public function handle(Request $request, Closure $next)
     {
         $language = $request->header('Accept-Language');
-
         if ($language) {
             App::setLocale($language);
         }
