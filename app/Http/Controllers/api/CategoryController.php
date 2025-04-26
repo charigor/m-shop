@@ -7,10 +7,17 @@ use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\Filter\ElasticFilter;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    protected ElasticFilter $filterService;
+
+    public function __construct(ElasticFilter $filterService)
+    {
+        $this->filterService = $filterService;
+    }
     public function index(Request $request)
     {
         $categories = Category::with(['children', 'translate'])->get()->toTree();
@@ -19,6 +26,7 @@ class CategoryController extends Controller
 
     public function show(Request $request, $linkRewrite)
     {
+        $data = $request->all();
         $locale = app()->getLocale();
         $category = Category::with(['media', 'translate'])
             ->select('categories.*')
@@ -42,6 +50,7 @@ class CategoryController extends Controller
         $products = [];
 
         if ($subcategories->isEmpty()) {
+            $res = $this->filterService->handle($category->id,$data);
             $products = Product::with(['media', 'translate' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
             }])
@@ -54,6 +63,7 @@ class CategoryController extends Controller
             'category' => new CategoryResource($category),
             'subcategories' => CategoryResource::collection($subcategories),
             'products' => ProductResource::collection($products),
+            'facet' => $res,
             'pagination' => [
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),
