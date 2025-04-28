@@ -18,22 +18,24 @@ class CategoryController extends Controller
     {
         $this->filterService = $filterService;
     }
+
     public function index(Request $request)
     {
         $categories = Category::with(['children', 'translate'])->get()->toTree();
+
         return response()->json($categories);
     }
 
     public function show(Request $request, $linkRewrite)
     {
-        $data = $request->all();
+        $filters = $request->input('filter', []);
         $locale = app()->getLocale();
         $category = Category::with(['media', 'translate'])
             ->select('categories.*')
             ->leftJoin('category_lang', 'category_lang.category_id', '=', 'categories.id')
             ->where('link_rewrite', $linkRewrite)
             ->first();
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'category' => null,
                 'subcategories' => [],
@@ -47,23 +49,20 @@ class CategoryController extends Controller
             ->where('locale', $locale)
             ->where('parent_id', $category->id)
             ->get();
-        $products = [];
-
-        if ($subcategories->isEmpty()) {
-            $res = $this->filterService->handle($category->id,$data);
-            $products = Product::with(['media', 'translate' => function ($query) use ($locale) {
-                $query->where('locale', $locale);
-            }])
-                ->whereHas('categories', fn($query) => $query->where('category_id', $category->id))
-                ->whereHas('translate', fn($query) => $query->where('locale', $locale))
-                ->paginate(24);
-        }
+        $facet = $this->filterService->handle($category->id, $filters);
+        $products = Product::with(['brand', 'media', 'translate' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        }])
+            ->whereHas('categories', fn ($query) => $query->where('category_id', $category->id))
+            ->whereHas('translate', fn ($query) => $query->where('locale', $locale))
+            ->whereIn('id', $facet['productIds'])
+            ->paginate(24);
 
         return response()->json([
             'category' => new CategoryResource($category),
             'subcategories' => CategoryResource::collection($subcategories),
             'products' => ProductResource::collection($products),
-            'facet' => $res,
+            'facet' => $facet,
             'pagination' => [
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),

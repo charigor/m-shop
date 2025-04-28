@@ -17,60 +17,60 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-                \App\Models\Lang::insert(
-                [
-                    [
-                    'name' => 'ukrainian',
-                    'active' => 1,
-                    'code' => 'uk',
-                    'date_format' => 'Y-m-d',
-                    'date_format_full' => 'Y-m-d H:i:s',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                    ],
-                    [
-                    'name' => 'english',
-                    'active' => 1,
-                    'code' => 'en',
-                    'date_format' => 'Y-m-d',
-                    'date_format_full' => 'Y-m-d H:i:s',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                    ]
-                ]
-                );
-                \App\Models\Feature::factory(30)->create()->each(function($feature){
-                     $faker = \Faker\Factory::create('uk_UA');
-                     $feature->translation()->create(
-                         [
-                         'locale' => 'uk',
-                         'name' => $faker->country,
-                        ]
-                     );
-                     $faker = \Faker\Factory::create('en_US');
-                     $feature->translation()->create(                 [
-                         'locale' => 'en',
-                         'name' => $faker->country,
-                     ]);
-
-                     $featureValue =  $feature->featureValue()->create(
-                         [
-                             'custom' => rand(0,1)
-                         ]
-                     );
-                     $faker = \Faker\Factory::create('uk_UA');
-                     $featureValue->translation()->create(
-                         [
-                             'locale' => 'uk',
-                             'value' => $faker->city
-                         ]
-                     );
-                     $faker = \Faker\Factory::create('en_US');
-                     $featureValue->translation()->create([
-                         'locale' => 'en',
-                         'value' => $faker->city,
-                     ]);
-                 });
+//                \App\Models\Lang::insert(
+//                [
+//                    [
+//                    'name' => 'ukrainian',
+//                    'active' => 1,
+//                    'code' => 'uk',
+//                    'date_format' => 'Y-m-d',
+//                    'date_format_full' => 'Y-m-d H:i:s',
+//                    'created_at' => now(),
+//                    'updated_at' => now()
+//                    ],
+//                    [
+//                    'name' => 'english',
+//                    'active' => 1,
+//                    'code' => 'en',
+//                    'date_format' => 'Y-m-d',
+//                    'date_format_full' => 'Y-m-d H:i:s',
+//                    'created_at' => now(),
+//                    'updated_at' => now()
+//                    ]
+//                ]
+//                );
+//                \App\Models\Feature::factory(30)->create()->each(function($feature){
+//                     $faker = \Faker\Factory::create('uk_UA');
+//                     $feature->translation()->create(
+//                         [
+//                         'locale' => 'uk',
+//                         'name' => $faker->country,
+//                        ]
+//                     );
+//                     $faker = \Faker\Factory::create('en_US');
+//                     $feature->translation()->create(                 [
+//                         'locale' => 'en',
+//                         'name' => $faker->country,
+//                     ]);
+//
+//                     $featureValue =  $feature->featureValue()->create(
+//                         [
+//                             'custom' => rand(0,1)
+//                         ]
+//                     );
+//                     $faker = \Faker\Factory::create('uk_UA');
+//                     $featureValue->translation()->create(
+//                         [
+//                             'locale' => 'uk',
+//                             'value' => $faker->city
+//                         ]
+//                     );
+//                     $faker = \Faker\Factory::create('en_US');
+//                     $featureValue->translation()->create([
+//                         'locale' => 'en',
+//                         'value' => $faker->city,
+//                     ]);
+//                 });
 //        $products = Product::where('id','>', 10000)->get();
 //        foreach ($products as $product) {
 //            $fakeImagesPath = storage_path('app/public/fake-images');
@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
 //                            'order' => $index,  // Порядковый номер
 //                        ])
 //                        ->preservingOriginal()
-//                        ->toMediaCollection('images');
+//                        ->toMediaCollection('image');
 //                }
 //            }
 //        }
@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
                     $randomCategories = collect($categoryIds)->random(rand(1, min(3, count($categoryIds)))); // выбираем от 1 до 3
                     $product->categories()->attach($randomCategories);
                 });
-//                \App\Models\Brand::factory(10)->create();
+                \App\Models\Brand::factory(10)->create();
 //                 \App\Models\User::factory(100)->create();
 //                \App\Models\Product::factory(10000)->create();
 //        $role = Role::create(['name' => 'manager']);

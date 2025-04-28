@@ -25,6 +25,8 @@ class ProductResource extends JsonResource
             'meta_title' => optional($this->translate)->meta_title,
             'link_rewrite' => optional($this->translate)->link_rewrite,
             'preview_url' => $this->media->first()?->preview_url,
+            'brand_name' => $this->brand->name,
+            'brand_id' => $this->brand->id
         ];
     }
 }

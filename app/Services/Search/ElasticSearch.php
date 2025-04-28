@@ -89,7 +89,8 @@ class ElasticSearch implements SearchEngineInterface
         return collect($searchResultCat['aggregations']['categories']['buckets'])->map(function ($bucket) use ($lang) {
             $categoryTitle = $bucket['category_title']['hits']['hits'][0]['_source']['category_title'][$lang] ?? 'Без назви';
             $products = collect($bucket['products']['hits']['hits'])->map(function ($hit) use ($lang) {
-                $product = Product::find($hit['_source']['product_id']);
+                $product = Product::with('media')->find($hit['_source']['product_id']);
+                info($product->mainImage);
                 return [
                     'product_id' => $hit['_source']['product_id'],
                     'name' => $hit['_source']['product_name'][$lang] ?? 'Без назви',

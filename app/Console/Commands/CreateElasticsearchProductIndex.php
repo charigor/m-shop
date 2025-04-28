@@ -68,6 +68,7 @@ class CreateElasticsearchProductIndex extends Command
                                 ],
                             ],
                             'brand_id' => ['type' => 'integer'],
+                            'price' => ['type' => 'integer'],
                             'brand_name' => [
                                 'type' => 'text',
                                 'analyzer' => 'autocomplete',
@@ -93,7 +94,6 @@ class CreateElasticsearchProductIndex extends Command
 
                 foreach ($category->products as $product) {
                     $productNames = [];
-                    $brandNames = [];
 
                     foreach ($product->translation as $prodLang) {
                         $productNames[$prodLang->locale] = $prodLang->name;
@@ -108,6 +108,7 @@ class CreateElasticsearchProductIndex extends Command
                             'product_name' => $productNames,
                             'brand_id' => $product->brand_id,
                             'brand_name' => $product->brand?->name,
+                            'price' => $product->price,
                         ]
                     ]);
                 }
