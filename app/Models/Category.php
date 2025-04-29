@@ -21,6 +21,7 @@ class Category extends Model implements HasMedia
     //}
 
     public $table = 'categories';
+    protected $appends = ['menu_thumbnail_url'];
 
     protected $fillable = [
         'active',
@@ -39,7 +40,26 @@ class Category extends Model implements HasMedia
         $this
             ->addMediaConversion('preview')
             ->nonQueued();
+
+        $this
+            ->addMediaConversion('thumbnail')
+            ->width(100)
+            ->height(100)
+            ->nonQueued();
     }
+
+// Then update your accessor to use this conversion
+    public function getMenuThumbnailUrlAttribute()
+    {
+        $media = $this->getFirstMedia('menu_thumbnail');
+
+        if ($media) {
+            return $media->getUrl('preview'); // Use the thumbnail conversion
+        }
+
+        return null;
+    }
+
 
     /**
      * The attributes that should be cast.

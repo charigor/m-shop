@@ -18,7 +18,9 @@ class CategoryController extends Controller
     {
         $this->filterService = $filterService;
     }
-
+    /**
+     * Get categories data
+     */
     public function index(Request $request)
     {
         $categories = Category::with(['children', 'translate'])->get()->toTree();
