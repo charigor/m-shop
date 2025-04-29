@@ -6,15 +6,11 @@ use Elastic\Elasticsearch\Client;
 
 class ElasticFilter
 {
-    private $hasProductFeatures = false;
-
     public function __construct(private Client $client)
     {
-        // Check if product_features field exists and is nested when the class is instantiated
-//        $this->hasProductFeatures = $this->checkIfNestedFieldExists('products_index', 'product_features');
     }
 
-    public function handle($cat_id, $filters = [])
+    public function handle($cat_id = null, $filters = [])
     {
         info($filters);
         $brands = isset($filters['brands']) && !empty($filters['brands']) ? explode(',', $filters['brands']) : [];
@@ -173,54 +169,46 @@ class ElasticFilter
             ],
         ];
 
-        // Only add features aggregation if the field exists
-//        if ($this->hasProductFeatures) {
-            $aggregations['all_features'] = [
-                'nested' => [
-                    'path' => 'product_features',
-                ],
-                'aggs' => [
-                    'features' => [
-                        'terms' => [
-                            'field' => 'product_features.feature_name.' . app()->getLocale(),
-                            'size' => 100,
-                        ],
-                        'aggs' => [
-                            'feature_values' => [
-                                'terms' => [
-                                    'field' => 'product_features.feature_value.' . app()->getLocale(),
-                                    'size' => 100,
-                                ],
+        //  Add features aggregation
+        $aggregations['all_features'] = [
+            'nested' => [
+                'path' => 'product_features',
+            ],
+            'aggs' => [
+                'features' => [
+                    'terms' => [
+                        'field' => 'product_features.feature_name.' . app()->getLocale(),
+                        'size' => 100,
+                    ],
+                    'aggs' => [
+                        'feature_values' => [
+                            'terms' => [
+                                'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                'size' => 100,
                             ],
                         ],
                     ],
                 ],
-            ];
-//        }
+            ],
+        ];
 
-        // 1. Get all brands, attributes, and features in category (no filters applied)
+        // 1. Get all brands, attributes, and features
         $allMetadataBody = [
             'size' => 0,
-            'query' => [
-                'term' => [
-                    'category_id' => $cat_id,
-                ],
-            ],
             'aggs' => $aggregations,
         ];
+
+        // Add query based on category ID if specified
+        $allMetadataBody['query'] = $this->buildQuery($cat_id);
 
         $allMetadataResponse = $this->search('products_index', $allMetadataBody);
         $allBrandBuckets = $allMetadataResponse['aggregations']['all_brands']['buckets'] ?? [];
         $attributeBuckets = collect($allMetadataResponse['aggregations']['all_attributes']['attributes']['buckets'] ?? []);
 
         // Only get feature buckets if the field exists
-        $featureBuckets = collect([]);
-//        if ($this->hasProductFeatures) {
-            $featureBuckets = collect($allMetadataResponse['aggregations']['all_features']['features']['buckets'] ?? []);
-//        }
+        $featureBuckets = collect($allMetadataResponse['aggregations']['all_features']['features']['buckets'] ?? []);
 
         // 2. Create filter combinations
-
         // Only include non-empty filters
         $priceOnlyFilters = !empty($priceFilter) ? [$priceFilter] : [];
         $brandOnlyFilters = !empty($brandFilter) ? [$brandFilter] : [];
@@ -231,13 +219,6 @@ class ElasticFilter
         // 3. Get brands with all other filters applied
         $brandsWithFiltersBody = [
             'size' => 0,
-            'query' => [
-                'bool' => [
-                    'must' => [
-                        ['term' => ['category_id' => $cat_id]],
-                    ],
-                ],
-            ],
             'aggs' => [
                 'brands' => [
                     'terms' => [
@@ -248,10 +229,8 @@ class ElasticFilter
             ],
         ];
 
-        // Only add filter if there are actual filters to apply
-        if (!empty($brandsWithOtherFilters)) {
-            $brandsWithFiltersBody['query']['bool']['filter'] = $brandsWithOtherFilters;
-        }
+        // Add query with category filter and other filters
+        $brandsWithFiltersBody['query'] = $this->buildQuery($cat_id, $brandsWithOtherFilters);
 
         $brandsWithFiltersResponse = $this->search('products_index', $brandsWithFiltersBody);
         $brandsWithFiltersMap = collect($brandsWithFiltersResponse['aggregations']['brands']['buckets'] ?? [])
@@ -282,13 +261,6 @@ class ElasticFilter
             // Query Elasticsearch with these filters
             $attributeWithFiltersBody = [
                 'size' => 0,
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            ['term' => ['category_id' => $cat_id]],
-                        ],
-                    ],
-                ],
                 'aggs' => [
                     'filtered_attributes' => [
                         'nested' => [
@@ -315,10 +287,8 @@ class ElasticFilter
                 ],
             ];
 
-            // Only add filter if there are actual filters to apply
-            if (!empty($filtersExcludingCurrentAttribute)) {
-                $attributeWithFiltersBody['query']['bool']['filter'] = $filtersExcludingCurrentAttribute;
-            }
+            // Add query with category filter and other filters
+            $attributeWithFiltersBody['query'] = $this->buildQuery($cat_id, $filtersExcludingCurrentAttribute);
 
             $attributeWithFiltersResponse = $this->search('products_index', $attributeWithFiltersBody);
             $valueBuckets = $attributeWithFiltersResponse['aggregations']['filtered_attributes']['attribute_name_filter']['attribute_values']['buckets'] ?? [];
@@ -334,76 +304,65 @@ class ElasticFilter
         // 5. For each feature group, get counts excluding its own filter (only if features exist)
         $featureCountMaps = [];
 
-//        if ($this->hasProductFeatures) {
-            foreach ($featureBuckets as $featureBucket) {
-                $featureName = $featureBucket['key'];
+        foreach ($featureBuckets as $featureBucket) {
+            $featureName = $featureBucket['key'];
 
-                // Create filters excluding the current feature group
-                $filtersExcludingCurrentFeature = array_merge(
-                    $priceOnlyFilters,
-                    $brandOnlyFilters,
-                    $attributeFilters // Include all attribute filters
-                );
+            // Create filters excluding the current feature group
+            $filtersExcludingCurrentFeature = array_merge(
+                $priceOnlyFilters,
+                $brandOnlyFilters,
+                $attributeFilters // Include all attribute filters
+            );
 
-                // Add filters for all other feature groups
-                foreach ($featureGroupFilters as $featName => $filter) {
-                    if ($featName !== $featureName) {
-                        $filtersExcludingCurrentFeature[] = $filter;
-                    }
+            // Add filters for all other feature groups
+            foreach ($featureGroupFilters as $featName => $filter) {
+                if ($featName !== $featureName) {
+                    $filtersExcludingCurrentFeature[] = $filter;
                 }
+            }
 
-                // Query Elasticsearch with these filters
-                $featureWithFiltersBody = [
-                    'size' => 0,
-                    'query' => [
-                        'bool' => [
-                            'must' => [
-                                ['term' => ['category_id' => $cat_id]],
-                            ],
+            // Query Elasticsearch with these filters
+            $featureWithFiltersBody = [
+                'size' => 0,
+                'aggs' => [
+                    'filtered_features' => [
+                        'nested' => [
+                            'path' => 'product_features',
                         ],
-                    ],
-                    'aggs' => [
-                        'filtered_features' => [
-                            'nested' => [
-                                'path' => 'product_features',
-                            ],
-                            'aggs' => [
-                                'feature_name_filter' => [
-                                    'filter' => [
-                                        'term' => [
-                                            'product_features.feature_name.' . app()->getLocale() => $featureName,
-                                        ],
+                        'aggs' => [
+                            'feature_name_filter' => [
+                                'filter' => [
+                                    'term' => [
+                                        'product_features.feature_name.' . app()->getLocale() => $featureName,
                                     ],
-                                    'aggs' => [
-                                        'feature_values' => [
-                                            'terms' => [
-                                                'field' => 'product_features.feature_value.' . app()->getLocale(),
-                                                'size' => 100,
-                                            ],
+                                ],
+                                'aggs' => [
+                                    'feature_values' => [
+                                        'terms' => [
+                                            'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                            'size' => 100,
                                         ],
                                     ],
                                 ],
                             ],
                         ],
                     ],
-                ];
+                ],
+            ];
 
-                // Only add filter if there are actual filters to apply
-                if (!empty($filtersExcludingCurrentFeature)) {
-                    $featureWithFiltersBody['query']['bool']['filter'] = $filtersExcludingCurrentFeature;
-                }
+            // Add query with category filter and other filters
+            $featureWithFiltersBody['query'] = $this->buildQuery($cat_id, $filtersExcludingCurrentFeature);
 
-                $featureWithFiltersResponse = $this->search('products_index', $featureWithFiltersBody);
-                $valueBuckets = $featureWithFiltersResponse['aggregations']['filtered_features']['feature_name_filter']['feature_values']['buckets'] ?? [];
+            $featureWithFiltersResponse = $this->search('products_index', $featureWithFiltersBody);
+            $valueBuckets = $featureWithFiltersResponse['aggregations']['filtered_features']['feature_name_filter']['feature_values']['buckets'] ?? [];
 
-                // Create count map for this feature
-                $featureCountMaps[$featureName] = collect($valueBuckets)
-                    ->mapWithKeys(function ($bucket) {
-                        return [$bucket['key'] => $bucket['doc_count']];
-                    })
-                    ->all();
-            }
-//        }
+            // Create count map for this feature
+            $featureCountMaps[$featureName] = collect($valueBuckets)
+                ->mapWithKeys(function ($bucket) {
+                    return [$bucket['key'] => $bucket['doc_count']];
+                })
+                ->all();
+        }
 
         // 6. Get all filtered products (apply all filters)
         $allFilters = [];
@@ -424,60 +383,42 @@ class ElasticFilter
 
         $filteredProductsBody = [
             'size' => 0,
-            'query' => [
-                'bool' => [
-                    'must' => [
-                        ['term' => ['category_id' => $cat_id]],
+            'aggs' => [
+                'unique_products' => [
+                    'terms' => [
+                        'field' => 'product_id',
+                        'size' => 10000, // Set a high value to return all product IDs
                     ],
                 ],
-            ],
-            'aggs' => [
-                'brands' => [
+                'price_stats' => [
+                    'stats' => [
+                        'field' => 'price',
+                    ],
+                ],
+                'brand_stats' => [
                     'terms' => [
                         'field' => 'brand_id',
-                        'size' => 100,
-                    ],
-                    'aggs' => [
-                        'products' => [
-                            'top_hits' => [
-                                'size' => 100,
-                                '_source' => ['product_id', 'brand_id'],
-                            ],
-                        ],
-                        'min_price' => [
-                            'min' => [
-                                'field' => 'price',
-                            ],
-                        ],
-                        'max_price' => [
-                            'max' => [
-                                'field' => 'price',
-                            ],
-                        ],
+                        'size' => 1000,
                     ],
                 ],
             ],
         ];
 
-        // Only add filter if there are actual filters to apply
-        if (!empty($allFilters)) {
-            $filteredProductsBody['query']['bool']['filter'] = $allFilters;
-        }
+        // Add query with category filter and all other filters
+        $filteredProductsBody['query'] = $this->buildQuery($cat_id, $allFilters);
 
         $filteredProductsResponse = $this->search('products_index', $filteredProductsBody);
-        $filteredBuckets = $filteredProductsResponse['aggregations']['brands']['buckets'] ?? [];
 
         // Extract product IDs from filtered results
-        $productIds = collect($filteredBuckets)->flatMap(function ($bucket) {
-            return collect($bucket['products']['hits']['hits'] ?? [])
-                ->map(function ($hit) {
-                    return $hit['_source']['product_id'];
-                });
-        })->unique()->values()->all();
+        $productIds = collect($filteredProductsResponse['aggregations']['unique_products']['buckets'] ?? [])
+            ->pluck('key')
+            ->values()
+            ->all();
 
-        // Calculate price range from filtered products
-        $minPrice = collect($filteredBuckets)->pluck('min_price.value')->filter()->min();
-        $maxPrice = collect($filteredBuckets)->pluck('max_price.value')->filter()->max();
+        // Get price range from filtered products
+        $priceStats = $filteredProductsResponse['aggregations']['price_stats'] ?? [];
+        $minPrice = $priceStats['min'] ?? null;
+        $maxPrice = $priceStats['max'] ?? null;
 
         // Format attributes with adaptive counts - using the per-attribute group filters
         $attributesData = $attributeBuckets->mapWithKeys(function ($attribute) use ($attributeCountMaps) {
@@ -502,10 +443,10 @@ class ElasticFilter
 
         // Prepare result
         $result = [
-            'brands' => $brandData = collect($allBrandBuckets)
+            'brands' => collect($allBrandBuckets)
                 ->map(function ($bucket) use ($brandsWithFiltersMap) {
                     $brandId = $bucket['key'];
-                    // Use count from filtered aggregation if available, otherwise 0
+                    // Get brand count from filtered results
                     $count = $brandsWithFiltersMap->get($brandId, 0);
 
                     return [
@@ -520,54 +461,78 @@ class ElasticFilter
             'maxPrice' => $maxPrice,
         ];
 
-        // Only add features to result if they exist
-//        if ($this->hasProductFeatures) {
-            // Format features with adaptive counts - using the per-feature group filters
-            $featuresData = $featureBuckets->mapWithKeys(function ($feature) use ($featureCountMaps) {
-                $featureName = $feature['key'];
-                $countMap = $featureCountMaps[$featureName] ?? [];
+        // Format features with adaptive counts - using the per-feature group filters
+        $featuresData = $featureBuckets->mapWithKeys(function ($feature) use ($featureCountMaps) {
+            $featureName = $feature['key'];
+            $countMap = $featureCountMaps[$featureName] ?? [];
 
-                $values = collect($feature['feature_values']['buckets'])->map(function ($value) use ($countMap) {
-                    $valueName = $value['key'];
-                    // Use count from filtered aggregation if available, otherwise 0
-                    $count = $countMap[$valueName] ?? 0;
-
-                    return [
-                        'name' => $valueName,
-                        'count' => $count,
-                    ];
-                });
+            $values = collect($feature['feature_values']['buckets'])->map(function ($value) use ($countMap) {
+                $valueName = $value['key'];
+                // Use count from filtered aggregation if available, otherwise 0
+                $count = $countMap[$valueName] ?? 0;
 
                 return [
-                    $featureName => $values,
+                    'name' => $valueName,
+                    'count' => $count,
                 ];
             });
 
-            $result['features'] = $featuresData;
-//        }
+            return [
+                $featureName => $values,
+            ];
+        });
+
+        $result['features'] = $featuresData;
 
         return $result;
     }
 
     /**
-     * Check if a nested field exists in the Elasticsearch index
+     * Builds Elasticsearch query with category ID and additional filters
+     *
+     * @param int|null $cat_id Category ID or null if no category specified
+     * @param array $filters Additional filters (if any)
+     * @return array Elasticsearch query structure
      */
-//    private function checkIfNestedFieldExists(string $index, string $field): bool
-//    {
-//        try {
-//            // Get the mapping to check if the field exists
-//            $mapping = $this->client->indices()->getMapping([
-//                'index' => $index,
-//            ])->asArray();
-//
-//            // Check if the field exists and is of type 'nested'
-//            return isset($mapping[$index]['mappings']['properties'][$field])
-//                && $mapping[$index]['mappings']['properties'][$field]['type'] === 'nested';
-//        } catch (\Exception $e) {
-//            // If there's an error, assume the field doesn't exist
-//            return false;
-//        }
-//    }
+    private function buildQuery($cat_id, array $filters = [])
+    {
+        // If category is specified
+        if ($cat_id !== null) {
+            // Base query with category
+            $query = [
+                'bool' => [
+                    'must' => [
+                        [
+                            'term' => [
+                                'category_ids' => $cat_id, // Changed from category_id to category_ids
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+
+            // Add additional filters if they exist
+            if (!empty($filters)) {
+                $query['bool']['filter'] = $filters;
+            }
+
+            return $query;
+        }
+
+        // If no category but has filters
+        if (!empty($filters)) {
+            return [
+                'bool' => [
+                    'filter' => $filters,
+                ],
+            ];
+        }
+
+        // If no category and no filters - return match_all
+        return [
+            'match_all' => new \stdClass(),
+        ];
+    }
 
     public function search($index, array $body)
     {
@@ -579,6 +544,8 @@ class ElasticFilter
         } catch (\Exception $e) {
             // Log the error
             \Log::error('Elasticsearch error: ' . $e->getMessage());
+            \Log::error('Query: ' . json_encode($body));
+
             // Return an empty result
             return [
                 'hits' => ['hits' => []],

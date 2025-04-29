@@ -2,57 +2,62 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Category;
+use App\Models\Product;
 use Elastic\Elasticsearch\Client;
-use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Console\Command;
 
 class CreateElasticsearchProductIndex extends Command
 {
-
     protected $signature = 'elasticsearch:create-products-index';
-    protected $description = 'Create the category_lang index in Elasticsearch';
+
+    protected $description = 'Create the products index in Elasticsearch';
+
     public function __construct(protected Client $client)
     {
-        parent::__construct(); // Важно вызвать конструктор родительского класса
+        parent::__construct();
     }
+
     public function handle()
     {
         try {
-        $client = ClientBuilder::create()
-            ->setHosts([env('ELASTICSEARCH_HOST', 'http://elasticsearch:9200')])
-            ->build();
-        if ($client->indices()->exists(['index' => 'products_index'])->asBool()) {
-            $client->indices()->delete(['index' => 'products_index']);
-            $this->info("Index products deleted.");
-        }
+            $client = ClientBuilder::create()
+                ->setHosts([env('ELASTICSEARCH_HOST', 'http://elasticsearch:9200')])
+                ->build();
+
+            if ($client->indices()->exists(['index' => 'products_index'])->asBool()) {
+                $client->indices()->delete(['index' => 'products_index']);
+                $this->info('Index products deleted.');
+            }
+
+            // Define the index mapping
             $params = [
                 'index' => 'products_index',
-                'body'  => [
+                'body' => [
                     'settings' => [
                         'analysis' => [
                             'filter' => [
                                 'autocomplete_filter' => [
-                                    'type'     => 'edge_ngram',
+                                    'type' => 'edge_ngram',
                                     'min_gram' => 1,
                                     'max_gram' => 20,
                                 ],
                             ],
                             'analyzer' => [
                                 'autocomplete' => [
-                                    'type'      => 'custom',
+                                    'type' => 'custom',
                                     'tokenizer' => 'standard',
-                                    'filter'    => ['lowercase', 'autocomplete_filter'],
+                                    'filter' => ['lowercase', 'autocomplete_filter'],
                                 ],
                             ],
                         ],
                     ],
                     'mappings' => [
                         'properties' => [
-                            'category_id' => [
+                            'category_ids' => [
                                 'type' => 'integer',
                             ],
-                            'category_title' => [
+                            'category_titles' => [
                                 'type' => 'object',
                                 'properties' => [
                                     'uk' => ['type' => 'text', 'analyzer' => 'autocomplete', 'search_analyzer' => 'standard'],
@@ -75,9 +80,9 @@ class CreateElasticsearchProductIndex extends Command
                                 'search_analyzer' => 'standard',
                                 'fields' => [
                                     'keyword' => [
-                                        'type' => 'keyword'
-                                    ]
-                                ]
+                                        'type' => 'keyword',
+                                    ],
+                                ],
                             ],
                             'product_attributes' => [
                                 'type' => 'nested',
@@ -117,80 +122,113 @@ class CreateElasticsearchProductIndex extends Command
                     ],
                 ],
             ];
-        $client->indices()->create($params);
-        $categories = Category::with(['products.brand.translation','translation', 'translate', 'products.translation'])->get();
-            foreach ($categories as $category) {
-                $categoryTitles = [];
-                foreach ($category->translation as $catLang) {
-                    $categoryTitles[$catLang->locale] = $catLang->title;
+
+            $client->indices()->create($params);
+
+            // Fetch products with all needed relations
+            $products = Product::with([
+                'categories.translation',
+                'brand.translation',
+                'translation',
+                'attributes.attributes.group.translation',
+                'attributes.attributes.translation',
+                'features.feature.translation',
+                'features.translate'
+            ])->get();
+
+            $this->info("Starting to index {$products->count()} products...");
+            $bar = $this->output->createProgressBar($products->count());
+
+            foreach ($products as $product) {
+                // Get product names
+                $productNames = [];
+                foreach ($product->translation as $prodLang) {
+                    $productNames[$prodLang->locale] = $prodLang->name;
                 }
 
-                foreach ($category->products as $product) {
-                    $productNames = [];
+                // Get categories info
+                $categoryIds = [];
+                $categoryTitles = [
+                    'uk' => [],
+                    'en' => []
+                ];
+                foreach ($product->categories as $category) {
+                    $categoryIds[] = $category->id;
 
-                    foreach ($product->translation as $prodLang) {
-                        $productNames[$prodLang->locale] = $prodLang->name;
-                    }
-                    $attributes = [];
-                    foreach ($product->attributes as  $attributeProduct) {
-                        foreach ($attributeProduct->attributes as $attribute) {
-                            $attributes[] = [
-                                'attribute_name' => [
-                                    'uk' => $attribute->group->translation->where('locale', 'uk')->first()?->name,
-                                    'en' => $attribute->group->translation->where('locale', 'en')->first()?->name,
-                                ],
-                                'attribute_value' => [
-                                    'uk' => $attribute->translation->where('locale', 'uk')->first()?->name,
-                                    'en' => $attribute->translation->where('locale', 'en')->first()?->name,
-                                ],
-                            ];
+                    foreach ($category->translation as $catLang) {
+                        $locale = $catLang->locale;
+                        if (isset($categoryTitles[$locale])) {
+                            $categoryTitles[$locale][] = $catLang->title;
                         }
-
                     }
-                    // Process features
-                    $features = [];
-                    foreach ($product->features as $featureValue) {
-                        $feature = $featureValue->feature;
-                        // Get feature translations
-                        $featureNameUk = $feature->translation->where('locale', 'uk')->first()?->name;
-                        $featureNameEn = $feature->translation->where('locale', 'en')->first()?->name;
+                }
 
-                        // Get feature value translations
-                        $featureValueUk = $featureValue->translate->where('locale', 'uk')->first()?->value;
-                        $featureValueEn = $featureValue->translate->where('locale', 'en')->first()?->value;
-
-                        $features[] = [
-                            'feature_name' => [
-                                'uk' => $featureNameUk,
-                                'en' => $featureNameEn,
+                // Process attributes
+                $attributes = [];
+                foreach ($product->attributes as $attributeProduct) {
+                    foreach ($attributeProduct->attributes as $attribute) {
+                        $attributes[] = [
+                            'attribute_name' => [
+                                'uk' => $attribute->group->translation->where('locale', 'uk')->first()?->name,
+                                'en' => $attribute->group->translation->where('locale', 'en')->first()?->name,
                             ],
-                            'feature_value' => [
-                                'uk' => $featureValueUk,
-                                'en' => $featureValueEn,
+                            'attribute_value' => [
+                                'uk' => $attribute->translation->where('locale', 'uk')->first()?->name,
+                                'en' => $attribute->translation->where('locale', 'en')->first()?->name,
                             ],
                         ];
                     }
-
-                    $client->index([
-                        'index' => 'products_index',
-                        'body' => [
-                            'category_id' => $category->id,
-                            'category_title' => $categoryTitles,
-                            'product_id' => $product->id,
-                            'product_name' => $productNames,
-                            'brand_id' => $product->brand_id,
-                            'brand_name' => $product->brand?->name,
-                            'price' => $product->price,
-                            'product_attributes' => $attributes,
-                            'product_features' => $features,
-
-                        ]
-                    ]);
                 }
+
+                // Process features
+                $features = [];
+                foreach ($product->features as $featureValue) {
+                    $feature = $featureValue->feature;
+
+                    $featureNameUk = $feature->translation->where('locale', 'uk')->first()?->name;
+                    $featureNameEn = $feature->translation->where('locale', 'en')->first()?->name;
+
+                    $featureValueUk = $featureValue->translate->where('locale', 'uk')->first()?->value;
+                    $featureValueEn = $featureValue->translate->where('locale', 'en')->first()?->value;
+
+                    $features[] = [
+                        'feature_name' => [
+                            'uk' => $featureNameUk,
+                            'en' => $featureNameEn,
+                        ],
+                        'feature_value' => [
+                            'uk' => $featureValueUk,
+                            'en' => $featureValueEn,
+                        ],
+                    ];
+                }
+
+                // Index the product
+                $client->index([
+                    'index' => 'products_index',
+                    'id' => 'product_' . $product->id,
+                    'body' => [
+                        'category_ids' => $categoryIds,
+                        'category_title' => $categoryTitles,
+                        'product_id' => $product->id,
+                        'product_name' => $productNames,
+                        'brand_id' => $product->brand_id,
+                        'brand_name' => $product->brand?->name,
+                        'price' => $product->price,
+                        'product_attributes' => $attributes,
+                        'product_features' => $features,
+                    ],
+                ]);
+
+                $bar->advance();
             }
-            $this->info("Indexed {$categories->count()} records.");
+
+            $bar->finish();
+            $this->info("\nIndexed {$products->count()} products successfully.");
+
         } catch (\Exception $e) {
-            $this->error('Failed to create index: '.$e->getMessage());
+            $this->error('Failed to create index: ' . $e->getMessage());
+            $this->error($e->getTraceAsString());
         }
     }
 }

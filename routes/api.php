@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\CatalogController;
 use App\Http\Controllers\api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,8 +25,7 @@ Route::get('/user', [AuthController::class, 'user']);
 //    return response()->json($request->user());
 //});
 Route::get('/category', [CategoryController::class,'index']);
-Route::any('/category/{linkRewrite?}', [CategoryController::class, 'show']);
-
+Route::get('/catalog/{link_rewrite?}', [CatalogController::class, 'index']);
 Route::get('/search', [App\Http\Controllers\api\SearchController::class, 'search']);
 Route::post('/set-locale', function (\Illuminate\Http\Request $request) {
     $lang = $request->input('lang');
