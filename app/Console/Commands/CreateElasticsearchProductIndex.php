@@ -68,7 +68,7 @@ class CreateElasticsearchProductIndex extends Command
                                 ],
                             ],
                             'brand_id' => ['type' => 'integer'],
-                            'price' => ['type' => 'integer'],
+                            'price' => ['type' => 'float'],
                             'brand_name' => [
                                 'type' => 'text',
                                 'analyzer' => 'autocomplete',
@@ -79,13 +79,46 @@ class CreateElasticsearchProductIndex extends Command
                                     ]
                                 ]
                             ],
+                            'product_attributes' => [
+                                'type' => 'nested',
+                                'properties' => [
+                                    'attribute_name' => [
+                                        'properties' => [
+                                            'uk' => ['type' => 'keyword'],
+                                            'en' => ['type' => 'keyword'],
+                                        ],
+                                    ],
+                                    'attribute_value' => [
+                                        'properties' => [
+                                            'uk' => ['type' => 'keyword'],
+                                            'en' => ['type' => 'keyword'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'product_features' => [
+                                'type' => 'nested',
+                                'properties' => [
+                                    'feature_name' => [
+                                        'properties' => [
+                                            'uk' => ['type' => 'keyword'],
+                                            'en' => ['type' => 'keyword'],
+                                        ],
+                                    ],
+                                    'feature_value' => [
+                                        'properties' => [
+                                            'uk' => ['type' => 'keyword'],
+                                            'en' => ['type' => 'keyword'],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
             ];
         $client->indices()->create($params);
-        $this->info('Index category_lang created successfully.');
-        $categories = Category::with(['products.brand.translation', 'translate', 'products'])->get();
+        $categories = Category::with(['products.brand.translation','translation', 'translate', 'products.translation'])->get();
             foreach ($categories as $category) {
                 $categoryTitles = [];
                 foreach ($category->translation as $catLang) {
@@ -98,6 +131,45 @@ class CreateElasticsearchProductIndex extends Command
                     foreach ($product->translation as $prodLang) {
                         $productNames[$prodLang->locale] = $prodLang->name;
                     }
+                    $attributes = [];
+                    foreach ($product->attributes as  $attributeProduct) {
+                        foreach ($attributeProduct->attributes as $attribute) {
+                            $attributes[] = [
+                                'attribute_name' => [
+                                    'uk' => $attribute->group->translation->where('locale', 'uk')->first()?->name,
+                                    'en' => $attribute->group->translation->where('locale', 'en')->first()?->name,
+                                ],
+                                'attribute_value' => [
+                                    'uk' => $attribute->translation->where('locale', 'uk')->first()?->name,
+                                    'en' => $attribute->translation->where('locale', 'en')->first()?->name,
+                                ],
+                            ];
+                        }
+
+                    }
+                    // Process features
+                    $features = [];
+                    foreach ($product->features as $featureValue) {
+                        $feature = $featureValue->feature;
+                        // Get feature translations
+                        $featureNameUk = $feature->translation->where('locale', 'uk')->first()?->name;
+                        $featureNameEn = $feature->translation->where('locale', 'en')->first()?->name;
+
+                        // Get feature value translations
+                        $featureValueUk = $featureValue->translate->where('locale', 'uk')->first()?->value;
+                        $featureValueEn = $featureValue->translate->where('locale', 'en')->first()?->value;
+
+                        $features[] = [
+                            'feature_name' => [
+                                'uk' => $featureNameUk,
+                                'en' => $featureNameEn,
+                            ],
+                            'feature_value' => [
+                                'uk' => $featureValueUk,
+                                'en' => $featureValueEn,
+                            ],
+                        ];
+                    }
 
                     $client->index([
                         'index' => 'products_index',
@@ -109,6 +181,9 @@ class CreateElasticsearchProductIndex extends Command
                             'brand_id' => $product->brand_id,
                             'brand_name' => $product->brand?->name,
                             'price' => $product->price,
+                            'product_attributes' => $attributes,
+                            'product_features' => $features,
+
                         ]
                     ]);
                 }

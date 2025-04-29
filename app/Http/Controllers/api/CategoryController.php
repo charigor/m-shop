@@ -26,7 +26,7 @@ class CategoryController extends Controller
         return response()->json($categories);
     }
 
-    public function show(Request $request, $linkRewrite)
+    public function show(Request $request, $linkRewrite = null)
     {
         $filters = $request->input('filter', []);
         $locale = app()->getLocale();
@@ -49,14 +49,16 @@ class CategoryController extends Controller
             ->where('locale', $locale)
             ->where('parent_id', $category->id)
             ->get();
+        $start = microtime(true);
         $facet = $this->filterService->handle($category->id, $filters);
-        $products = Product::with(['brand', 'media', 'translate' => function ($query) use ($locale) {
+        $end = microtime(true);
+        info('Время выполнения скрипта: ' . round($end - $start, 4) . ' секунд');
+        $products = Product::with(['media', 'translate' => function ($query) use ($locale) {
             $query->where('locale', $locale);
         }])
-            ->whereHas('categories', fn ($query) => $query->where('category_id', $category->id))
             ->whereHas('translate', fn ($query) => $query->where('locale', $locale))
             ->whereIn('id', $facet['productIds'])
-            ->paginate(24);
+            ->paginate(25);
 
         return response()->json([
             'category' => new CategoryResource($category),
