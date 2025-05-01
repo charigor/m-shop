@@ -16,14 +16,14 @@ class ProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => optional($this->translate)->name,
+            'name' => optional($this->translateWithFallback)->name,
             'price' => $this->price,
-            'locale' => optional($this->translate)->locale,
-            'description' => optional($this->translate)->description,
-            'meta_description' => optional($this->translate)->meta_description,
-            'meta_keywords' => optional($this->translate)->meta_keywords,
-            'meta_title' => optional($this->translate)->meta_title,
-            'link_rewrite' => optional($this->translate)->link_rewrite,
+            'locale' => optional($this->translateWithFallback)->locale,
+            'description' => optional($this->translateWithFallback)->description,
+            'meta_description' => optional($this->translateWithFallback)->meta_description,
+            'meta_keywords' => optional($this->translateWithFallback)->meta_keywords,
+            'meta_title' => optional($this->translateWithFallback)->meta_title,
+            'link_rewrite' => optional($this->translateWithFallback)->link_rewrite,
             'preview_url' => $this->media->first()?->preview_url
         ];
     }

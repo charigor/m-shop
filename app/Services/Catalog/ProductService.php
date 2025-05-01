@@ -12,13 +12,20 @@ class ProductService
      */
     public function getFilteredProducts(array $facet, string $locale, string $sort): LengthAwarePaginator
     {
-        $productsQuery = Product::with(['media', 'translate' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        }])
-            ->whereHas('translate', fn ($query) => $query->where('locale', $locale));
+        $fallbackLocale = config('app.fallback_locale');
+
+        $productsQuery = Product::with(['media', 'translateWithFallback' => function($query) use ($locale, $fallbackLocale) {
+            $query->where('locale', $locale)
+                ->orWhere('locale', $fallbackLocale);
+        }]);
+
+        // Only include products that have at least one translation (either in requested locale or fallback)
+        $productsQuery->whereHas('translateWithFallback');
+
+
 
         // Apply filtering by ID from faceted search
-        if (!empty($facet['productIds'])) {
+        if (! empty($facet['productIds'])) {
             $productsQuery->whereIn('id', $facet['productIds']);
         }
 

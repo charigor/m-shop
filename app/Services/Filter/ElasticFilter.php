@@ -12,7 +12,6 @@ class ElasticFilter
 
     public function handle($cat_id = null, $filters = [])
     {
-        info($filters);
         $brands = isset($filters['brands']) && !empty($filters['brands']) ? explode(',', $filters['brands']) : [];
         $price = isset($filters['price']) && !empty($filters['price']) ? explode(',', $filters['price']) : [];
         $attributes = isset($filters['attr']) && !empty($filters['attr']) ? $filters['attr'] : [];

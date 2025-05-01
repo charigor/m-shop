@@ -4,7 +4,7 @@ namespace App\Services\Catalog;
 
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\ProductResource;
-use App\Services\Filter\ElasticFilter;
+use App\Services\Filter\Elastic\Filter;
 use Illuminate\Http\JsonResponse;
 
 class CatalogService
@@ -13,9 +13,9 @@ class CatalogService
 
     protected ProductService $productService;
 
-    protected ElasticFilter $filterService;
+    protected Filter $filterService;
 
-    public function __construct(CategoryService $categoryService, ProductService $productService, ElasticFilter $filterService)
+    public function __construct(CategoryService $categoryService, ProductService $productService, Filter $filterService)
     {
         $this->categoryService = $categoryService;
         $this->productService = $productService;

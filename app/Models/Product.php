@@ -154,6 +154,33 @@ class Product extends Model implements HasMedia
     {
         return $this->getMedia('image', ['main_image' => 1])->first();
     }
+    public function translateWithFallback($locale = null)
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        return $this->hasOne(ProductLang::class)
+            ->where(function($query) use ($currentLocale, $fallbackLocale) {
+                $query->where('locale', $currentLocale)
+                    ->orWhere('locale', $fallbackLocale);
+            })
+            ->orderByRaw("CASE WHEN locale = ? THEN 0 ELSE 1 END", [$currentLocale]);
+    }
+
+
+    public function getTranslateWithFallbackAttribute()
+    {
+        $currentLocale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        $translation = $this->translation()->where('locale', $currentLocale)->first();
+
+        if (!$translation) {
+            $translation = $this->translation()->where('locale', $fallbackLocale)->first();
+        }
+
+        return $translation;
+    }
 
     public function getSortedMediaAttribute()
     {

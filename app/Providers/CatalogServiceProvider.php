@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Services\Catalog\CatalogService;
 use App\Services\Catalog\CategoryService;
 use App\Services\Catalog\ProductService;
-use App\Services\Filter\ElasticFilter;
+use App\Services\Filter\Elastic\Filter;
 use Illuminate\Support\ServiceProvider;
 
 class CatalogServiceProvider extends ServiceProvider
@@ -22,7 +22,7 @@ class CatalogServiceProvider extends ServiceProvider
             return new CatalogService(
                 $app->make(CategoryService::class),
                 $app->make(ProductService::class),
-                $app->make(ElasticFilter::class)
+                $app->make(Filter::class)
             );
         });
     }
