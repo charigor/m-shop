@@ -39,10 +39,25 @@ class Filter
      */
     private function processFilters(array $filters): array
     {
-        $brands = isset($filters['brands']) && !empty($filters['brands']) ? explode(',', $filters['brands']) : [];
-        $price = isset($filters['price']) && !empty($filters['price']) ? explode(',', $filters['price']) : [];
-        $attributes = isset($filters['attr']) && !empty($filters['attr']) ? $filters['attr'] : [];
-        $features = isset($filters['features']) && !empty($filters['features']) ? $filters['features'] : [];
+        $brands = isset($filters['brands']) && ! empty($filters['brands']) ? explode(',', $filters['brands']) : [];
+        $price = isset($filters['price']) && ! empty($filters['price']) ? explode(',', $filters['price']) : [];
+        $attributes = isset($filters['attr']) && ! empty($filters['attr']) ? $filters['attr'] : [];
+        $features = isset($filters['features']) && ! empty($filters['features']) ? $filters['features'] : [];
+        $processedFeatures = [];
+        // Process string values in features
+        foreach ($features as $guardName => $valueIds) {
+            if (is_string($valueIds)) {
+                $valueIds = explode(',', $valueIds);
+            }
+            $processedFeatures[$guardName] = array_map('intval', $valueIds);
+        }
+        foreach ($features as $guardName => $valueIds) {
+            if (is_string($valueIds)) {
+                $valueIds = explode(',', $valueIds);
+            }
+
+            $processedFeatures[$guardName] = array_map('intval', $valueIds);
+        }
 
         // Process string values in attributes
         foreach ($attributes as $key => $value) {
@@ -51,18 +66,12 @@ class Filter
             }
         }
 
-        // Process string values in features
-        foreach ($features as $key => $value) {
-            if (is_string($value)) {
-                $features[$key] = explode(',', $value);
-            }
-        }
-
         return [
             'brands' => $brands,
             'price' => $price,
             'attributes' => $attributes,
-            'features' => $features
+            'features' => $processedFeatures,
+
         ];
     }
 
@@ -78,14 +87,14 @@ class Filter
         $brandFilter = $this->createBrandFilter($processedFilters['brands']);
 
         // Create attribute filters
-        list($attributeFilters, $attributeGroupFilters) = $this->createAttributeFilters($processedFilters['attributes']);
+        [$attributeFilters, $attributeGroupFilters] = $this->createAttributeFilters($processedFilters['attributes']);
 
         // Create feature filters
-        list($featureFilters, $featureGroupFilters) = $this->createFeatureFilters($processedFilters['features']);
+        [$featureFilters, $featureGroupFilters] = $this->createFeatureFilters($processedFilters['features']);
 
         // Create filter combinations
-        $priceOnlyFilters = !empty($priceFilter) ? [$priceFilter] : [];
-        $brandOnlyFilters = !empty($brandFilter) ? [$brandFilter] : [];
+        $priceOnlyFilters = ! empty($priceFilter) ? [$priceFilter] : [];
+        $brandOnlyFilters = ! empty($brandFilter) ? [$brandFilter] : [];
 
         // All filters combined
         $allFilters = array_merge(
@@ -104,7 +113,7 @@ class Filter
             'featureGroupFilters' => $featureGroupFilters,
             'priceOnlyFilters' => $priceOnlyFilters,
             'brandOnlyFilters' => $brandOnlyFilters,
-            'allFilters' => $allFilters
+            'allFilters' => $allFilters,
         ];
     }
 
@@ -120,10 +129,10 @@ class Filter
         $range = [];
         foreach ($price as $part) {
             if (str_starts_with($part, 'min')) {
-                $range['gte'] = (int)str_replace('min', '', $part);
+                $range['gte'] = (int) str_replace('min', '', $part);
             }
             if (str_starts_with($part, 'max')) {
-                $range['lte'] = (int)str_replace('max', '', $part);
+                $range['lte'] = (int) str_replace('max', '', $part);
             }
         }
 
@@ -175,12 +184,12 @@ class Filter
                             'must' => [
                                 [
                                     'term' => [
-                                        'product_attributes.attribute_name.' . app()->getLocale() => $attributeName,
+                                        'product_attributes.attribute_name.'.app()->getLocale() => $attributeName,
                                     ],
                                 ],
                                 [
                                     'terms' => [
-                                        'product_attributes.attribute_value.' . app()->getLocale() => $values,
+                                        'product_attributes.attribute_value.'.app()->getLocale() => $values,
                                     ],
                                 ],
                             ],
@@ -208,7 +217,7 @@ class Filter
             return [$featureFilters, $featureGroupFilters];
         }
 
-        foreach ($features as $featureName => $values) {
+        foreach ($features as $guardName => $valueIds) {
             $filter = [
                 'nested' => [
                     'path' => 'product_features',
@@ -217,12 +226,12 @@ class Filter
                             'must' => [
                                 [
                                     'term' => [
-                                        'product_features.feature_name.' . app()->getLocale() => $featureName,
+                                        'product_features.feature_guard_name' => $guardName,
                                     ],
                                 ],
                                 [
                                     'terms' => [
-                                        'product_features.feature_value.' . app()->getLocale() => $values,
+                                        'product_features.feature_value_id' => $valueIds,
                                     ],
                                 ],
                             ],
@@ -232,7 +241,7 @@ class Filter
             ];
 
             $featureFilters[] = $filter;
-            $featureGroupFilters[$featureName] = $filter;
+            $featureGroupFilters[$guardName] = $filter;
         }
 
         return [$featureFilters, $featureGroupFilters];
@@ -265,13 +274,13 @@ class Filter
                 'aggs' => [
                     'attributes' => [
                         'terms' => [
-                            'field' => 'product_attributes.attribute_name.' . app()->getLocale(),
+                            'field' => 'product_attributes.attribute_name.'.app()->getLocale(),
                             'size' => 100,
                         ],
                         'aggs' => [
                             'attribute_values' => [
                                 'terms' => [
-                                    'field' => 'product_attributes.attribute_value.' . app()->getLocale(),
+                                    'field' => 'product_attributes.attribute_value.'.app()->getLocale(),
                                     'size' => 100,
                                 ],
                             ],
@@ -284,15 +293,40 @@ class Filter
                     'path' => 'product_features',
                 ],
                 'aggs' => [
+                    'features_guard_names' => [
+                        'terms' => [
+                            'field' => 'product_features.feature_guard_name',
+                            'size' => 100,
+                        ],
+                        'aggs' => [
+                            'feature_ids' => [
+                                'terms' => [
+                                    'field' => 'product_features.feature_value_id',
+                                    'size' => 100,
+                                ],
+                                'aggs' => [
+                                    'feature_details' => [
+                                        'top_hits' => [
+                                            'size' => 1,
+                                            '_source' => [
+                                                'product_features.feature_name',
+                                                'product_features.feature_value',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                     'features' => [
                         'terms' => [
-                            'field' => 'product_features.feature_name.' . app()->getLocale(),
+                            'field' => 'product_features.feature_name.'.app()->getLocale(),
                             'size' => 100,
                         ],
                         'aggs' => [
                             'feature_values' => [
                                 'terms' => [
-                                    'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                    'field' => 'product_features.feature_value.'.app()->getLocale(),
                                     'size' => 100,
                                 ],
                             ],
@@ -300,6 +334,7 @@ class Filter
                     ],
                 ],
             ],
+
         ];
 
         $body = [
@@ -348,7 +383,77 @@ class Filter
             'brands' => $this->getBrandCounts($cat_id, $elasticFilters),
             'attributes' => $this->getAttributeCounts($cat_id, $elasticFilters),
             'features' => $this->getFeatureCounts($cat_id, $elasticFilters),
+            'features_by_guard_name' => $this->getFeatureCountsByGuardName($cat_id, $elasticFilters),
         ];
+    }
+
+    /**
+     * Новый метод для подсчета по guardName/valueId
+     */
+    private function getFeatureCountsByGuardName($cat_id, array $elasticFilters): array
+    {
+        $featureCountMaps = [];
+        $featureBuckets = collect($this->getMetadata($cat_id)['aggregations']['all_features']['features_guard_names']['buckets'] ?? []);
+
+        foreach ($featureBuckets as $featureBucket) {
+            $guardName = $featureBucket['key'];
+
+            // Create filters excluding the current feature group
+            $filtersExcludingCurrentFeature = array_merge(
+                $elasticFilters['priceOnlyFilters'],
+                $elasticFilters['brandOnlyFilters'],
+                $elasticFilters['attributeFilters'] // Include all attribute filters
+            );
+
+            // Add filters for all other feature groups
+            foreach ($elasticFilters['featureGroupFilters'] as $featGuardName => $filter) {
+                if ($featGuardName !== $guardName) {
+                    $filtersExcludingCurrentFeature[] = $filter;
+                }
+            }
+
+            // Query Elasticsearch with these filters
+            $featureWithFiltersBody = [
+                'size' => 0,
+                'aggs' => [
+                    'filtered_features' => [
+                        'nested' => [
+                            'path' => 'product_features',
+                        ],
+                        'aggs' => [
+                            'feature_guard_name_filter' => [
+                                'filter' => [
+                                    'term' => [
+                                        'product_features.feature_guard_name' => $guardName,
+                                    ],
+                                ],
+                                'aggs' => [
+                                    'feature_value_ids' => [
+                                        'terms' => [
+                                            'field' => 'product_features.feature_value_id',
+                                            'size' => 100,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+
+            $featureWithFiltersBody['query'] = $this->buildQuery($cat_id, $filtersExcludingCurrentFeature);
+            $featureWithFiltersResponse = $this->search($this->indexName, $featureWithFiltersBody);
+            $valueBuckets = $featureWithFiltersResponse['aggregations']['filtered_features']['feature_guard_name_filter']['feature_value_ids']['buckets'] ?? [];
+
+            // Create count map for this feature
+            $featureCountMaps[$guardName] = collect($valueBuckets)
+                ->mapWithKeys(function ($bucket) {
+                    return [$bucket['key'] => $bucket['doc_count']];
+                })
+                ->all();
+        }
+
+        return $featureCountMaps;
     }
 
     /**
@@ -421,13 +526,13 @@ class Filter
                             'attribute_name_filter' => [
                                 'filter' => [
                                     'term' => [
-                                        'product_attributes.attribute_name.' . app()->getLocale() => $attributeName,
+                                        'product_attributes.attribute_name.'.app()->getLocale() => $attributeName,
                                     ],
                                 ],
                                 'aggs' => [
                                     'attribute_values' => [
                                         'terms' => [
-                                            'field' => 'product_attributes.attribute_value.' . app()->getLocale(),
+                                            'field' => 'product_attributes.attribute_value.'.app()->getLocale(),
                                             'size' => 100,
                                         ],
                                     ],
@@ -490,13 +595,13 @@ class Filter
                             'feature_name_filter' => [
                                 'filter' => [
                                     'term' => [
-                                        'product_features.feature_name.' . app()->getLocale() => $featureName,
+                                        'product_features.feature_name.'.app()->getLocale() => $featureName,
                                     ],
                                 ],
                                 'aggs' => [
                                     'feature_values' => [
                                         'terms' => [
-                                            'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                            'field' => 'product_features.feature_value.'.app()->getLocale(),
                                             'size' => 100,
                                         ],
                                     ],
@@ -551,9 +656,9 @@ class Filter
         );
 
         // Format features
-        $features = $this->formatFeatures(
-            collect($metadataResponse['aggregations']['all_features']['features']['buckets'] ?? []),
-            $facetCounts['features']
+        $features = $this->formatFeaturesWithGuardName(
+            collect($metadataResponse['aggregations']['all_features']['features_guard_names']['buckets'] ?? []),
+            $facetCounts['features_by_guard_name']
         );
 
         return [
@@ -565,6 +670,71 @@ class Filter
             'maxPrice' => $maxPrice,
         ];
     }
+
+    /**
+     * Debug version - выводит подробную информацию о структуре данных
+     */
+    /**
+     * Format features with guardName/valueId и локализованными названиями
+     */
+    /**
+     * Format features with guardName/valueId и локализованными названиями
+     */
+    private function formatFeaturesWithGuardName(Collection $featureBuckets, array $featureCountMaps): Collection
+    {
+        $locale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale', 'en');
+        $result = [];
+
+        foreach ($featureBuckets as $guardBucket) {
+            $guardName = $guardBucket['key'];
+            $countMap = $featureCountMaps[$guardName] ?? [];
+            $values = [];
+            $featureNameLocalized = null;
+
+            foreach ($guardBucket['feature_ids']['buckets'] as $valueBucket) {
+                $valueId = $valueBucket['key'];
+                $count = $countMap[$valueId] ?? 0;
+
+                $hit = $valueBucket['feature_details']['hits']['hits'][0] ?? null;
+
+                $featureName = '';
+                $featureValue = '';
+
+                if ($hit && isset($hit['_source'])) {
+                    // Get translations
+                    $nameTranslations = $hit['_source']['feature_name'] ?? [];
+                    $valueTranslations = $hit['_source']['feature_value'] ?? [];
+
+                    $featureName = $nameTranslations[$locale] ?? $nameTranslations[$fallbackLocale] ?? '';
+                    $featureValue = $valueTranslations[$locale] ?? $valueTranslations[$fallbackLocale] ?? '';
+
+                    if ($featureNameLocalized === null && !empty($featureName)) {
+                        $featureNameLocalized = $featureName;
+                    }
+                }
+
+                // Add a filter_key field that combines guard_name and id
+                $values[] = [
+                    'id' => $valueId,
+                    'guard_name' => $guardName,
+                    'feature_name' => $featureName,
+                    'feature_value' => $featureValue,
+                    'count' => $count,
+                    'filter_key' => $guardName . ':' . $valueId  // Add this field for easier handling in ActiveFilters
+                ];
+            }
+
+            $featureKey = $featureNameLocalized ?? $guardName;
+            $result[$featureKey] = $values;
+        }
+
+        return collect($result);
+    }
+
+
+
+
 
     /**
      * Format brands with counts
@@ -651,7 +821,7 @@ class Filter
             ];
 
             // Add additional filters if they exist
-            if (!empty($filters)) {
+            if (! empty($filters)) {
                 $query['bool']['filter'] = $filters;
             }
 
@@ -659,7 +829,7 @@ class Filter
         }
 
         // If no category but has filters
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             return [
                 'bool' => [
                     'filter' => $filters,
@@ -685,8 +855,8 @@ class Filter
             ])->asArray();
         } catch (\Exception $e) {
             // Log the error
-            \Log::error('Elasticsearch error: ' . $e->getMessage());
-            \Log::error('Query: ' . json_encode($body));
+            \Log::error('Elasticsearch error: '.$e->getMessage());
+            \Log::error('Query: '.json_encode($body));
 
             // Return empty result
             return [

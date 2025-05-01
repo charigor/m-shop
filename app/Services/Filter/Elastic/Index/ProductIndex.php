@@ -72,6 +72,8 @@ class ProductIndex
                 $featureValueEn = $featureValue->translation->where('locale', 'en')->first()?->value;
 
                 $features[] = [
+                    'feature_guard_name' => $feature->guard_name,
+                    'feature_value_id' => $featureValue->id,
                     'feature_name' => [
                         'uk' => $featureNameUk,
                         'en' => $featureNameEn,
@@ -214,6 +216,9 @@ class ProductIndex
                             'product_features' => [
                                 'type' => 'nested',
                                 'properties' => [
+                                    'feature_guard_name' => ['type' => 'keyword'],
+                                    'feature_value_id' => ['type' => 'integer'],
+
                                     'feature_name' => [
                                         'properties' => [
                                             'uk' => ['type' => 'keyword'],
