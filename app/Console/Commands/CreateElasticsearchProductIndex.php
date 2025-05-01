@@ -65,13 +65,6 @@ class CreateElasticsearchProductIndex extends Command
                                 ],
                             ],
                             'product_id' => ['type' => 'integer'],
-                            'product_name' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'uk' => ['type' => 'text', 'analyzer' => 'autocomplete', 'search_analyzer' => 'standard'],
-                                    'en' => ['type' => 'text', 'analyzer' => 'autocomplete', 'search_analyzer' => 'standard'],
-                                ],
-                            ],
                             'brand_id' => ['type' => 'integer'],
                             'price' => ['type' => 'float'],
                             'brand_name' => [
@@ -140,12 +133,6 @@ class CreateElasticsearchProductIndex extends Command
             $bar = $this->output->createProgressBar($products->count());
 
             foreach ($products as $product) {
-                // Get product names
-                $productNames = [];
-                foreach ($product->translation as $prodLang) {
-                    $productNames[$prodLang->locale] = $prodLang->name;
-                }
-
                 // Get categories info
                 $categoryIds = [];
                 $categoryTitles = [
@@ -188,8 +175,8 @@ class CreateElasticsearchProductIndex extends Command
                     $featureNameUk = $feature->translation->where('locale', 'uk')->first()?->name;
                     $featureNameEn = $feature->translation->where('locale', 'en')->first()?->name;
 
-                    $featureValueUk = $featureValue->translate->where('locale', 'uk')->first()?->value;
-                    $featureValueEn = $featureValue->translate->where('locale', 'en')->first()?->value;
+                    $featureValueUk = $featureValue->translation->where('locale', 'uk')->first()?->value;
+                    $featureValueEn = $featureValue->translation->where('locale', 'en')->first()?->value;
 
                     $features[] = [
                         'feature_name' => [
@@ -211,7 +198,6 @@ class CreateElasticsearchProductIndex extends Command
                         'category_ids' => $categoryIds,
                         'category_title' => $categoryTitles,
                         'product_id' => $product->id,
-                        'product_name' => $productNames,
                         'brand_id' => $product->brand_id,
                         'brand_name' => $product->brand?->name,
                         'price' => $product->price,
