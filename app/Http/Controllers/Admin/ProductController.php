@@ -9,6 +9,8 @@ use App\Http\Requests\Admin\Product\ProductUpdateRequest;
 use App\Http\Resources\Admin\Product\ProductResource;
 use App\Http\Resources\Admin\Product\ProductTableResource;
 use App\Http\Resources\Category\CategoryResource;
+use App\Jobs\DeleteElasticsearchProduct;
+use App\Jobs\UpdateElasticsearchProduct;
 use App\Models\AttributeGroup;
 use App\Models\Category;
 use App\Models\FeatureLang;
@@ -67,7 +69,7 @@ class ProductController extends Controller
     public function store(ProductCreateRequest $request): void
     {
         $model = $this->service->createItem($request);
-
+        UpdateElasticsearchProduct::dispatch($product->id);
         to_route('product.edit', $model->id)->with(['message' => trans('messages.success.create'), 'fragment' => $request->has('hashback') ? $request->hashback : '']);
     }
 
@@ -91,6 +93,8 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, Product $product): void
     {
         $model = $this->service->updateItem($product, $request);
+
+        UpdateElasticsearchProduct::dispatch($product->id);
         to_route('product.edit', $model->id)->with(['message' => trans('messages.success.update'), 'fragment' => $request->has('hashback') ? $request->hashback : '']);
     }
 
@@ -98,7 +102,10 @@ class ProductController extends Controller
     {
         $products = Product::whereIn('id', $request->ids)->get();
         foreach ($products as $item) {
+            $productId = $item->id;
             $item->delete();
+            DeleteElasticsearchProduct::dispatch($productId);
+
         }
 
         return redirect()->route('.index')->with('message', trans('messages.success.delete'));

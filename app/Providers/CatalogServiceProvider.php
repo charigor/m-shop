@@ -6,6 +6,7 @@ use App\Services\Catalog\CatalogService;
 use App\Services\Catalog\CategoryService;
 use App\Services\Catalog\ProductService;
 use App\Services\Filter\Elastic\Filter;
+use App\Services\Filter\Elastic\Index\ProductIndex;
 use Illuminate\Support\ServiceProvider;
 
 class CatalogServiceProvider extends ServiceProvider
@@ -24,6 +25,9 @@ class CatalogServiceProvider extends ServiceProvider
                 $app->make(ProductService::class),
                 $app->make(Filter::class)
             );
+        });
+        $this->app->singleton(ProductIndex::class, function ($app) {
+            return new ProductIndex($app->make(\Elastic\Elasticsearch\Client::class));
         });
     }
 }

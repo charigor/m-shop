@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
+use App\Observers\ProductObserver;
 use App\Services\Contracts\CartInterface;
 use App\Services\Contracts\SearchEngineInterface;
 use App\Services\Filter\ProductFilterContract;
@@ -15,7 +16,6 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton( \Elastic\Elasticsearch\Client::class, function () {
+        $this->app->singleton(\Elastic\Elasticsearch\Client::class, function () {
             return ClientBuilder::create()
                 ->setHosts([env('ELASTICSEARCH_HOST', 'http://elasticsearch:9200')])
                 ->build();
@@ -39,42 +39,20 @@ class AppServiceProvider extends ServiceProvider
         //            $this->app->register(TelescopeServiceProvider::class);
         //
         //        }
-        //        $this->app->bind(\App\Services\Filter\BrandSearchRepository::class, function ($app) {
-        //            /*This is useful in case we want to turn-off our
-        //            search cluster or when deploying the search
-        //            to a live, running application at first.*/
-        ////                if (! config('services.search.enabled')) {
-        ////                    return new \App\Services\Filter\BrandSearchRepository::class();
-        ////                }
-        //            return new \App\Services\Filter\ElasticSearchRepository(
-        //                $app->make(Client::class)
-        //            );
-        //        });
-        //        $this->bindSearchClient();
     }
-    //    private function bindSearchClient()
-    //    {
-
-    //        $this->app->bind(Client::class, function ($app) {
-    //            return \Elastic\Elasticsearch\ClientBuilder::create()->setSSLVerification(false)
-    ////                ->setHttpClient(new HttpClient(['verify' => false ]))
-    ////                ->setHosts($app['config']->get('services.search.hosts'))
-    //                ->setHosts(["http://elastic:9200"])
-    //                ->build();
-    //        });
-    //    }
 
     /**
      * Bootstrap any application services.
      */
     public function boot()
     {
+        Product::observe(ProductObserver::class);
+
         app()->setLocale(session('locale', config('app.locale')));
         Cashier::useCustomerModel(User::class);
         Cashier::calculateTaxes();
         Cashier::useSubscriptionModel(Subscription::class);
         Cashier::useSubscriptionItemModel(SubscriptionItem::class);
-
 
         $this->app->bind(ProductFilterContract::class, function () {
             return new ProductMeilisearchFilter();
@@ -89,21 +67,6 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('categories', $categories);
                 $view->with('currantLang', session()->has('locale') ? session()->get('locale') : app()->getLocale());
             });
-            //            View::share('categories', Category::with(['media'])
-            //                ->selectRaw(
-            //                    'categories.*,
-            //                                                category_lang.title,
-            //                                                category_lang.locale,
-            //                                                category_lang.description,
-            //                                                category_lang.meta_description,
-            //                                                category_lang.meta_keywords,
-            //                                                category_lang.meta_title,
-            //                                                category_lang.link_rewrite')
-            //                ->leftJoin('category_lang', 'category_lang.category_id', '=', 'categories.id')
-            //                ->where('locale', app()->getLocale())
-            //                ->active()
-            //                ->get()->toTree());
-
         }
         Collection::macro('recursive', function () {
             return $this->map(function ($value) {
