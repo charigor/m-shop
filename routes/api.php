@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\api\CatalogController;
 use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\Auth\AuthController;
@@ -24,9 +25,11 @@ Route::get('/user', [AuthController::class, 'user']);
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return response()->json($request->user());
 //});
+
 Route::get('/category', [CategoryController::class,'index']);
 Route::get('/catalog/{link_rewrite?}', [CatalogController::class, 'index']);
 Route::get('/search', [App\Http\Controllers\api\SearchController::class, 'search']);
+
 Route::post('/set-locale', function (\Illuminate\Http\Request $request) {
     $lang = $request->input('lang');
 
@@ -37,3 +40,4 @@ Route::post('/set-locale', function (\Illuminate\Http\Request $request) {
 
     return response()->json(['status' => 'ok']);
 });
+Route::get('/product/{link_rewrite}', [ProductController::class, 'show']);
