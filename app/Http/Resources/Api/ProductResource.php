@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Http\Resources\Attribute\AttributeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,7 +25,10 @@ class ProductResource extends JsonResource
             'meta_keywords' => optional($this->translateWithFallback)->meta_keywords,
             'meta_title' => optional($this->translateWithFallback)->meta_title,
             'link_rewrite' => optional($this->translateWithFallback)->link_rewrite,
-            'preview_url' => $this->media->first()?->preview_url
+            'preview_url' => $this->media->first()?->preview_url,
+            'attributes' => AttributeProductResource::collection($this->attributes)
+
+
         ];
     }
 }

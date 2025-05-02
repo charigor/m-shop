@@ -69,7 +69,7 @@ class ProductController extends Controller
     public function store(ProductCreateRequest $request): void
     {
         $model = $this->service->createItem($request);
-        UpdateElasticsearchProduct::dispatch($product->id);
+        UpdateElasticsearchProduct::dispatch($model->id);
         to_route('product.edit', $model->id)->with(['message' => trans('messages.success.create'), 'fragment' => $request->has('hashback') ? $request->hashback : '']);
     }
 

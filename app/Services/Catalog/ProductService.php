@@ -14,7 +14,7 @@ class ProductService
     {
         $fallbackLocale = config('app.fallback_locale');
 
-        $productsQuery = Product::with(['media', 'translateWithFallback' => function($query) use ($locale, $fallbackLocale) {
+        $productsQuery = Product::with(['attributes.attributes','media', 'translateWithFallback' => function($query) use ($locale, $fallbackLocale) {
             $query->where('locale', $locale)
                 ->orWhere('locale', $fallbackLocale);
         }]);
