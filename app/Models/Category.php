@@ -21,6 +21,7 @@ class Category extends Model implements HasMedia
     //}
 
     public $table = 'categories';
+
     protected $appends = ['menu_thumbnail_url'];
 
     protected $fillable = [
@@ -48,7 +49,7 @@ class Category extends Model implements HasMedia
             ->nonQueued();
     }
 
-// Then update your accessor to use this conversion
+    // Then update your accessor to use this conversion
     public function getMenuThumbnailUrlAttribute()
     {
         $media = $this->getFirstMedia('menu_thumbnail');
@@ -59,7 +60,6 @@ class Category extends Model implements HasMedia
 
         return null;
     }
-
 
     /**
      * The attributes that should be cast.
@@ -101,5 +101,32 @@ class Category extends Model implements HasMedia
     public function translate($lang = null)
     {
         return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale($lang ?? app()->getLocale());
+    }
+
+    public function translateWithFallback($locale = null)
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        return $this->hasOne(CategoryLang::class)
+            ->where(function ($query) use ($currentLocale, $fallbackLocale) {
+                $query->where('locale', $currentLocale)
+                    ->orWhere('locale', $fallbackLocale);
+            })
+            ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$currentLocale]);
+    }
+
+    public function getTranslateWithFallbackAttribute()
+    {
+        $currentLocale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        $translation = $this->translation()->where('locale', $currentLocale)->first();
+
+        if (! $translation) {
+            $translation = $this->translation()->where('locale', $fallbackLocale)->first();
+        }
+
+        return $translation;
     }
 }

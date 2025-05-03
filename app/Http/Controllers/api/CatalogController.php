@@ -4,8 +4,8 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Services\Catalog\CatalogService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
@@ -21,6 +21,8 @@ class CatalogController extends Controller
      */
     public function index(Request $request, $link_rewrite = null): JsonResponse
     {
+        $start = microtime(true);
+
         $filters = $request->input('filter', []);
         $locale = app()->getLocale();
         $sort = $request->input('sort', '');
