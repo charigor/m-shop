@@ -129,4 +129,11 @@ class Category extends Model implements HasMedia
 
         return $translation;
     }
+    public function ancestors()
+    {
+        return $this->newQuery()
+            ->whereRaw('_lft < ? and _rgt > ?', [$this->_lft, $this->_rgt])
+            ->orderBy('_lft');
+    }
+
 }
