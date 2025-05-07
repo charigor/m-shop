@@ -43,12 +43,4 @@ class ProductLang extends Model
     {
         return $this->belongsTo(Product::class);
     }
-    protected static function booted()
-    {
-        static::updated(function ($productLang) {
-            if ($productLang->isDirty('name')) {
-                dispatch(new \App\Jobs\IndexProductInElasticsearch());
-            }
-        });
-    }
 }

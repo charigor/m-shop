@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\FeatureValueProduct;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -70,10 +71,29 @@ class DatabaseSeeder extends Seeder
 //                         'value' => $faker->city,
 //                     ]);
 //                 });
-
+//        $products = Product::where('id','>', 10000)->get();
+//        foreach ($products as $product) {
+//            $fakeImagesPath = storage_path('app/public/fake-images');
+//
+//            $allImages = collect(glob($fakeImagesPath . '/*.{jpg,jpeg,png}', GLOB_BRACE));
+//
+//            if ($allImages->isNotEmpty()) {
+//                $selectedImages = collect($allImages->random(rand(1, min(3, $allImages->count()))));
+//
+//                foreach ($selectedImages as $index => $imagePath) {
+//                    $product
+//                        ->addMedia($imagePath)
+//                        ->withCustomProperties([
+//                            'main_image' => $index === 0 ? 1 : 0,  // Первый элемент как основной
+//                            'order' => $index,  // Порядковый номер
+//                        ])
+//                        ->preservingOriginal()
+//                        ->toMediaCollection('image');
+//                }
+//            }
+//        }
                 \App\Models\Product::factory(400)->create()->each(function ($product) {
                     $productLang = \App\Models\ProductLang::factory(1)->make();
-                    $product->translation()->saveMany($productLang);
                     $product->translation()->saveMany($productLang);
                     $featureValues = \App\Models\FeatureValue::all()->random(rand(1,5));
                     foreach($featureValues as $item){
@@ -89,7 +109,7 @@ class DatabaseSeeder extends Seeder
                     $randomCategories = collect($categoryIds)->random(rand(1, min(3, count($categoryIds)))); // выбираем от 1 до 3
                     $product->categories()->attach($randomCategories);
                 });
-//                \App\Models\Brand::factory(10)->create();
+                \App\Models\Brand::factory(10)->create();
 //                 \App\Models\User::factory(100)->create();
 //                \App\Models\Product::factory(10000)->create();
 //        $role = Role::create(['name' => 'manager']);

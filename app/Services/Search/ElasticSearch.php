@@ -9,10 +9,11 @@ use Illuminate\Http\Request;
 
 class ElasticSearch implements SearchEngineInterface
 {
-
-    public function __construct(private Client $client) {
+    public function __construct(private Client $client)
+    {
 
     }
+
     public function handle(Request $request): array
     {
         $query = $request->input('q');
@@ -21,9 +22,7 @@ class ElasticSearch implements SearchEngineInterface
         $page = (int) $request->input('page', 1);
         $perPage = 12;
 
-
-
-        $searchResultCat = $this->getFullCategorySearchResult( $query, $lang);
+        $searchResultCat = $this->getFullCategorySearchResult($query, $lang);
         $totalProducts = $this->getTotalProductsCount($searchResultCat);
         $categories = $this->formatCategories($searchResultCat, $lang);
 
@@ -34,9 +33,10 @@ class ElasticSearch implements SearchEngineInterface
         return [
             'itemGroups' => $itemGroups,
             'categories' => $categories,
-            'total' => $totalProducts
+            'total' => $totalProducts,
         ];
     }
+
     public function search($index, array $body)
     {
         return $this->client->search([
@@ -47,37 +47,38 @@ class ElasticSearch implements SearchEngineInterface
 
     private function getFullCategorySearchResult($query, $lang): array
     {
-        return $this->search( 'category_product_lang', [
-            '_source' => ["product_name.$lang", "category_title.$lang", "product_id", "category_id"],
+        return $this->search('category_product_lang', [
+            '_source' => ["product_name.$lang", "category_title.$lang", 'product_id', 'category_id'],
             'query' => [
                 'multi_match' => [
                     'query' => $query,
                     'fields' => ['product_name.uk^3', 'product_name.en^3'],
                     'type' => 'best_fields',
-                    'fuzziness' => 'AUTO'
-                ]
+                    'fuzziness' => 'AUTO',
+                ],
             ],
             'aggs' => [
                 'categories' => [
                     'terms' => ['field' => 'category_id', 'size' => 1000],
                     'aggs' => [
                         'category_title' => ['top_hits' => ['size' => 1, '_source' => ["category_title.$lang"]]],
+                        'category_path' => ['top_hits' => ['size' => 1, '_source' => ["category_path.$lang"]]],
                         'total_products' => ['value_count' => ['field' => 'product_id']],
-                        'products' => ['top_hits' => ['size' => 4, '_source' => ["product_name.$lang", "product_id", "category_title.$lang"]]]
-                    ]
-                ]
-            ]
+                        'products' => ['top_hits' => ['size' => 4, '_source' => ["product_name.$lang", 'product_id', "category_title.$lang", "category_path.$lang"]]],
+                    ],
+                ],
+            ],
         ]);
     }
 
     private function getTotalProductsCount($searchResultCat)
     {
-        return collect($searchResultCat['aggregations']['categories']['buckets'])->sum(fn($bucket) => $bucket['total_products']['value'] ?? 0);
+        return collect($searchResultCat['aggregations']['categories']['buckets'])->sum(fn ($bucket) => $bucket['total_products']['value'] ?? 0);
     }
 
     private function formatCategories($searchResultCat, $lang): \Illuminate\Support\Collection
     {
-        return collect($searchResultCat['aggregations']['categories']['buckets'])->map(fn($bucket) => [
+        return collect($searchResultCat['aggregations']['categories']['buckets'])->map(fn ($bucket) => [
             'id' => $bucket['key'],
             'count' => $bucket['doc_count'],
             'name' => $bucket['category_title']['hits']['hits'][0]['_source']['category_title'][$lang] ?? 'Без назви',
@@ -88,13 +89,16 @@ class ElasticSearch implements SearchEngineInterface
     {
         return collect($searchResultCat['aggregations']['categories']['buckets'])->map(function ($bucket) use ($lang) {
             $categoryTitle = $bucket['category_title']['hits']['hits'][0]['_source']['category_title'][$lang] ?? 'Без назви';
-            $products = collect($bucket['products']['hits']['hits'])->map(function ($hit) use ($lang) {
-                $product = Product::find($hit['_source']['product_id']);
+            $categoryPath = $bucket['category_path']['hits']['hits'][0]['_source']['category_path'][$lang] ?? '';
+            $products = collect($bucket['products']['hits']['hits'])->map(function ($hit) use ($lang, $categoryPath) {
+                $product = Product::with(['media', 'translateWithFallback'])->find($hit['_source']['product_id']);
+
                 return [
                     'product_id' => $hit['_source']['product_id'],
                     'name' => $hit['_source']['product_name'][$lang] ?? 'Без назви',
                     'image' => optional($product->mainImage)->getUrl('preview'),
-                    'price' => (int)$product->price,
+                    'price' => (int) $product->price,
+                    'path' => '/catalog/'.$categoryPath.'/'.optional($product->translateWithFallback)->link_rewrite,
                 ];
             });
 
@@ -113,8 +117,8 @@ class ElasticSearch implements SearchEngineInterface
     {
         $from = ($page - 1) * $perPage;
 
-        $searchResult = $this->search( 'category_product_lang', [
-            '_source' => ["product_name.$lang", "category_title.$lang", "product_id", "category_id"],
+        $searchResult = $this->search('category_product_lang', [
+            '_source' => ["product_name.$lang", "category_title.$lang", "category_path.$lang", 'product_id', 'category_id'],
             'query' => [
                 'bool' => [
                     'must' => [
@@ -123,10 +127,10 @@ class ElasticSearch implements SearchEngineInterface
                             'query' => $query,
                             'fields' => ['product_name.uk^3', 'product_name.en^3'],
                             'type' => 'best_fields',
-                            'fuzziness' => 'AUTO'
-                        ]]
-                    ]
-                ]
+                            'fuzziness' => 'AUTO',
+                        ]],
+                    ],
+                ],
             ],
             'from' => $from,
             'size' => $perPage,
@@ -134,10 +138,10 @@ class ElasticSearch implements SearchEngineInterface
                 'categories' => [
                     'terms' => ['field' => 'category_id', 'size' => 1],
                     'aggs' => [
-                        'category_title' => ['top_hits' => ['size' => 1, '_source' => ["category_title.$lang"]]]
-                    ]
-                ]
-            ]
+                        'category_title' => ['top_hits' => ['size' => 1, '_source' => ["category_title.$lang"]]],
+                    ],
+                ],
+            ],
         ]);
 
         return [[
@@ -147,14 +151,16 @@ class ElasticSearch implements SearchEngineInterface
                 'count' => $searchResult['hits']['total']['value'],
             ],
             'items' => collect($searchResult['hits']['hits'])->map(function ($item) use ($lang) {
-                $product = Product::find($item['_source']['product_id']);
+                $product = Product::with(['media', 'translateWithFallback'])->where('id', $item['_source']['product_id'])->first();
+                $categoryPath = $item['_source']['category_path'][$lang] ? '/catalog/'.$item['_source']['category_path'][$lang].'/'.optional($product->translateWithFallback)->link_rewrite : '/catalog/'.optional($product->translateWithFallback)->link_rewrite;
                 return [
                     'product_id' => $item['_source']['product_id'],
                     'name' => $item['_source']['product_name'][$lang] ?? 'Без назви',
                     'image' => optional($product->mainImage)->getUrl('preview'),
-                    'price' => (int)$product->price,
+                    'price' => (int) $product->price,
+                    'path' => $categoryPath,
                 ];
-            })
+            }),
         ]];
     }
 }

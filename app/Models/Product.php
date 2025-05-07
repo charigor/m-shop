@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory,InteractsWithMedia,Searchable;
+    use HasFactory,InteractsWithMedia;
 
     public $table = 'products';
 
@@ -119,54 +118,71 @@ class Product extends Model implements HasMedia
         $query->where('active', array_search('Active', self::ACTIVE));
     }
 
-//    public function toSearchableArray(): array
-//    {
-//        return [
-//            'cost' => $this->cost * 100,
-//            'quantity' => $this->quantity,
-//            'category' => $this->categories()->pluck('id')->toArray(),
-//            'brand' => $this->brand()->pluck('name')->first(),
-//            'feature' => $this->featureValues()->get()->groupBy('guard_name')
-//                ->map(function ($item) {
-//                    return $item->map(function ($i) {
-//                        return $i->pivot->feature_value_id;
-//                    })->flatten()->toArray();
-//                }),
-//            'created_at' => $this->created_at,
-//        ];
-//    }
+    //    public function toSearchableArray(): array
+    //    {
+    //        return [
+    //            'cost' => $this->cost * 100,
+    //            'quantity' => $this->quantity,
+    //            'category' => $this->categories()->pluck('id')->toArray(),
+    //            'brand' => $this->brand()->pluck('name')->first(),
+    //            'feature' => $this->featureValues()->get()->groupBy('guard_name')
+    //                ->map(function ($item) {
+    //                    return $item->map(function ($i) {
+    //                        return $i->pivot->feature_value_id;
+    //                    })->flatten()->toArray();
+    //                }),
+    //            'created_at' => $this->created_at,
+    //        ];
+    //    }
 
-    public function translate($lang = null): mixed
+    public function translate($lang = null)
     {
-        return $this->hasOne(ProductLang::class)->whereLocale($lang || app()->getLocale());
+        return $this->hasOne(ProductLang::class)->whereLocale($lang ?? app()->getLocale());
     }
+    //    public function searchableAs(): string
+    //    {
+    //        return 'products';
+    //    }
 
-//    public function searchableAs(): string
-//    {
-//        return 'products';
-//    }
-
-//    protected function makeAllSearchableUsing($query): Builder
-//    {
-//        return $query->with(['categories', 'features']);
-//    }
+    //    protected function makeAllSearchableUsing($query): Builder
+    //    {
+    //        return $query->with(['categories', 'features']);
+    //    }
 
     public function getMainImageAttribute()
     {
         return $this->getMedia('image', ['main_image' => 1])->first();
     }
 
+    public function translateWithFallback($locale = null)
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        return $this->hasOne(ProductLang::class)
+            ->where(function ($query) use ($currentLocale, $fallbackLocale) {
+                $query->where('locale', $currentLocale)
+                    ->orWhere('locale', $fallbackLocale);
+            })
+            ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$currentLocale]);
+    }
+
+    public function getTranslateWithFallbackAttribute()
+    {
+        $currentLocale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        $translation = $this->translation()->where('locale', $currentLocale)->first();
+
+        if (! $translation) {
+            $translation = $this->translation()->where('locale', $fallbackLocale)->first();
+        }
+
+        return $translation;
+    }
+
     public function getSortedMediaAttribute()
     {
         return $this->getMedia('image')->sortBy(fn ($value) => $value->custom_properties['order']);
-    }
-    protected static function booted()
-    {
-        static::saved(function () {
-            dispatch(new \App\Jobs\IndexProductInElasticsearch());
-        });
-        static::deleted(function () {
-            dispatch(new \App\Jobs\IndexProductInElasticsearch());
-        });
     }
 }

@@ -7,7 +7,7 @@ export const useMainStore = defineStore("main", {
     userName: null,
     userEmail: null,
     userAvatar: null,
-    _lang: getActiveLanguage(),
+    _lang: normalizeLang(getActiveLanguage()),
 
     /* Field focus with ctrl+k (to register only once) */
     isFieldFocusRegistered: false,
@@ -31,6 +31,7 @@ export const useMainStore = defineStore("main", {
    setLang(payload){
       if (payload.lang) {
           this._lang = payload.lang;
+
       }
     },
     fetch(sampleDataKey) {
@@ -51,3 +52,6 @@ export const useMainStore = defineStore("main", {
         lang: (state) => state._lang
     },
 });
+function normalizeLang(lang) {
+    return lang.split(',')[0].split('_')[0].trim();
+}

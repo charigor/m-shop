@@ -51,7 +51,7 @@ class ProductFactory extends Factory
                             'order' => $index,  // Порядковый номер
                         ])
                         ->preservingOriginal()
-                        ->toMediaCollection('images');
+                        ->toMediaCollection('image');
                 }
             }
         });

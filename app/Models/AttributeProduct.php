@@ -56,4 +56,51 @@ class AttributeProduct extends Model implements HasMedia
         return $this->getMedia('image', ['active' => '1'])
             ->sortBy(fn ($value) => $value->custom_properties['order']);
     }
+
+    public function getLocalizedAttributes($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+
+        $result = [];
+
+        $attributes = $this->attributes()->with('translate', 'group.translate')->get();
+
+        // Group attributes by their group
+        $groupedAttributes = $attributes->groupBy(function ($attribute) {
+            return $attribute->group->id;
+        });
+
+        foreach ($groupedAttributes as $groupId => $attributes) {
+            // Get the group name
+            $groupName = $attributes->first()->group->translate?->name
+                ?? $attributes->first()->group->translation()
+                    ->where('locale', config('app.fallback_locale'))
+                    ->first()?->name
+                ?? 'Unnamed Group';
+
+            $attributeValues = [];
+
+            foreach ($attributes as $attribute) {
+                $attrName = $attribute->translate?->name
+                    ?? $attribute->translation()
+                        ->where('locale', config('app.fallback_locale'))
+                        ->first()?->name
+                    ?? 'Unnamed Attribute';
+
+                $attributeValues[] = [
+                    'id' => $attribute->id,
+                    'name' => $attrName,
+                    'color' => $attribute->color,
+                ];
+            }
+
+            $result[] = [
+                'group_id' => $groupId,
+                'group_name' => $groupName,
+                'attributes' => $attributeValues,
+            ];
+        }
+
+        return $result;
+    }
 }

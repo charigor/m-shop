@@ -39,7 +39,6 @@ class Categories
 
     public function query(): Builder
     {
-
         return Category::with('children')
             ->selectRaw('categories.id,category_lang.title,categories.created_at,categories.active,categories.parent_id,category_lang.meta_title,category_lang.meta_description,category_lang.meta_keywords,langs.code')
             ->leftJoin('category_lang', 'categories.id', '=', 'category_lang.category_id')

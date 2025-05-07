@@ -30,7 +30,7 @@ const props = defineProps({
     },
 });
 let locale = ref(useMainStore().lang)
-
+console.log(locale)
 const form = reactive({
     parent_id: +null,
     active: 0,
@@ -98,7 +98,6 @@ const categories = ref([{id: 0,parent_id: null,translation: [{'id': null, title:
                 main
             >
             </SectionTitleLineWithButton>
-
             <ul class="flex flex-wrap  justify-end text-sm font-medium text-center mb-1"  role="tablist">
                 <li role="lang" v-for="item in [...$page.props.languages]">
                     <button type="button" @click="tab(item.code)" :class="{ 'bg-gray-300 dark:bg-gray-600': locale === item.code}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" >

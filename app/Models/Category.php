@@ -22,6 +22,8 @@ class Category extends Model implements HasMedia
 
     public $table = 'categories';
 
+    protected $appends = ['menu_thumbnail_url'];
+
     protected $fillable = [
         'active',
         'parent_id',
@@ -39,6 +41,24 @@ class Category extends Model implements HasMedia
         $this
             ->addMediaConversion('preview')
             ->nonQueued();
+
+        $this
+            ->addMediaConversion('thumbnail')
+            ->width(100)
+            ->height(100)
+            ->nonQueued();
+    }
+
+    // Then update your accessor to use this conversion
+    public function getMenuThumbnailUrlAttribute()
+    {
+        $media = $this->getFirstMedia('menu_thumbnail');
+
+        if ($media) {
+            return $media->getUrl('preview'); // Use the thumbnail conversion
+        }
+
+        return null;
     }
 
     /**
@@ -78,8 +98,42 @@ class Category extends Model implements HasMedia
         return $this->products->pluck('product_id');
     }
 
-    public function translate()
+    public function translate($lang = null)
     {
-        return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale(app()->getLocale());
+        return $this->hasOne(\App\Models\CategoryLang::class)->whereLocale($lang ?? app()->getLocale());
     }
+
+    public function translateWithFallback($locale = null)
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        return $this->hasOne(CategoryLang::class)
+            ->where(function ($query) use ($currentLocale, $fallbackLocale) {
+                $query->where('locale', $currentLocale)
+                    ->orWhere('locale', $fallbackLocale);
+            })
+            ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$currentLocale]);
+    }
+
+    public function getTranslateWithFallbackAttribute()
+    {
+        $currentLocale = app()->getLocale();
+        $fallbackLocale = config('app.fallback_locale');
+
+        $translation = $this->translation()->where('locale', $currentLocale)->first();
+
+        if (! $translation) {
+            $translation = $this->translation()->where('locale', $fallbackLocale)->first();
+        }
+
+        return $translation;
+    }
+    public function ancestors()
+    {
+        return $this->newQuery()
+            ->whereRaw('_lft < ? and _rgt > ?', [$this->_lft, $this->_rgt])
+            ->orderBy('_lft');
+    }
+
 }
