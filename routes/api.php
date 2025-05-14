@@ -25,7 +25,6 @@ Route::prefix('cart')->middleware(['cartCookie'])->group(function () {
     Route::delete('/remove', [CartController::class, 'remove']);
     Route::post('/sync', [CartController::class, 'sync']);
     Route::delete('/clear', [CartController::class, 'clear']);
-    Route::post('/logout', [CartController::class, 'handleLogout']);
 });
 Route::post('/login', function (Request $request) {
     return response()->json($request->user());
