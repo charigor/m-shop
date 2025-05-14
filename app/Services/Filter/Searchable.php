@@ -2,8 +2,8 @@
 
 namespace App\Services\Filter;
 
-//trait Searchable
-//{
+// trait Searchable
+// {
 //    public static function bootSearchable()
 //    {
 //        // Это облегчает переключение флага поиска.
@@ -34,4 +34,4 @@ namespace App\Services\Filter;
 //        info($this->toArray());
 //        return $this->toArray();
 //    }
-//}
+// }

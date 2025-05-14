@@ -55,10 +55,10 @@ class AppServiceProvider extends ServiceProvider
         Cashier::useSubscriptionItemModel(SubscriptionItem::class);
 
         $this->app->bind(ProductFilterContract::class, function () {
-            return new ProductMeilisearchFilter();
+            return new ProductMeilisearchFilter;
         });
         $this->app->bind(CartInterface::class, function () {
-            return new Cart();
+            return new Cart;
         });
         if (! $this->app->runningInConsole()) {
 

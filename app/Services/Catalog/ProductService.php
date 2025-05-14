@@ -14,15 +14,13 @@ class ProductService
     {
         $fallbackLocale = config('app.fallback_locale');
 
-        $productsQuery = Product::with(['attributes.attributes','media', 'translateWithFallback' => function($query) use ($locale, $fallbackLocale) {
+        $productsQuery = Product::with(['attributes.attributes', 'media', 'translateWithFallback' => function ($query) use ($locale, $fallbackLocale) {
             $query->where('locale', $locale)
                 ->orWhere('locale', $fallbackLocale);
         }]);
 
         // Only include products that have at least one translation (either in requested locale or fallback)
         $productsQuery->whereHas('translateWithFallback');
-
-
 
         // Apply filtering by ID from faceted search
         if (! empty($facet['productIds'])) {

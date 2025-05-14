@@ -15,7 +15,7 @@ class AttributeGroupService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new AttributeGroup());
+        parent::__construct(new AttributeGroup);
     }
 
     /**

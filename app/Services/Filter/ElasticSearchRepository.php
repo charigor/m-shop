@@ -55,7 +55,7 @@ class ElasticSearchRepository implements BrandSearchRepository
 
                 'highlight' => [
                     'fields' => [
-                        'name' => new \stdClass(),
+                        'name' => new \stdClass,
                     ],
                 ],
             ],

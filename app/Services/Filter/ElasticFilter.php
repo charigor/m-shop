@@ -6,16 +6,14 @@ use Elastic\Elasticsearch\Client;
 
 class ElasticFilter
 {
-    public function __construct(private Client $client)
-    {
-    }
+    public function __construct(private Client $client) {}
 
     public function handle($cat_id = null, $filters = [])
     {
-        $brands = isset($filters['brands']) && !empty($filters['brands']) ? explode(',', $filters['brands']) : [];
-        $price = isset($filters['price']) && !empty($filters['price']) ? explode(',', $filters['price']) : [];
-        $attributes = isset($filters['attr']) && !empty($filters['attr']) ? $filters['attr'] : [];
-        $features = isset($filters['features']) && !empty($filters['features']) ? $filters['features'] : [];
+        $brands = isset($filters['brands']) && ! empty($filters['brands']) ? explode(',', $filters['brands']) : [];
+        $price = isset($filters['price']) && ! empty($filters['price']) ? explode(',', $filters['price']) : [];
+        $attributes = isset($filters['attr']) && ! empty($filters['attr']) ? $filters['attr'] : [];
+        $features = isset($filters['features']) && ! empty($filters['features']) ? $filters['features'] : [];
 
         // Process string values in attributes
         foreach ($attributes as $key => $value) {
@@ -33,18 +31,18 @@ class ElasticFilter
 
         // Create price filter
         $priceFilter = [];
-        if (!empty($price)) {
+        if (! empty($price)) {
             $range = [];
             foreach ($price as $part) {
                 if (str_starts_with($part, 'min')) {
-                    $range['gte'] = (int)str_replace('min', '', $part);
+                    $range['gte'] = (int) str_replace('min', '', $part);
                 }
                 if (str_starts_with($part, 'max')) {
-                    $range['lte'] = (int)str_replace('max', '', $part);
+                    $range['lte'] = (int) str_replace('max', '', $part);
                 }
             }
 
-            if (!empty($range)) {
+            if (! empty($range)) {
                 $priceFilter = [
                     'range' => [
                         'price' => $range,
@@ -55,7 +53,7 @@ class ElasticFilter
 
         // Create brand filter
         $brandFilter = [];
-        if (!empty($brands)) {
+        if (! empty($brands)) {
             $brandFilter = [
                 'terms' => [
                     'brand_id' => $brands,
@@ -67,7 +65,7 @@ class ElasticFilter
         $attributeFilters = [];
         $attributeGroupFilters = []; // Store filters by attribute group
 
-        if (!empty($attributes)) {
+        if (! empty($attributes)) {
             foreach ($attributes as $attributeName => $values) {
                 $filter = [
                     'nested' => [
@@ -77,12 +75,12 @@ class ElasticFilter
                                 'must' => [
                                     [
                                         'term' => [
-                                            'product_attributes.attribute_name.' . app()->getLocale() => $attributeName,
+                                            'product_attributes.attribute_name.'.app()->getLocale() => $attributeName,
                                         ],
                                     ],
                                     [
                                         'terms' => [
-                                            'product_attributes.attribute_value.' . app()->getLocale() => $values,
+                                            'product_attributes.attribute_value.'.app()->getLocale() => $values,
                                         ],
                                     ],
                                 ],
@@ -100,7 +98,7 @@ class ElasticFilter
         $featureFilters = [];
         $featureGroupFilters = []; // Store filters by feature group
 
-        if (!empty($features)) {
+        if (! empty($features)) {
             foreach ($features as $featureName => $values) {
                 $filter = [
                     'nested' => [
@@ -110,12 +108,12 @@ class ElasticFilter
                                 'must' => [
                                     [
                                         'term' => [
-                                            'product_features.feature_name.' . app()->getLocale() => $featureName,
+                                            'product_features.feature_name.'.app()->getLocale() => $featureName,
                                         ],
                                     ],
                                     [
                                         'terms' => [
-                                            'product_features.feature_value.' . app()->getLocale() => $values,
+                                            'product_features.feature_value.'.app()->getLocale() => $values,
                                         ],
                                     ],
                                 ],
@@ -152,13 +150,13 @@ class ElasticFilter
                 'aggs' => [
                     'attributes' => [
                         'terms' => [
-                            'field' => 'product_attributes.attribute_name.' . app()->getLocale(),
+                            'field' => 'product_attributes.attribute_name.'.app()->getLocale(),
                             'size' => 100,
                         ],
                         'aggs' => [
                             'attribute_values' => [
                                 'terms' => [
-                                    'field' => 'product_attributes.attribute_value.' . app()->getLocale(),
+                                    'field' => 'product_attributes.attribute_value.'.app()->getLocale(),
                                     'size' => 100,
                                 ],
                             ],
@@ -176,13 +174,13 @@ class ElasticFilter
             'aggs' => [
                 'features' => [
                     'terms' => [
-                        'field' => 'product_features.feature_name.' . app()->getLocale(),
+                        'field' => 'product_features.feature_name.'.app()->getLocale(),
                         'size' => 100,
                     ],
                     'aggs' => [
                         'feature_values' => [
                             'terms' => [
-                                'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                'field' => 'product_features.feature_value.'.app()->getLocale(),
                                 'size' => 100,
                             ],
                         ],
@@ -209,8 +207,8 @@ class ElasticFilter
 
         // 2. Create filter combinations
         // Only include non-empty filters
-        $priceOnlyFilters = !empty($priceFilter) ? [$priceFilter] : [];
-        $brandOnlyFilters = !empty($brandFilter) ? [$brandFilter] : [];
+        $priceOnlyFilters = ! empty($priceFilter) ? [$priceFilter] : [];
+        $brandOnlyFilters = ! empty($brandFilter) ? [$brandFilter] : [];
 
         // Create filter set for brands (price + all attribute filters + all feature filters)
         $brandsWithOtherFilters = array_merge($priceOnlyFilters, $attributeFilters, $featureFilters);
@@ -269,13 +267,13 @@ class ElasticFilter
                             'attribute_name_filter' => [
                                 'filter' => [
                                     'term' => [
-                                        'product_attributes.attribute_name.' . app()->getLocale() => $attributeName,
+                                        'product_attributes.attribute_name.'.app()->getLocale() => $attributeName,
                                     ],
                                 ],
                                 'aggs' => [
                                     'attribute_values' => [
                                         'terms' => [
-                                            'field' => 'product_attributes.attribute_value.' . app()->getLocale(),
+                                            'field' => 'product_attributes.attribute_value.'.app()->getLocale(),
                                             'size' => 100,
                                         ],
                                     ],
@@ -332,13 +330,13 @@ class ElasticFilter
                             'feature_name_filter' => [
                                 'filter' => [
                                     'term' => [
-                                        'product_features.feature_name.' . app()->getLocale() => $featureName,
+                                        'product_features.feature_name.'.app()->getLocale() => $featureName,
                                     ],
                                 ],
                                 'aggs' => [
                                     'feature_values' => [
                                         'terms' => [
-                                            'field' => 'product_features.feature_value.' . app()->getLocale(),
+                                            'field' => 'product_features.feature_value.'.app()->getLocale(),
                                             'size' => 100,
                                         ],
                                     ],
@@ -365,10 +363,10 @@ class ElasticFilter
 
         // 6. Get all filtered products (apply all filters)
         $allFilters = [];
-        if (!empty($priceFilter)) {
+        if (! empty($priceFilter)) {
             $allFilters[] = $priceFilter;
         }
-        if (!empty($brandFilter)) {
+        if (! empty($brandFilter)) {
             $allFilters[] = $brandFilter;
         }
         // Add all attribute filters
@@ -489,8 +487,8 @@ class ElasticFilter
     /**
      * Builds Elasticsearch query with category ID and additional filters
      *
-     * @param int|null $cat_id Category ID or null if no category specified
-     * @param array $filters Additional filters (if any)
+     * @param  int|null  $cat_id  Category ID or null if no category specified
+     * @param  array  $filters  Additional filters (if any)
      * @return array Elasticsearch query structure
      */
     private function buildQuery($cat_id, array $filters = [])
@@ -511,7 +509,7 @@ class ElasticFilter
             ];
 
             // Add additional filters if they exist
-            if (!empty($filters)) {
+            if (! empty($filters)) {
                 $query['bool']['filter'] = $filters;
             }
 
@@ -519,7 +517,7 @@ class ElasticFilter
         }
 
         // If no category but has filters
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             return [
                 'bool' => [
                     'filter' => $filters,
@@ -529,7 +527,7 @@ class ElasticFilter
 
         // If no category and no filters - return match_all
         return [
-            'match_all' => new \stdClass(),
+            'match_all' => new \stdClass,
         ];
     }
 
@@ -542,8 +540,8 @@ class ElasticFilter
             ])->asArray();
         } catch (\Exception $e) {
             // Log the error
-            \Log::error('Elasticsearch error: ' . $e->getMessage());
-            \Log::error('Query: ' . json_encode($body));
+            \Log::error('Elasticsearch error: '.$e->getMessage());
+            \Log::error('Query: '.json_encode($body));
 
             // Return an empty result
             return [

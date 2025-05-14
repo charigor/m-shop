@@ -16,7 +16,7 @@ class ProductService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Product());
+        parent::__construct(new Product);
     }
 
     /**

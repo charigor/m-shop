@@ -20,13 +20,13 @@ class AttributeGroup extends Model
         'position',
     ];
 
-    const  GROUP_TYPE = [
+    const GROUP_TYPE = [
         0 => 'radio',
         1 => 'color',
         2 => 'select',
     ];
 
-    const  IS_COLOR_GROUP = [
+    const IS_COLOR_GROUP = [
         0 => 'no',
         1 => 'yes',
     ];

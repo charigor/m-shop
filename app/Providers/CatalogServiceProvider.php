@@ -16,7 +16,7 @@ class CatalogServiceProvider extends ServiceProvider
         $this->app->singleton(CategoryService::class);
 
         $this->app->singleton(ProductService::class, function ($app) {
-            return new ProductService();
+            return new ProductService;
         });
 
         $this->app->singleton(CatalogService::class, function ($app) {

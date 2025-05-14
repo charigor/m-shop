@@ -9,9 +9,7 @@ class Filter
 {
     private string $indexName = 'products_index';
 
-    public function __construct(private Client $client)
-    {
-    }
+    public function __construct(private Client $client) {}
 
     public function handle($cat_id = null, $filters = [])
     {
@@ -709,7 +707,7 @@ class Filter
                     $featureName = $nameTranslations[$locale] ?? $nameTranslations[$fallbackLocale] ?? '';
                     $featureValue = $valueTranslations[$locale] ?? $valueTranslations[$fallbackLocale] ?? '';
 
-                    if ($featureNameLocalized === null && !empty($featureName)) {
+                    if ($featureNameLocalized === null && ! empty($featureName)) {
                         $featureNameLocalized = $featureName;
                     }
                 }
@@ -721,7 +719,7 @@ class Filter
                     'feature_name' => $featureName,
                     'feature_value' => $featureValue,
                     'count' => $count,
-                    'filter_key' => $guardName . ':' . $valueId  // Add this field for easier handling in ActiveFilters
+                    'filter_key' => $guardName.':'.$valueId,  // Add this field for easier handling in ActiveFilters
                 ];
             }
 
@@ -731,10 +729,6 @@ class Filter
 
         return collect($result);
     }
-
-
-
-
 
     /**
      * Format brands with counts
@@ -839,7 +833,7 @@ class Filter
 
         // If no category and no filters - return match_all
         return [
-            'match_all' => new \stdClass(),
+            'match_all' => new \stdClass,
         ];
     }
 

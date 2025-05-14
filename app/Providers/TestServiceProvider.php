@@ -13,10 +13,7 @@ class TestServiceProvider extends ServiceProvider
     /**
      * Register services.
      */
-    public function register(): void
-    {
-
-    }
+    public function register(): void {}
 
     /**
      * Bootstrap services.
@@ -26,10 +23,10 @@ class TestServiceProvider extends ServiceProvider
         $this->app->bind(\App\Services\Payment::class, function ($app) {
             $request = app(\Illuminate\Http\Request::class);
             if ($request->payment === 'stripe') {
-                return new StripeService();
+                return new StripeService;
             }
 
-            return new PrivateService();
+            return new PrivateService;
         });
         if (! $this->app->runningInConsole()) {
             $this->app->singleton('shopLanguages', function ($app) {

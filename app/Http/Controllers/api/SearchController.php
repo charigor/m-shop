@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-
     protected SearchEngineInterface $searchService;
 
     public function __construct(SearchEngineInterface $searchService)
@@ -18,7 +17,7 @@ class SearchController extends Controller
 
     public function search(Request $request): \Illuminate\Http\JsonResponse
     {
-        if (!$request->get('q')) {
+        if (! $request->get('q')) {
             return response()->json([]);
         }
 

@@ -15,19 +15,11 @@ class UpdateElasticsearchProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     *
-     * @var int
-     */
     public int $tries = 3;
 
-    /**
-     * @var int
-     */
     protected int $productId;
 
     /**
-     *
      * @return void
      */
     public function __construct(int $productId)

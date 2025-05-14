@@ -54,7 +54,7 @@ class ProductController extends Controller
     {
 
         return Inertia::render('Products/Create', [
-            'product' => ProductResource::make(new Product()),
+            'product' => ProductResource::make(new Product),
             'categories' => CategoryResource::collection(Category::with(['translation'])->defaultOrder()->withDepth()->get()),
             'feature_options' => FeatureLang::whereHas('feature.featureValue')->where('locale', app()->getLocale())->get()->map(fn ($item) => ['value' => $item->feature_id, 'label' => $item->name]),
             'feature_value_options' => FeatureValueLang::with('featureValue')

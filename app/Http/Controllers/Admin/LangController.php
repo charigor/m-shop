@@ -49,7 +49,7 @@ class LangController extends Controller
     public function create()
     {
         return Inertia::render('Langs/Create', [
-            'lang' => LangResource::make(new Lang())->resolve(),
+            'lang' => LangResource::make(new Lang)->resolve(),
             'date_format_options' => createOptions(Lang::DATE_FORMAT),
             'date_format_full_options' => createOptions(Lang::DATE_FORMAT_FULL),
             'active_options' => createOptions(Lang::ACTIVE),

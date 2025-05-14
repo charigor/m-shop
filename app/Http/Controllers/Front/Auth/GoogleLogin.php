@@ -8,6 +8,7 @@ use Laravel\Socialite\Facades\Socialite;
 class GoogleLogin
 {
     private string $name = 'google';
+
     public function login()
     {
         return $this->getDriver()->redirect();
@@ -26,13 +27,14 @@ class GoogleLogin
             auth()->login($existingUser);
         } else {
             // Реєстрація нового користувача
-            $newUser = new User();
+            $newUser = new User;
             $newUser->name = $user->getName();
             $newUser->email = $user->getEmail();
             $newUser->save();
 
             auth()->login($newUser);
         }
+
         return redirect('/checkout');
     }
 

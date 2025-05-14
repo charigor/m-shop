@@ -20,6 +20,7 @@ class BreadcrumbsController extends Controller
 
         // Используем кэширование для оптимизации
         $cacheKey = "breadcrumbs_translations_{$locale}";
+
         return Cache::remember($cacheKey, now()->addHours(24), function () use ($locale) {
             // Получаем все переводы категорий
             $categoryTranslations = DB::table('category_lang')

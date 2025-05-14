@@ -19,20 +19,20 @@ class Lang extends Model
         'date_format_full',
     ];
 
-    const  DATE_FORMAT = [
+    const DATE_FORMAT = [
         1 => 'Y-m-d',
         2 => 'd/m/Y',
         3 => 'm/d/Y',
     ];
 
-    const  DATE_FORMAT_FULL = [
+    const DATE_FORMAT_FULL = [
         1 => 'Y-m-d H:i:s',
         2 => 'd/m/Y H:i:s',
         3 => 'm/d/Y H:i:s',
 
     ];
 
-    const  ACTIVE = [
+    const ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];

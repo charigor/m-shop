@@ -10,7 +10,7 @@ class LangService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Lang());
+        parent::__construct(new Lang);
     }
 
     /**

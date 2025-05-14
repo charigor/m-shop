@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-//use App\Services\Filter\SearchRepository;
+// use App\Services\Filter\SearchRepository;
 use Illuminate\Http\Request;
 
 class MainController extends Controller

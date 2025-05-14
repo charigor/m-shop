@@ -26,10 +26,10 @@ class DownloadFakeImages extends Command
     public function handle()
     {
 
-            $dir = storage_path('app/public/fake-images');
-            if (!file_exists($dir)) {
-                mkdir($dir, 0777, true);
-            }
+        $dir = storage_path('app/public/fake-images');
+        if (! file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
 
         for ($i = 1; $i <= 100; $i++) {
             $imageUrl = "https://picsum.photos/seed/$i/600/400";
@@ -38,6 +38,6 @@ class DownloadFakeImages extends Command
             $this->info("Saved image_$i.jpg");
         }
 
-            $this->info('All images downloaded!');
+        $this->info('All images downloaded!');
     }
 }

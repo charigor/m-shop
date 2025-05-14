@@ -137,7 +137,7 @@ class ProductIndex
     /**
      * Create or recreate the products index
      *
-     * @param  bool  $recreateIndex Whether to delete the existing index if it exists
+     * @param  bool  $recreateIndex  Whether to delete the existing index if it exists
      * @return bool Success status
      */
     public function createIndex(bool $recreateIndex = false): bool

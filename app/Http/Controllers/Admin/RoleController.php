@@ -60,7 +60,7 @@ class RoleController extends Controller
     {
         //        abort_unless(Auth::user()->hasAnyRole(['admin']), \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN, '403 Forbidden');
         return Inertia::render('Roles/Create', [
-            'role' => RoleResource::make(new Role())->resolve(),
+            'role' => RoleResource::make(new Role)->resolve(),
         ]);
     }
 

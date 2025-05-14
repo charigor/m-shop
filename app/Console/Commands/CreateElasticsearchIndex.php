@@ -4,12 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use Elastic\Elasticsearch\Client;
-use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Console\Command;
 
 class CreateElasticsearchIndex extends Command
 {
     protected $signature = 'elasticsearch:create-category-index';
+
     protected $description = 'Create the category_lang index in Elasticsearch';
 
     public function __construct(protected Client $client)
@@ -26,26 +27,26 @@ class CreateElasticsearchIndex extends Command
 
             if ($client->indices()->exists(['index' => 'category_product_lang'])->asBool()) {
                 $client->indices()->delete(['index' => 'category_product_lang']);
-                $this->info("Index category_product_lang deleted.");
+                $this->info('Index category_product_lang deleted.');
             }
 
             $params = [
                 'index' => 'category_product_lang',
-                'body'  => [
+                'body' => [
                     'settings' => [
                         'analysis' => [
                             'filter' => [
                                 'autocomplete_filter' => [
-                                    'type'     => 'edge_ngram',
+                                    'type' => 'edge_ngram',
                                     'min_gram' => 1,
                                     'max_gram' => 20,
                                 ],
                             ],
                             'analyzer' => [
                                 'autocomplete' => [
-                                    'type'      => 'custom',
+                                    'type' => 'custom',
                                     'tokenizer' => 'standard',
-                                    'filter'    => ['lowercase', 'autocomplete_filter'],
+                                    'filter' => ['lowercase', 'autocomplete_filter'],
                                 ],
                             ],
                         ],
@@ -135,8 +136,8 @@ class CreateElasticsearchIndex extends Command
                             'category_title' => $categoryTitles,
                             'category_path' => $categoryPaths,
                             'product_id' => $product->id,
-                            'product_name' => $productNames
-                        ]
+                            'product_name' => $productNames,
+                        ],
                     ]);
                 }
             }

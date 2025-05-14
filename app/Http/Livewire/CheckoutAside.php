@@ -33,7 +33,7 @@ class CheckoutAside extends Component
         $this->summary = $this->cartService->getTotal();
     }
 
-    public function addQuantity(int $productID, int $attributeID = null): void
+    public function addQuantity(int $productID, ?int $attributeID = null): void
     {
         if ($product = Product::when($attributeID, fn ($q) => $q->whereHas('attributes', fn ($q) => $q->where('id', $attributeID)))->where('id', $productID)->active()->first()) {
             if ($attributeID) {
@@ -49,7 +49,7 @@ class CheckoutAside extends Component
         }
     }
 
-    public function removeQuantity(int $productID, int $attributeID = null): void
+    public function removeQuantity(int $productID, ?int $attributeID = null): void
     {
         if ($product = Product::when($attributeID, fn ($q) => $q->whereHas('attributes', fn ($q) => $q->where('id', $attributeID)))->where('id', $productID)->active()->first()) {
             if ($attributeID) {

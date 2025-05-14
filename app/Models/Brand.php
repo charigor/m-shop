@@ -26,7 +26,7 @@ class Brand extends Model implements HasMedia
         'active',
     ];
 
-    public const  ACTIVE = [
+    public const ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
@@ -42,7 +42,7 @@ class Brand extends Model implements HasMedia
         ];
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
@@ -79,10 +79,6 @@ class Brand extends Model implements HasMedia
         'updated_at' => 'datetime:d-m-Y h:m:s',
     ];
 
-    /**
-     * @param  string  $term
-     * @return Collection
-     */
     public function search(string $term): Collection
     {
 

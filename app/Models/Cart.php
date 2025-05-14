@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
@@ -16,6 +15,7 @@ class Cart extends Model
         'customer_id',
         'delivery_id',
         'payment_id',
+        'session_id',
     ];
 
     /**
@@ -27,8 +27,19 @@ class Cart extends Model
         'created_at' => 'datetime:d-m-Y',
     ];
 
-    public function cartItems(): HasMany
+    /**
+     * Get the items in the cart.
+     */
+    public function items()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get the customer that owns the cart.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
     }
 }

@@ -37,7 +37,7 @@ trait Datatable
      */
     public static function datatable(Request $request)
     {
-        return (new static())->table($request);
+        return (new static)->table($request);
     }
 
     /**
@@ -100,7 +100,7 @@ trait Datatable
      */
     public function search(Request $request, $query)
     {
-        //1 version
+        // 1 version
         //        if($request->has('query')){
         //            if($request->has('search') && !empty($request->get('search')) && $request->get('query')){
         //

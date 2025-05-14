@@ -30,7 +30,7 @@ class FeatureValueController extends Controller
     public function create(Feature $feature): Response
     {
         return Inertia::render('FeatureValues/Create', [
-            'feature_value' => FeatureValueResource::make(new FeatureValue()),
+            'feature_value' => FeatureValueResource::make(new FeatureValue),
             'feature_options' => createOptions(FeatureResource::collection(Feature::all())->resolve()),
             'parent_route_id' => $feature->id,
         ]);

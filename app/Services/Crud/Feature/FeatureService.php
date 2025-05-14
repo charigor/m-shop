@@ -16,7 +16,7 @@ class FeatureService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Feature());
+        parent::__construct(new Feature);
     }
 
     /**

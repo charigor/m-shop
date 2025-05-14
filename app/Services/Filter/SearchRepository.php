@@ -1,11 +1,11 @@
 <?php
 
 //
-//namespace App\Services\Filter;
+// namespace App\Services\Filter;
 //
-//use Illuminate\Database\Eloquent\Collection;
+// use Illuminate\Database\Eloquent\Collection;
 //
-//interface SearchRepository
-//{
+// interface SearchRepository
+// {
 //    public function search(string $term): Collection;
-//}
+// }

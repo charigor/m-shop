@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     protected ElasticFilter $filterService;
+
     private CategoryProductUrl $urlService;
 
     public function __construct(ElasticFilter $filterService, CategoryProductUrl $urlService)

@@ -19,7 +19,7 @@ class StoreRoleTest extends TestCase
 
     private string $name;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->name = $this->faker->name();

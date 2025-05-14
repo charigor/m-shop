@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\Cart\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,14 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+
+        $cart = app(CartService::class)->handleLogout($request);
+
+        if ($cart) {
+            $request->attributes->add(['set_cart_cookie' => $cart->id]);
+        }
         Auth::logout();
+
         return response()->json(['message' => 'Logged out successfully']);
     }
 
@@ -30,4 +38,3 @@ class AuthController extends Controller
         return response()->json(Auth::user());
     }
 }
-

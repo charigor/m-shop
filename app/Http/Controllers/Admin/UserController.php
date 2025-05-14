@@ -69,7 +69,7 @@ class UserController extends Controller
     {
         return Inertia::render('Users/Create', [
             'roles' => RoleResource::collection(Role::all())->resolve(),
-            'user' => UserResource::make(new User())->resolve(),
+            'user' => UserResource::make(new User)->resolve(),
         ]);
     }
 
