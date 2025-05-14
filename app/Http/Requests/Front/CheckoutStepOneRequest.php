@@ -22,10 +22,10 @@ class CheckoutStepOneRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required','max:255'],
-            'lastname' => ['required','max:255'],
+            'name' => ['required', 'max:255'],
+            'lastname' => ['required', 'max:255'],
             'phone' => ['required'],
-            'email' => ['required','email'],
+            'email' => ['required', 'email'],
         ];
     }
 }

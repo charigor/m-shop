@@ -41,13 +41,13 @@ class AggregationBuilder
                 'aggs' => [
                     'attributes' => [
                         'terms' => [
-                            'field' => 'product_attributes.attribute_name.' . $this->locale,
+                            'field' => 'product_attributes.attribute_name.'.$this->locale,
                             'size' => 100,
                         ],
                         'aggs' => [
                             'attribute_values' => [
                                 'terms' => [
-                                    'field' => 'product_attributes.attribute_value.' . $this->locale,
+                                    'field' => 'product_attributes.attribute_value.'.$this->locale,
                                     'size' => 100,
                                 ],
                             ],
@@ -62,13 +62,13 @@ class AggregationBuilder
                 'aggs' => [
                     'features' => [
                         'terms' => [
-                            'field' => 'product_features.feature_name.' . $this->locale,
+                            'field' => 'product_features.feature_name.'.$this->locale,
                             'size' => 100,
                         ],
                         'aggs' => [
                             'feature_values' => [
                                 'terms' => [
-                                    'field' => 'product_features.feature_value.' . $this->locale,
+                                    'field' => 'product_features.feature_value.'.$this->locale,
                                     'size' => 100,
                                 ],
                             ],
@@ -93,13 +93,13 @@ class AggregationBuilder
                     'attribute_name_filter' => [
                         'filter' => [
                             'term' => [
-                                'product_attributes.attribute_name.' . $this->locale => $attributeName,
+                                'product_attributes.attribute_name.'.$this->locale => $attributeName,
                             ],
                         ],
                         'aggs' => [
                             'attribute_values' => [
                                 'terms' => [
-                                    'field' => 'product_attributes.attribute_value.' . $this->locale,
+                                    'field' => 'product_attributes.attribute_value.'.$this->locale,
                                     'size' => 100,
                                 ],
                             ],
@@ -124,13 +124,13 @@ class AggregationBuilder
                     'feature_name_filter' => [
                         'filter' => [
                             'term' => [
-                                'product_features.feature_name.' . $this->locale => $featureName,
+                                'product_features.feature_name.'.$this->locale => $featureName,
                             ],
                         ],
                         'aggs' => [
                             'feature_values' => [
                                 'terms' => [
-                                    'field' => 'product_features.feature_value.' . $this->locale,
+                                    'field' => 'product_features.feature_value.'.$this->locale,
                                     'size' => 100,
                                 ],
                             ],

@@ -48,7 +48,7 @@ class ReindexCommand extends Command
         //        }
         //
         //        $this->info("\nDone!");
-        //$data = {
+        // $data = {
         //	"mappings": {
         //		"dynamic": true,
         //		"properties": {
@@ -123,6 +123,6 @@ class ReindexCommand extends Command
         //			}
         //		}
         //	}
-        //}'
+        // }'
     }
 }

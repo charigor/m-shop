@@ -19,17 +19,18 @@ class MessageController extends Controller
     public function index()
     {
         //
-                $enrollmentData = [
-                    'body' => 'some body',
-                    'text' => 'some text',
-                    'name' => 'igor',
-                    'url' => url('/'),
-                    'thanks' => 'thanks',
-                ];
+        $enrollmentData = [
+            'body' => 'some body',
+            'text' => 'some text',
+            'name' => 'igor',
+            'url' => url('/'),
+            'thanks' => 'thanks',
+        ];
         //        $user = User::first();
         //        Notification::send(auth()->user(), new TestNotify($enrollmentData));
         $messages = Message::query()->orderByDesc('created_at')->get();
         $a = rand(1, 100);
+
         return inertia('Message', [
             'messages' => MessageResponse::collection($messages)->resolve(),
         ]);
@@ -38,7 +39,7 @@ class MessageController extends Controller
     public function store(Request $request)
     {
 
-        $message = new Message();
+        $message = new Message;
         $message->body = $request->body;
         $message->user_id = auth()->user()->id;
         $message->save();

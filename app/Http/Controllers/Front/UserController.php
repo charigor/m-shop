@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -12,6 +11,6 @@ class UserController extends Controller
     {
         $uniqueUserNames = User::distinct()->pluck('name');
 
-        return view('front.user',compact('uniqueUserNames'));
+        return view('front.user', compact('uniqueUserNames'));
     }
 }

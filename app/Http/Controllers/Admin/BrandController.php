@@ -50,7 +50,7 @@ class BrandController extends Controller
     public function create(): \Inertia\Response
     {
         $response = [
-            'brand' => BrandResource::make(new Brand()),
+            'brand' => BrandResource::make(new Brand),
         ];
 
         return Inertia::render('Brands/Create', $response);
@@ -65,9 +65,6 @@ class BrandController extends Controller
 
     }
 
-    /**
-     * @param  Brand  $brand;
-     */
     public function edit(Brand $brand): \Inertia\Response
     {
         $response = [

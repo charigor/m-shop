@@ -39,7 +39,7 @@ class AttributeProduct extends Model implements HasMedia
         return $this->belongsToMany(Attribute::class);
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')

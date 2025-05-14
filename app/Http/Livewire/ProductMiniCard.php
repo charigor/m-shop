@@ -30,7 +30,7 @@ class ProductMiniCard extends Component
 
     }
 
-    public function addToCart(int $productID, int $attributeID = null): void
+    public function addToCart(int $productID, ?int $attributeID = null): void
     {
         if ($attributeID) {
             $attributeName = AttributeProduct::where('id', $attributeID)->first()->attributes()->first()->translate->name;
@@ -65,7 +65,7 @@ class ProductMiniCard extends Component
         }
     }
 
-    public function addQuantity(int $productID, int $attributeID = null): void
+    public function addQuantity(int $productID, ?int $attributeID = null): void
     {
         if ($product = Product::when($attributeID, fn ($q) => $q->whereHas('attributes', fn ($q) => $q->where('id', $attributeID)))->where('id', $productID)->active()->first()) {
             if ($attributeID) {
@@ -81,7 +81,7 @@ class ProductMiniCard extends Component
         }
     }
 
-    public function removeQuantity(int $productID, int $attributeID = null): void
+    public function removeQuantity(int $productID, ?int $attributeID = null): void
     {
         if ($product = Product::when($attributeID, fn ($q) => $q->whereHas('attributes', fn ($q) => $q->where('id', $attributeID)))->where('id', $productID)->active()->first()) {
             if ($attributeID) {

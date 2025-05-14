@@ -33,12 +33,13 @@ class ProductFactory extends Factory
             'active' => rand(0, 1),
         ];
     }
+
     public function configure(): static
     {
         return $this->afterCreating(function (Product $product) {
             $fakeImagesPath = storage_path('app/public/fake-images');
 
-            $allImages = collect(glob($fakeImagesPath . '/*.{jpg,jpeg,png}', GLOB_BRACE));
+            $allImages = collect(glob($fakeImagesPath.'/*.{jpg,jpeg,png}', GLOB_BRACE));
 
             if ($allImages->isNotEmpty()) {
                 $selectedImages = collect($allImages->random(rand(1, min(3, $allImages->count()))));

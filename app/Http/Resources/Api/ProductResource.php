@@ -28,28 +28,27 @@ class ProductResource extends JsonResource
             $featureValueStr = $featureValueObj->translation->where('locale', $locale)->first()?->value;
 
             // Если нет перевода для текущей локали, пропускаем
-            if (!$featureName || !$featureValueStr) {
+            if (! $featureName || ! $featureValueStr) {
                 continue;
             }
 
             // Если такой группы еще нет, создаем ее
-            if (!isset($featureGroups[$featureName])) {
+            if (! isset($featureGroups[$featureName])) {
                 $featureGroups[$featureName] = [
                     'name' => $featureName,
-                    'values' => []
+                    'values' => [],
                 ];
             }
 
             $featureGroups[$featureName]['values'][] = [
                 'id' => $featureValueObj->id,
                 'value' => $featureValueStr,
-                'guard_name' => $feature->guard_name
+                'guard_name' => $feature->guard_name,
             ];
         }
 
         // Преобразуем хеш-таблицу в индексированный массив для вывода в JSON
         $features = array_values($featureGroups);
-
 
         return [
             'id' => $this->id,
@@ -73,7 +72,7 @@ class ProductResource extends JsonResource
                     'alt' => $media->alt ?? $this->name,
                 ];
             }),
-            'features' => $features
+            'features' => $features,
         ];
     }
 }

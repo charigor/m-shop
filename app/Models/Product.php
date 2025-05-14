@@ -45,12 +45,12 @@ class Product extends Model implements HasMedia
         'type',
     ];
 
-    const  ACTIVE = [
+    const ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
 
-    const  TAXES = [
+    const TAXES = [
         ['id' => '1', 'name' => 'Без налогу', 'value' => 0],
         ['id' => '2', 'name' => 'Ндс 5%', 'value' => 5],
         ['id' => '3', 'name' => 'Ндс 7%', 'value' => 7],
@@ -71,7 +71,7 @@ class Product extends Model implements HasMedia
         'translate',
     ];
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')

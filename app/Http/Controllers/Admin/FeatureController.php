@@ -46,7 +46,7 @@ class FeatureController extends Controller
     public function create(): \Inertia\Response
     {
         return Inertia::render('Features/Create', [
-            'attribute_group' => FeatureResource::make(new Feature()),
+            'attribute_group' => FeatureResource::make(new Feature),
         ]);
     }
 
@@ -61,7 +61,7 @@ class FeatureController extends Controller
     public function show(Request $request, Feature $feature): \Inertia\Response
     {
 
-        $data = (new FeatureValueService())->getItems($request, $feature);
+        $data = (new FeatureValueService)->getItems($request, $feature);
 
         return Inertia::render('FeatureValues/Index', [
             'feature_values' => FeatureValueResource::collection($data),

@@ -14,7 +14,7 @@ class AttributeService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Attribute());
+        parent::__construct(new Attribute);
     }
 
     public function getItems($request, $params = null)

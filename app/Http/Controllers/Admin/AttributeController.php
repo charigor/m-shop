@@ -29,7 +29,7 @@ class AttributeController extends Controller
     public function create(AttributeGroup $attributeGroup)
     {
         return Inertia::render('Attributes/Create', [
-            'attribute' => AttributeResource::make(new Attribute()),
+            'attribute' => AttributeResource::make(new Attribute),
             'group_type_options' => createOptions(AttributeGroupResource::collection(AttributeGroup::all())->resolve()),
             'parent_route_id' => $attributeGroup->id,
         ]);

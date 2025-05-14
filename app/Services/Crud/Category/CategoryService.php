@@ -16,7 +16,7 @@ class CategoryService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Category());
+        parent::__construct(new Category);
     }
 
     /**

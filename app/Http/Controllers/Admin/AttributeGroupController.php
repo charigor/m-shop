@@ -46,7 +46,7 @@ class AttributeGroupController extends Controller
     public function create(): \Inertia\Response
     {
         return Inertia::render('AttributeGroups/Create', [
-            'attribute_group' => AttributeGroupResource::make(new AttributeGroup()),
+            'attribute_group' => AttributeGroupResource::make(new AttributeGroup),
             'group_type_options' => createOptions(AttributeGroup::GROUP_TYPE),
         ]);
     }

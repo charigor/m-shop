@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Filter\Elastic;
 
 /**
@@ -43,12 +44,12 @@ class AttributeFilterStrategy implements FilterStrategyInterface
                             'must' => [
                                 [
                                     'term' => [
-                                        'product_attributes.attribute_name.' . $this->locale => $attributeName,
+                                        'product_attributes.attribute_name.'.$this->locale => $attributeName,
                                     ],
                                 ],
                                 [
                                     'terms' => [
-                                        'product_attributes.attribute_value.' . $this->locale => $values,
+                                        'product_attributes.attribute_value.'.$this->locale => $values,
                                     ],
                                 ],
                             ],

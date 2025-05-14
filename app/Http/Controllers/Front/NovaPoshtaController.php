@@ -3,23 +3,19 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use Barryvdh\Debugbar\Facades\Debugbar;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NovaPoshtaController extends Controller
 {
     private array $warehouseTypes = [
         'Поштомат',
-        'Поштове відділення'
+        'Поштове відділення',
     ];
 
     public function getCities(Request $request)
     {
-        $response = Http::post("https://api.novaposhta.ua/v2.0/json/", [
+        $response = Http::post('https://api.novaposhta.ua/v2.0/json/', [
             'apiKey' => config('services.nova_poshta.api_key'),
             'modelName' => 'Address',
             'calledMethod' => 'searchSettlements',
@@ -27,8 +23,9 @@ class NovaPoshtaController extends Controller
                 'CityName' => $request->input('q'),
                 'Page' => $request->input('page', 1),
                 'Limit' => $request->input('limit', 10),
-            ]
+            ],
         ]);
+
         return $response->json();
     }
 
@@ -43,7 +40,7 @@ class NovaPoshtaController extends Controller
                 'TypeOfWarehouseRef' => $request->get('TypeOfWarehouseRef'),
                 'FindByString' => $request->input('q'),
                 'Limit' => $request->input('limit', 10),
-                'Page' => $request->input('page',1)
+                'Page' => $request->input('page', 1),
             ],
         ]);
 
@@ -52,18 +49,16 @@ class NovaPoshtaController extends Controller
 
     public function getWarehouseTypes(Request $request)
     {
-        $response =   Http::post('https://api.novaposhta.ua/v2.0/json/', [
-                'apiKey' => config('services.nova_poshta.api_key'),
-                'modelName' => 'Address',
-                'calledMethod' => 'getWarehouseTypes',
-                'methodProperties' => null
-            ]);
-
-
+        $response = Http::post('https://api.novaposhta.ua/v2.0/json/', [
+            'apiKey' => config('services.nova_poshta.api_key'),
+            'modelName' => 'Address',
+            'calledMethod' => 'getWarehouseTypes',
+            'methodProperties' => null,
+        ]);
 
         $content = json_decode($response->getBody());
 
-        return response()->json(collect($content->data)->filter(fn($item) => in_array($item->Description, $this->warehouseTypes))->flatten());
+        return response()->json(collect($content->data)->filter(fn ($item) => in_array($item->Description, $this->warehouseTypes))->flatten());
 
     }
 }

@@ -9,10 +9,7 @@ use Illuminate\Http\Request;
 
 class ElasticSearch implements SearchEngineInterface
 {
-    public function __construct(private Client $client)
-    {
-
-    }
+    public function __construct(private Client $client) {}
 
     public function handle(Request $request): array
     {
@@ -153,6 +150,7 @@ class ElasticSearch implements SearchEngineInterface
             'items' => collect($searchResult['hits']['hits'])->map(function ($item) use ($lang) {
                 $product = Product::with(['media', 'translateWithFallback'])->where('id', $item['_source']['product_id'])->first();
                 $categoryPath = $item['_source']['category_path'][$lang] ? '/catalog/'.$item['_source']['category_path'][$lang].'/'.optional($product->translateWithFallback)->link_rewrite : '/catalog/'.optional($product->translateWithFallback)->link_rewrite;
+
                 return [
                     'product_id' => $item['_source']['product_id'],
                     'name' => $item['_source']['product_name'][$lang] ?? 'Без назви',

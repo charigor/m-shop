@@ -14,7 +14,7 @@ class FeatureValueService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new FeatureValue());
+        parent::__construct(new FeatureValue);
     }
 
     public function getItems($request, $model = null)

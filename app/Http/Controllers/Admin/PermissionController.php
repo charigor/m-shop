@@ -56,7 +56,7 @@ class PermissionController extends Controller
     public function create()
     {
         return Inertia::render('Permissions/Create', [
-            'permission' => PermissionResource::make(new Permission())->resolve(),
+            'permission' => PermissionResource::make(new Permission)->resolve(),
         ]);
     }
 

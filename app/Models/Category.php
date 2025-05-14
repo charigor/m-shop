@@ -18,7 +18,7 @@ class Category extends Model implements HasMedia
     use HasFactory,InteractsWithMedia,NodeTrait;
     //        Searchable {
     //    \Laravel\Scout\Searchable::usesSoftDelete insteadof \Kalnoy\Nestedset\NodeTrait;
-    //}
+    // }
 
     public $table = 'categories';
 
@@ -29,14 +29,14 @@ class Category extends Model implements HasMedia
         'parent_id',
     ];
 
-    const  ACTIVE = [
+    const ACTIVE = [
         0 => 'Inactive',
         1 => 'Active',
     ];
 
     const MODEL_NAME = 'category';
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
@@ -129,11 +129,11 @@ class Category extends Model implements HasMedia
 
         return $translation;
     }
+
     public function ancestors()
     {
         return $this->newQuery()
             ->whereRaw('_lft < ? and _rgt > ?', [$this->_lft, $this->_rgt])
             ->orderBy('_lft');
     }
-
 }

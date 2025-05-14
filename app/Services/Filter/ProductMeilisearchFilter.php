@@ -25,9 +25,7 @@ class ProductMeilisearchFilter implements ProductFilterContract
 
     public const MULTIPLE = 100;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * @return $this

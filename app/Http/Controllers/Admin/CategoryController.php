@@ -70,7 +70,7 @@ class CategoryController extends Controller
     public function create(): \Inertia\Response
     {
         return Inertia::render('Categories/Create', [
-            'category' => CategoryResource::make(new Category()),
+            'category' => CategoryResource::make(new Category),
             'categories' => Category::with(['translation' => fn ($q) => $q->where('locale', app()->getLocale())])->get()->toTree(),
         ]);
     }

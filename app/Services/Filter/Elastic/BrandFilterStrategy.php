@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services\Filter\Elastic;
+
 /**
  * Brand filter strategy
  */

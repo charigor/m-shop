@@ -14,7 +14,7 @@ class BrandService extends BaseCrudService
 {
     public function __construct()
     {
-        parent::__construct(new Brand());
+        parent::__construct(new Brand);
     }
 
     /**

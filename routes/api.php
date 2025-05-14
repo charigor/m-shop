@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\api\BreadcrumbsController;
+use App\Http\Controllers\api\CartController;
 use App\Http\Controllers\api\CatalogController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ProductController;
-use App\Http\Controllers\api\TranslationController;
 use App\Http\Controllers\Front\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,16 +19,23 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::prefix('cart')->middleware(['cartCookie'])->group(function () {
+    Route::get('/', [CartController::class, 'index']);
+    Route::post('/add', [CartController::class, 'add']);
+    Route::delete('/remove', [CartController::class, 'remove']);
+    Route::post('/sync', [CartController::class, 'sync']);
+    Route::delete('/clear', [CartController::class, 'clear']);
+    Route::post('/logout', [CartController::class, 'handleLogout']);
+});
 Route::post('/login', function (Request $request) {
     return response()->json($request->user());
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/user', [AuthController::class, 'user']);
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return response()->json($request->user());
-//});
+// });
 Route::get('/breadcrumbs/translations', [BreadcrumbsController::class, 'getBreadcrumbsTranslations']);
 Route::get('/breadcrumbs/category', [BreadcrumbsController::class, 'getCategoryContext']);
 Route::post('/breadcrumbs/resolve', [BreadcrumbsController::class, 'resolvePath']);

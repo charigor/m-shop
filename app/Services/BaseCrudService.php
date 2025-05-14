@@ -46,7 +46,7 @@ abstract class BaseCrudService
     public function updateItem($model, $request)
     {
 
-        //Model is soft delete
+        // Model is soft delete
         if (method_exists($model, 'trashed')) {
             $model->withTrashed();
         }

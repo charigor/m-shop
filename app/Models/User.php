@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens,Billable, HasFactory, HasRoles, InteractsWithMedia,Notifiable;
+    use Billable,HasApiTokens, HasFactory, HasRoles, InteractsWithMedia,Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -58,7 +58,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * @throws \Spatie\Image\Exceptions\InvalidManipulation
      */
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
